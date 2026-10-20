@@ -156,9 +156,3 @@ threads-keywords.json  B1 帳號
 - Threads 抓取是用瀏覽器自動化讀取公開頁面，可能被登入牆或機房 IP 擋下，也可能不符合 Threads 使用條款，請自行評估。
 - Reddit 對機房 IP 常有限流，抓取遇到 429 會等待重試，仍可能偶爾失敗。
 - 頭版排序沿用 Google 新聞 RSS 的順序，不是實際閱讀數。
-
-## 資安設計
-
-- **隔離第三方程式**：Threads 抓取會執行 threads-toolkit 與其 npm 依賴，因此放在獨立的 Fetch Threads workflow，只有 `contents: read`，拿不到部署權限、OIDC 與 secrets。它產出的 JSON 部署前先經 `scripts/sanitize_threads.py` 檢查欄位、型別與長度，連結只留 `https://www.threads.com/`。
-- **最小權限**：workflow 預設 `permissions: {}`；Fetch Threads 的 checkout 不保存憑證。Update news 需要 `contents: write` 才能 commit 存檔，所以只執行本 repo 的程式與官方 actions；`ANTHROPIC_API_KEY` 只給翻譯步驟。
-- **前端**：外部內容一律用 `textContent` 輸出；連結與圖片只接受 http(s)；頁面帶 Content-Security-Policy，只允許自家腳本與 Google Fonts。
