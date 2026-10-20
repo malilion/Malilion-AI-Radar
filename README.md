@@ -11,6 +11,7 @@
 - **A2 要聞**：多欄列表，可搜尋（按 `/`）、依媒體篩選、只看未讀
 - **B1 社群版**：Threads 引述卡，可依帳號篩選
 - **C1 科技副刊**：Unwind AI 橫向捲動封面卡
+- **C2 AI 業界動態**：各 AI 公司官方部落格新文，可依來源篩選
 - **已讀與收藏**：點過的文章變淡；☆ 收藏後按 `s` 開啟收藏夾。兩者都只存在瀏覽器（localStorage）
 
 前端檔案：`site/index.html`、`site/styles.css`、`site/app.js`（無框架、無建置步驟）。
@@ -21,6 +22,7 @@
 |------|------|------|
 | A1 頭版、A2 要聞 | [Google 新聞 RSS（台灣）](https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant) | RSS 前 6 則排進頭版，其餘進要聞 |
 | B1 社群版 | [threads-toolkit](https://github.com/Chuanyin1202/threads-toolkit) | 追蹤帳號近 72 小時的貼文，依互動分數（讚 + 回覆×2 + 轉發×3）排序 |
+| C2 AI 業界動態 | `ai-feeds.json` 列出的 AI 公司官方部落格（OpenAI、Google DeepMind、Google AI、Google Research、Hugging Face、NVIDIA、Mistral AI、AWS ML） | 近 14 天、每家最多 6 則，依時間排序，可依來源篩選，標題與摘要翻成繁體中文 |
 | C1 科技副刊 | [Unwind AI 電子報 RSS](https://rss.beehiiv.com/feeds/fMHDv0Uk41.xml) | 最新 30 篇文章，標題與摘要自動翻譯成繁體中文 |
 
 ## 運作方式
@@ -31,6 +33,7 @@
 
 1. `scripts/fetch_news.py`：抓 Google 新聞，輸出 `site/news.json`
 2. `scripts/fetch_unwind.py`：抓 Unwind AI RSS 並翻譯，輸出 `site/unwind.json`
+   `scripts/fetch_ai_feeds.py`：抓各 AI 公司部落格（RSS／Atom）並翻譯，輸出 `site/ai.json`
 3. 取 Fetch Threads 最近一次成功的 `threads.json`，經 `scripts/sanitize_threads.py` 檢查後放進 `site/`
 4. 把 `site/` 部署到 GitHub Pages
 
@@ -42,6 +45,7 @@
 
 - **Threads 帳號與關鍵字**：編輯 `threads-keywords.json`。目前追蹤 `dcard.tw`、`ithome`、`cool3c`、`kocpc`、`ai.lanrenbao`、`darrell_tw_`、`c.yu.an_`、`kelly_guooo`、`lazyoffice2024`、`ironv.careerlife`。`accounts` 是要追蹤的帳號（不含 @），有填就以帳號模式依互動分數排序；`keywords` 是搜尋模式（未登入時對中文關鍵字常抓不到結果）。
 - **翻譯**：到 Settings → Secrets and variables → Actions 新增 `ANTHROPIC_API_KEY`。沒有設定時 Unwind AI 會顯示英文原文。翻譯結果以文章連結為鍵快取，只有新文章才會呼叫 API。
+- **AI 來源**：編輯 `ai-feeds.json`（`feeds` 的 `name`／`url`、`days`、`maxPerSource`）。
 - **更新頻率**：修改 workflow 裡的 `cron`（UTC 時間）。
 - **首次啟用**：Settings → Pages → Source 選 **GitHub Actions**，再到 Actions 手動執行一次 "Update news"。
 

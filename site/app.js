@@ -396,6 +396,74 @@
     next.disabled = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 8;
   }
 
+  // ---------- AI 業界動態 ----------
+  let ai = null;
+  let aiSource = '';
+  let aiLimit = 10;
+
+  function renderAI() {
+    const list = $('#aiList');
+    const chips = $('#aiSources');
+    list.textContent = '';
+    chips.textContent = '';
+    const items = ai?.items || [];
+    if (!items.length) {
+      $('#aiEmpty').textContent = 'AI 業界動態暫時沒有資料，下一次整點更新會再試。';
+      $('#aiEmpty').hidden = false;
+      $('#aiMore').hidden = true;
+      return;
+    }
+    $('#aiEmpty').hidden = true;
+    const counts = {};
+    items.forEach((it) => { counts[it.source] = (counts[it.source] || 0) + 1; });
+    const chip = (label, value, n) => {
+      const b = el('button', 'chip', label);
+      b.type = 'button';
+      b.append(el('small', null, n));
+      b.setAttribute('aria-pressed', String(aiSource === value));
+      b.addEventListener('click', () => { aiSource = value; aiLimit = 10; renderAI(); });
+      chips.append(b);
+    };
+    chip('全部', '', items.length);
+    Object.keys(counts).sort().forEach((k) => chip(k, k, counts[k]));
+
+    const shown = items.filter((it) => !aiSource || it.source === aiSource);
+    shown.slice(0, aiLimit).forEach((it, i) => {
+      const title = it.title_zh || it.title;
+      const entry = { id: it.link, kind: 'ai', title, link: it.link, src: it.source, date: it.pubDate };
+      const li = el('li', 'dispatch item reveal');
+      li.style.setProperty('--d', `${(i % 2) * 0.06}s`);
+      if (read.has(entry.id)) li.classList.add('is-read');
+      const text = el('div');
+      const h = el('h3', 'dispatch__title t');
+      h.append(el('span', 'hl', title));
+      text.append(el('span', 'dispatch__src', it.source), h);
+      if (it.title_zh && it.title_zh !== it.title) text.append(el('p', 'dispatch__orig', it.title));
+      const sum = it.summary_zh || it.summary;
+      if (sum) text.append(el('p', 'dispatch__sum', sum));
+      text.append(metaLine('', it.pubDate));
+      const parts = [text];
+      const imgSrc = safeUrl(it.image);
+      if (imgSrc) {
+        const fig = el('div', 'dispatch__img');
+        const img = el('img');
+        img.src = imgSrc;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.onerror = () => fig.remove();
+        fig.append(img);
+        parts.push(fig);
+      }
+      li.append(articleLink(entry, parts), starButton(entry));
+      list.append(li);
+    });
+    const more = $('#aiMore');
+    more.hidden = shown.length <= aiLimit;
+    more.textContent = `顯示更多（還有 ${shown.length - aiLimit} 則）`;
+    observe(list);
+  }
+
   // ---------- 進場動效 ----------
   const io = 'IntersectionObserver' in window
     ? new IntersectionObserver((entries) => entries.forEach((e) => {
@@ -431,6 +499,7 @@
       renderNews();
     });
     $('#threadsMore').addEventListener('click', () => { threadsLimit += PAGE; renderThreads(); });
+    $('#aiMore').addEventListener('click', () => { aiLimit += 10; renderAI(); });
 
     const rail = $('#techRail');
     $$('[data-rail]').forEach((b) => b.addEventListener('click', () => {
@@ -475,6 +544,7 @@
   loadNews();
   getJSON('threads.json').then((d) => { threads = d; renderThreads(); });
   getJSON('unwind.json').then(renderTech);
+  getJSON('ai.json').then((d) => { ai = d; renderAI(); });
   // 頁面放著不關時，每 10 分鐘更新相對時間與資料
   setInterval(() => { dateline(); loadNews(); }, 10 * 60 * 1000);
 })();
