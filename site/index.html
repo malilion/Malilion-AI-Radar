@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Google 新聞 · 台灣</title>
+<style>
+  :root { --bg:#fff; --fg:#202124; --muted:#5f6368; --line:#e8eaed; --link:#1a0dab; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#202124; --fg:#e8eaed; --muted:#9aa0a6; --line:#3c4043; --link:#8ab4f8; }
+  }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,"Noto Sans TC",sans-serif; }
+  main { max-width:720px; margin:0 auto; padding:24px 16px; }
+  h1 { font-size:1.4rem; margin:0 0 4px; }
+  .meta { color:var(--muted); font-size:.85rem; margin-bottom:16px; }
+  ul { list-style:none; padding:0; margin:0; }
+  li { padding:12px 0; border-top:1px solid var(--line); }
+  a { color:var(--link); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .sub { color:var(--muted); font-size:.8rem; margin-top:2px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Google 新聞 · 台灣</h1>
+  <div class="meta" id="meta">載入中…</div>
+  <ul id="list"></ul>
+</main>
+<script>
+fetch('news.json', {cache:'no-cache'}).then(r => r.json()).then(d => {
+  const fmt = s => { const t = new Date(s); return isNaN(t) ? s : t.toLocaleString('zh-TW'); };
+  document.getElementById('meta').textContent = '最後更新：' + fmt(d.updated) + '（每天自動更新）';
+  const ul = document.getElementById('list');
+  for (const it of d.items) {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = it.link; a.target = '_blank'; a.rel = 'noopener'; a.textContent = it.title;
+    const sub = document.createElement('div');
+    sub.className = 'sub';
+    sub.textContent = [it.source, fmt(it.pubDate)].filter(Boolean).join(' · ');
+    li.append(a, sub);
+    ul.append(li);
+  }
+}).catch(() => { document.getElementById('meta').textContent = '載入失敗'; });
+</script>
+</body>
+</html>
