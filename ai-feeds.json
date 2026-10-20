@@ -8,6 +8,21 @@
       "type": "lab"
     },
     {
+      "name": "Anthropic",
+      "url": "https://raw.githubusercontent.com/alan-turing-institute/ai-rss-feeds/refs/heads/main/feeds/anthropic-news.xml",
+      "type": "lab"
+    },
+    {
+      "name": "Anthropic Research",
+      "url": "https://raw.githubusercontent.com/alan-turing-institute/ai-rss-feeds/refs/heads/main/feeds/anthropic-research.xml",
+      "type": "lab"
+    },
+    {
+      "name": "Claude",
+      "url": "https://raw.githubusercontent.com/alan-turing-institute/ai-rss-feeds/refs/heads/main/feeds/claude-news.xml",
+      "type": "lab"
+    },
+    {
       "name": "Google DeepMind",
       "url": "https://deepmind.google/blog/rss.xml",
       "type": "lab"
