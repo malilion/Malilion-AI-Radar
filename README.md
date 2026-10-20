@@ -17,7 +17,7 @@
 | C1 | 科技副刊 | Unwind AI 電子報，橫向捲動封面卡 |
 | C2 | AI 業界動態 | 「官方部落格／科技媒體」兩個分頁，可依來源篩選 |
 | C3 | 開發者雷達 | 「GitHub 趨勢／Hacker News／論文／部落格／Reddit／版本更新」六個分頁，排行榜類標示名次 |
-| C4 | 社群與活動 | 左為近期社群活動，右為加入社群連結目錄 |
+| C4 | 社群與活動 | 左為近期社群活動，右為加入社群連結目錄（第一張為本站 LINE 社群「碼力獅冒險公會」） |
 
 其他功能：
 
@@ -54,7 +54,7 @@
 | Reddit | r/LocalLLaMA、r/ClaudeAI、r/AI_Agents、r/MachineLearning（當日熱門；四個版合併成一次請求再依版拆開） |
 | 版本更新 | Codex、Claude Code、LangChain、Ollama、Open WebUI 的 GitHub Releases（只留正式版） |
 
-**C4 社群目錄**：Hugging Face Discord、LangChain 社群、OpenAI 開發者論壇、生成式 AI 年會、GDG Taipei、F2E 前端社群、四個 Reddit 版。
+**C4 社群目錄**：碼力獅冒險公會（LINE，本站社群）、Hugging Face Discord、LangChain 社群、OpenAI 開發者論壇、生成式 AI 年會、GDG Taipei、F2E 前端社群、四個 Reddit 版。
 
 英文標題與摘要會翻成繁體中文（需設定 `ANTHROPIC_API_KEY`，見下方「設定」）；已是中文的內容、版本號不會送去翻譯。
 
