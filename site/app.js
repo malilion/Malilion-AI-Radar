@@ -7,6 +7,13 @@
   const TZ = 'Asia/Taipei';
   const FIRST_ISSUE = Date.UTC(2026, 9, 20); // 創刊日 2026-10-20（台灣時間）
   const pad = (n) => String(n).padStart(2, '0');
+  // 資料來自外部來源，連結與圖片只接受 http(s)，避免 javascript: 等協定
+  const safeUrl = (u) => {
+    try {
+      const x = new URL(u, location.href);
+      return x.protocol === 'https:' || x.protocol === 'http:' ? x.href : '';
+    } catch { return ''; }
+  };
 
   // ---------- 本機儲存（已讀、收藏）：失敗時退回記憶體 ----------
   const store = {
@@ -15,6 +22,7 @@
   };
   const read = new Set(store.get('mr:read', []));
   let saved = store.get('mr:saved', []); // [{id, kind, title, link, src, date}]
+  if (!Array.isArray(saved)) saved = [];
   const isSaved = (id) => saved.some((s) => s.id === id);
   const markRead = (id) => {
     if (read.has(id)) return;
@@ -142,7 +150,8 @@
   // 連結共用：點擊後標記已讀
   function articleLink(entry, child) {
     const a = el('a');
-    a.href = entry.link;
+    const href = safeUrl(entry.link);
+    if (href) a.href = href;
     a.target = '_blank';
     a.rel = 'noopener';
     a.append(...child);
@@ -360,9 +369,10 @@
       card.style.setProperty('--d', `${Math.min(i, 4) * 0.08}s`);
       if (read.has(entry.id)) card.classList.add('is-read');
       const fig = el('div', 'card__img');
-      if (it.image) {
+      const imgSrc = safeUrl(it.image);
+      if (imgSrc) {
         const img = el('img');
-        img.src = it.image;
+        img.src = imgSrc;
         img.alt = '';
         img.loading = 'lazy';
         img.decoding = 'async';

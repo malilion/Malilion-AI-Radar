@@ -108,7 +108,10 @@ def main():
             "summary": summary[:220] + ("…" if len(summary) > 220 else ""),
             "image": image,
         })
-    items = [i for i in items if i["title"] and i["link"]][:MAX_ITEMS]
+    for i in items:
+        if not i["image"].startswith("https://"):
+            i["image"] = ""
+    items = [i for i in items if i["title"] and i["link"].startswith("https://")][:MAX_ITEMS]
     if not items:
         print("Unwind AI RSS 沒有項目", file=sys.stderr)
         return
