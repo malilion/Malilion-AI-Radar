@@ -439,6 +439,18 @@ a:hover .hl, a:focus-visible .hl { background-size: 100% 1px; }
 .colophon a { text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
 .colophon a:hover { text-decoration-color: var(--accent); }
 .colophon__keys { color: var(--muted); }
+.follow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 6px 0 14px; }
+.follow__label { font: 700 .72rem/1 var(--sans); letter-spacing: .12em; color: var(--accent); margin-right: 4px; }
+.colophon .follow__btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid var(--ink); border-radius: 999px;
+  font: 600 .88rem/1 var(--sans); color: var(--ink); text-decoration: none;
+  transition: background .25s, color .25s, transform .3s var(--ease);
+}
+.colophon .follow__btn:hover { transform: translateY(-1px); background: var(--ink); color: var(--paper); }
+.colophon .follow__btn--main { background: var(--ink); color: var(--paper); }
+.colophon .follow__btn--main:hover { background: var(--accent); border-color: var(--accent); }
+.follow__btn b { font: 900 1rem/1 var(--serif); }
+.follow__line { color: #06c755; font-size: .7rem !important; }
 @media (hover: none) { .colophon__keys { display: none; } }
 
 /* ---------- 收藏抽屜 ---------- */
