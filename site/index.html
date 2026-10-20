@@ -38,6 +38,7 @@
   .kw button { font:inherit; font-size:.85rem; padding:3px 12px; border-radius:999px; cursor:pointer;
     color:var(--fg); background:var(--bg); border:1px solid var(--line); }
   .kw button[aria-pressed=true] { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .thumb { display:block; width:100%; max-height:180px; object-fit:cover; border-radius:8px; margin:8px 0 2px; }
   .rank { font-weight:700; color:var(--accent); margin-right:6px; }
   .body { white-space:pre-wrap; word-break:break-word; margin-top:4px; }
   .hot { margin-bottom:18px; }
@@ -70,6 +71,7 @@
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" id="tab-news" aria-selected="true">新聞</button>
       <button class="tab" role="tab" id="tab-threads" aria-selected="false">Threads 熱門</button>
+      <button class="tab" role="tab" id="tab-unwind" aria-selected="false">Unwind AI</button>
     </div>
     <div class="tools" id="newsTools" style="padding-top:12px">
       <input type="search" id="q" placeholder="搜尋標題…" aria-label="搜尋標題">
@@ -193,15 +195,54 @@ function renderThreads() {
   $('meta').textContent = '更新於 ' + (isNaN(u) ? '' : u.toLocaleString('zh-TW', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }));
 }
 
+// ---- Unwind AI（每日電子報） ----
+let udata = null;
+
+function renderUnwind() {
+  $('hot').hidden = true;
+  const list = $('list'); list.textContent = '';
+  if (!udata || !udata.items) {
+    $('count').textContent = '';
+    $('empty').textContent = 'Unwind AI 尚無資料（下次更新會再試）';
+    $('empty').hidden = false; return;
+  }
+  const q = $('q').value.trim().toLowerCase();
+  const shown = udata.items.filter(i => !q || (i.title + i.summary).toLowerCase().includes(q));
+  for (const it of shown) {
+    const li = document.createElement('li'), a = document.createElement('a');
+    a.href = it.link; a.target = '_blank'; a.rel = 'noopener';
+    const title = document.createElement('div'); title.className = 'title'; title.textContent = it.title;
+    a.append(title);
+    if (it.image) { const im = document.createElement('img'); im.className = 'thumb'; im.loading = 'lazy'; im.alt = ''; im.src = it.image; a.append(im); }
+    if (it.summary) { const b = document.createElement('div'); b.className = 'body'; b.textContent = it.summary; a.append(b); }
+    const sub = document.createElement('div'); sub.className = 'sub';
+    const c = document.createElement('span'); c.className = 'chip'; c.textContent = 'Unwind AI'; sub.append(c);
+    const t = document.createElement('span'); t.textContent = ago(it.pubDate); sub.append(t);
+    a.append(sub); li.append(a); list.append(li);
+  }
+  $('count').textContent = `共 ${shown.length} 則`;
+  $('empty').textContent = '找不到符合的文章'; $('empty').hidden = shown.length > 0;
+  const u = new Date(udata.updated);
+  $('meta').textContent = '更新於 ' + (isNaN(u) ? '' : u.toLocaleString('zh-TW', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }));
+}
+
 function setTab(t) {
   tab = t;
   $('tab-news').setAttribute('aria-selected', String(t === 'news'));
   $('tab-threads').setAttribute('aria-selected', String(t === 'threads'));
+  $('tab-unwind').setAttribute('aria-selected', String(t === 'unwind'));
   $('src').hidden = t !== 'news';
   $('kw').hidden = t !== 'threads';
-  $('q').placeholder = t === 'news' ? '搜尋標題…' : '搜尋貼文或帳號…';
+  $('q').placeholder = t === 'news' ? '搜尋標題…' : t === 'threads' ? '搜尋貼文或帳號…' : '搜尋文章…';
   $('empty').textContent = '找不到符合的新聞';
   if (t === 'news') { $('kw').textContent = ''; render(); return; }
+  if (t === 'unwind') {
+    if (udata !== null) { renderUnwind(); return; }
+    $('count').textContent = '載入中…'; $('list').textContent = '';
+    fetch('unwind.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : false)
+      .catch(() => false).then(d => { udata = d; if (tab === 'unwind') renderUnwind(); });
+    return;
+  }
   if (tdata !== null) { renderThreads(); return; }
   $('count').textContent = '載入中…'; $('list').textContent = '';
   fetch('threads.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : false)
@@ -209,8 +250,9 @@ function setTab(t) {
 }
 $('tab-news').onclick = () => setTab('news');
 $('tab-threads').onclick = () => setTab('threads');
+$('tab-unwind').onclick = () => setTab('unwind');
 
-$('q').addEventListener('input', () => tab === 'news' ? render() : renderThreads());
+$('q').addEventListener('input', () => tab === 'news' ? render() : tab === 'unwind' ? renderUnwind() : renderThreads());
 $('src').addEventListener('change', render);
 </script>
 </body>

@@ -25,6 +25,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 scripts/fetch_news.py
+      - name: Fetch Unwind AI newsletter
+        continue-on-error: true
+        run: python3 scripts/fetch_unwind.py
 
       # Threads 熱門：失敗時不影響新聞部署，頁面會顯示「尚無資料」
       - name: Checkout threads-toolkit
