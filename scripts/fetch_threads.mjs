@@ -36,6 +36,20 @@ const score = (s = {}) => (s.likes || 0) + 2 * (s.replies || 0) + 3 * (s.reposts
 
 const groups = [];
 const errors = [];
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// 每抓完一組就寫檔，這樣即使被 timeout 中斷也保有已抓到的部分
+function save() {
+    writeFileSync(outPath, JSON.stringify({
+        updated: new Date().toISOString(),
+        sort: accounts.length ? 'hot' : 'latest',
+        note: accounts.length
+            ? `追蹤帳號近 ${hotWindowHours} 小時貼文，依互動分數（讚 + 回覆×2 + 轉發×3）排序`
+            : '最近 24 小時，依發文時間新到舊',
+        groups,
+        errors,
+    }, null, 1));
+}
 for (const keyword of keywords) {
     current = [];
     try {
@@ -69,18 +83,27 @@ for (const keyword of keywords) {
         .sort((a, b) => (Date.parse(b.timestamp) || 0) - (Date.parse(a.timestamp) || 0));
     console.log(`${keyword}: 保留 ${posts.length} 則`, JSON.stringify(stat));
     groups.push({ keyword, posts, stat });
+    save();
 }
 
 // 帳號清單模式：抓各帳號個人頁的近期貼文（不需登入），依互動分數排出熱門
 const HOT_MS = hotWindowHours * 60 * 60 * 1000;
+let first = true;
 for (const username of accounts) {
-    current = [];
-    try {
-        await profileAction({ action: 'profile', username, includePosts: true, maxItems: maxPostsPerAccount }, log);
-    } catch (err) {
-        errors.push({ keyword: '@' + username, error: err instanceof Error ? err.message : String(err) });
+    // Threads 對連續請求會回空頁面，所以帳號之間要間隔；抓到 0 則時等久一點再重試一次
+    if (!first) await sleep(20000 + Math.random() * 20000);
+    first = false;
+    let raw = [];
+    for (let attempt = 1; attempt <= 2 && raw.length === 0; attempt++) {
+        if (attempt > 1) { console.log(`@${username}: 0 則，60 秒後重試`); await sleep(60000); }
+        current = [];
+        try {
+            await profileAction({ action: 'profile', username, includePosts: true, maxItems: maxPostsPerAccount }, log);
+        } catch (err) {
+            errors.push({ keyword: '@' + username, error: err instanceof Error ? err.message : String(err) });
+        }
+        raw = current.filter((p) => p.source === 'profile_posts');
     }
-    const raw = current.filter((p) => p.source === 'profile_posts');
     const stat = { raw: raw.length, stale: 0, spam: 0, notChinese: 0, duplicate: 0 };
     const seen = new Set();
     const posts = raw
@@ -100,17 +123,10 @@ for (const username of accounts) {
         }));
     console.log(`@${username}: 保留 ${posts.length} 則`, JSON.stringify(stat));
     groups.push({ keyword: '@' + username, posts, stat });
+    save();
 }
 
+save();
 const total = groups.reduce((n, g) => n + g.posts.length, 0);
-writeFileSync(outPath, JSON.stringify({
-    updated: new Date().toISOString(),
-    sort: accounts.length ? 'hot' : 'latest',
-    note: accounts.length
-        ? `追蹤帳號近 ${hotWindowHours} 小時貼文，依互動分數（讚 + 回覆×2 + 轉發×3）排序`
-        : '最近 24 小時，依發文時間新到舊',
-    groups,
-    errors,
-}, null, 1));
-console.log(`共 ${total} 則，${errors.length} 個關鍵字失敗`);
+console.log(`共 ${total} 則，${errors.length} 個失敗`);
 process.exit(0);
