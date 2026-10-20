@@ -51,12 +51,13 @@ jobs:
           cache-dependency-path: threads-toolkit/package-lock.json
       - name: Fetch Threads trending
         continue-on-error: true
+        timeout-minutes: 45
         working-directory: threads-toolkit
         run: |
           npm ci
           npx playwright install --with-deps chromium
           cp ../scripts/fetch_threads.mjs scripts/fetch_threads.mjs
-          timeout 12m node --import tsx scripts/fetch_threads.mjs
+          timeout 40m node --import tsx scripts/fetch_threads.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
