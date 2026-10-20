@@ -1,259 +1,146 @@
 <!doctype html>
-<html lang="zh-TW">
+<html lang="zh-Hant-TW">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>台灣新聞速報</title>
-<meta name="description" content="每小時自動更新的 Google 新聞（台灣）頭條">
-<style>
-  :root {
-    --bg:#f5f6f8; --card:#fff; --fg:#1f2328; --muted:#6b7280; --line:#e5e7eb;
-    --accent:#2563eb; --chip:#eef2ff; --chip-fg:#3730a3; --shadow:0 1px 2px rgba(0,0,0,.06);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg:#0f1115; --card:#181b21; --fg:#e6e8eb; --muted:#9aa3af; --line:#2a2f38;
-      --accent:#7aa2ff; --chip:#222a44; --chip-fg:#b7c6ff; --shadow:none;
-    }
-  }
-  * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg);
-    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif; }
-  header { background:var(--card); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:10; }
-  .wrap { max-width:760px; margin:0 auto; padding:0 16px; }
-  .top { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:14px 0 8px; }
-  h1 { font-size:1.25rem; margin:0; letter-spacing:.02em; }
-  .meta { color:var(--muted); font-size:.8rem; text-align:right; }
-  .tools { display:flex; gap:8px; padding-bottom:12px; }
-  input[type=search] { flex:1; min-width:0; padding:9px 12px; font:inherit; font-size:.95rem;
-    color:var(--fg); background:var(--bg); border:1px solid var(--line); border-radius:10px; outline:none; }
-  input[type=search]:focus { border-color:var(--accent); }
-  select { padding:9px 10px; font:inherit; font-size:.95rem; color:var(--fg); background:var(--bg);
-    border:1px solid var(--line); border-radius:10px; max-width:42%; }
-  .tabs { display:flex; gap:4px; border-top:1px solid var(--line); }
-  .tab { flex:1; padding:10px 0; font:inherit; font-size:.95rem; font-weight:600; color:var(--muted);
-    background:none; border:0; border-bottom:2px solid transparent; cursor:pointer; }
-  .tab[aria-selected=true] { color:var(--accent); border-bottom-color:var(--accent); }
-  .kw { display:flex; flex-wrap:wrap; gap:6px; padding-bottom:12px; }
-  .kw button { font:inherit; font-size:.85rem; padding:3px 12px; border-radius:999px; cursor:pointer;
-    color:var(--fg); background:var(--bg); border:1px solid var(--line); }
-  .kw button[aria-pressed=true] { background:var(--accent); border-color:var(--accent); color:#fff; }
-  .thumb { display:block; width:100%; max-height:180px; object-fit:cover; border-radius:8px; margin:8px 0 2px; }
-  .rank { font-weight:700; color:var(--accent); margin-right:6px; }
-  .body { white-space:pre-wrap; word-break:break-word; margin-top:4px; }
-  .hot { margin-bottom:18px; }
-  .hot h2 { font-size:1rem; margin:0 0 10px; }
-  .hot ol li { border-left:4px solid var(--accent); }
-  .hot .no { display:inline-flex; align-items:center; justify-content:center; width:1.6em; height:1.6em; margin-right:8px;
-    border-radius:50%; background:var(--accent); color:#fff; font-size:.85rem; font-weight:700; }
-  .hot .title { font-size:1.08rem; }
-  main { padding:16px 0 48px; }
-  ol { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
-  li { background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); transition:transform .12s, border-color .12s; }
-  li:hover { border-color:var(--accent); transform:translateY(-1px); }
-  li a { display:block; padding:14px 16px; color:inherit; text-decoration:none; }
-  .title { font-weight:600; line-height:1.5; }
-  .sub { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:8px; font-size:.8rem; color:var(--muted); }
-  .chip { background:var(--chip); color:var(--chip-fg); padding:1px 9px; border-radius:999px; font-weight:500; }
-  .empty, .count { text-align:center; color:var(--muted); font-size:.85rem; padding:12px 0; }
-  .count { text-align:left; padding:0 0 10px; }
-  footer { text-align:center; color:var(--muted); font-size:.75rem; padding:0 0 32px; }
-  footer a { color:inherit; }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>每日晨報</title>
+<meta name="description" content="每小時自動排版的台灣新聞頭版、Threads 社群精選與 AI 科技副刊。">
+<meta name="theme-color" content="#f3eee4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='6' fill='%23c2381f'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23fff' font-family='serif' font-weight='700'%3E晨%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700;900&display=swap">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header>
+<a class="skip" href="#front">跳到頭版</a>
+
+<!-- 縮小後的導覽列：報頭離開畫面時出現 -->
+<nav class="bar" id="bar" aria-label="版面導覽">
+  <div class="bar__inner">
+    <a class="bar__brand" href="#top" aria-label="回到頂端"><span class="seal seal--sm" aria-hidden="true">晨</span>每日晨報</a>
+    <ul class="bar__links">
+      <li><a href="#front">頭版</a></li>
+      <li><a href="#news">要聞</a></li>
+      <li><a href="#social">社群</a></li>
+      <li><a href="#tech">副刊</a></li>
+    </ul>
+    <button class="saved-btn" type="button" data-open-saved aria-haspopup="dialog">
+      收藏<span class="saved-count" data-saved-count>0</span>
+    </button>
+  </div>
+</nav>
+
+<header class="masthead" id="top">
   <div class="wrap">
-    <div class="top">
-      <h1>📰 台灣新聞速報</h1>
-      <div class="meta" id="meta">載入中…</div>
+    <div class="masthead__meta">
+      <span id="issue">第 — 期</span>
+      <span id="dateline" class="masthead__date">—</span>
+      <span id="updated">—</span>
     </div>
-    <div class="tabs" role="tablist">
-      <button class="tab" role="tab" id="tab-news" aria-selected="true">新聞</button>
-      <button class="tab" role="tab" id="tab-threads" aria-selected="false">Threads 熱門</button>
-      <button class="tab" role="tab" id="tab-unwind" aria-selected="false">Unwind AI</button>
+    <div class="masthead__title">
+      <span class="seal" aria-hidden="true"><span>晨</span><span>報</span></span>
+      <h1>每日晨報</h1>
     </div>
-    <div class="tools" id="newsTools" style="padding-top:12px">
-      <input type="search" id="q" placeholder="搜尋標題…" aria-label="搜尋標題">
-      <select id="src" aria-label="依媒體篩選"><option value="">全部媒體</option></select>
-    </div>
-    <div class="kw" id="kw" hidden></div>
+    <p class="masthead__tagline"><span>台灣要聞 · 社群脈動 · 科技副刊</span><span class="masthead__sep" aria-hidden="true">｜</span><span>每小時自動排版</span></p>
+    <ul class="masthead__nav" aria-label="版面">
+      <li><a href="#front"><b>A1</b>頭版</a></li>
+      <li><a href="#news"><b>A2</b>要聞</a></li>
+      <li><a href="#social"><b>B1</b>社群</a></li>
+      <li><a href="#tech"><b>C1</b>副刊</a></li>
+      <li><button type="button" data-open-saved aria-haspopup="dialog"><b>★</b>收藏 <span data-saved-count>0</span></button></li>
+    </ul>
   </div>
 </header>
-<main class="wrap">
-  <div class="count" id="count"></div>
-  <section class="hot" id="hot" hidden><h2>🔥 最熱門 Top 3</h2><ol id="hotList"></ol></section>
-  <ol id="list"></ol>
-  <div class="empty" id="empty" hidden>找不到符合的新聞</div>
+
+<main>
+  <section class="section" id="front" aria-labelledby="front-h">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 class="kicker" id="front-h"><span class="kicker__no">A1</span>頭版<span class="kicker__en">Front Page</span></h2>
+      </div>
+      <div class="front" id="frontGrid" aria-live="polite">
+        <div class="skeleton skeleton--lead"></div>
+        <div class="skeleton"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="news" aria-labelledby="news-h">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 class="kicker" id="news-h"><span class="kicker__no">A2</span>要聞<span class="kicker__en">Headlines</span></h2>
+        <div class="tools" role="search">
+          <label class="field">
+            <span class="sr">搜尋新聞標題</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            <input id="q" type="search" placeholder="搜尋標題" autocomplete="off" enterkeyhint="search">
+            <kbd aria-hidden="true">/</kbd>
+          </label>
+          <label class="select">
+            <span class="sr">依媒體篩選</span>
+            <select id="src"><option value="">全部媒體</option></select>
+          </label>
+          <button class="toggle" id="unreadOnly" type="button" aria-pressed="false">只看未讀</button>
+        </div>
+      </div>
+      <p class="count" id="newsCount" aria-live="polite"></p>
+      <ol class="columns" id="newsList"></ol>
+      <p class="empty" id="newsEmpty" hidden>沒有符合條件的新聞。</p>
+    </div>
+  </section>
+
+  <section class="section section--tint" id="social" aria-labelledby="social-h">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 class="kicker" id="social-h"><span class="kicker__no">B1</span>社群版<span class="kicker__en">On Threads</span></h2>
+        <p class="section__note" id="threadsNote"></p>
+      </div>
+      <div class="chips" id="accounts" role="group" aria-label="依帳號篩選"></div>
+      <div class="quotes" id="threadsList" aria-live="polite"></div>
+      <p class="empty" id="threadsEmpty" hidden></p>
+      <div class="more"><button class="more__btn" id="threadsMore" type="button" hidden>顯示更多</button></div>
+    </div>
+  </section>
+
+  <section class="section" id="tech" aria-labelledby="tech-h">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 class="kicker" id="tech-h"><span class="kicker__no">C1</span>科技副刊<span class="kicker__en">Unwind AI</span></h2>
+        <div class="rail-ctrl">
+          <button type="button" data-rail="-1" aria-label="上一頁">←</button>
+          <button type="button" data-rail="1" aria-label="下一頁">→</button>
+        </div>
+      </div>
+    </div>
+    <div class="rail" id="techRail" tabindex="0" aria-label="Unwind AI 文章，可左右捲動"></div>
+    <div class="wrap"><p class="empty" id="techEmpty" hidden></p></div>
+  </section>
 </main>
-<footer id="foot">資料來源：<a href="https://news.google.com/?hl=zh-TW&gl=TW&ceid=TW:zh-Hant" target="_blank" rel="noopener">Google 新聞</a> · 每小時自動更新</footer>
-<script>
-const $ = id => document.getElementById(id);
-let items = [];
 
-function ago(s) {
-  const t = new Date(s); if (isNaN(t)) return s || '';
-  const m = Math.round((Date.now() - t) / 60000);
-  if (m < 1) return '剛剛';
-  if (m < 60) return m + ' 分鐘前';
-  if (m < 1440) return Math.floor(m / 60) + ' 小時前';
-  if (m < 10080) return Math.floor(m / 1440) + ' 天前';
-  return t.toLocaleDateString('zh-TW');
-}
+<footer class="colophon">
+  <div class="wrap">
+    <p class="colophon__title"><span class="seal seal--sm" aria-hidden="true">晨</span>每日晨報</p>
+    <p>本報由 GitHub Actions 每小時自動採編排版。資料來源：
+      <a href="https://news.google.com/?hl=zh-TW&gl=TW&ceid=TW:zh-Hant">Google 新聞</a>、
+      <a href="https://www.threads.com/">Threads</a>、
+      <a href="https://www.theunwindai.com/">Unwind AI</a>。已讀與收藏只存在你的瀏覽器。</p>
+    <p class="colophon__keys">鍵盤：<kbd>/</kbd> 搜尋　<kbd>s</kbd> 開啟收藏　<kbd>Esc</kbd> 關閉</p>
+  </div>
+</footer>
 
-function card(it, rank) {
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = it.link; a.target = '_blank'; a.rel = 'noopener';
-    const title = document.createElement('div');
-    title.className = 'title';
-    if (rank) { const n = document.createElement('span'); n.className = 'no'; n.textContent = rank; title.append(n); }
-    title.append(it.title);
-    const sub = document.createElement('div'); sub.className = 'sub';
-    if (it.source) { const c = document.createElement('span'); c.className = 'chip'; c.textContent = it.source; sub.append(c); }
-    const time = document.createElement('span'); time.textContent = ago(it.pubDate); sub.append(time);
-    a.append(title, sub); li.append(a);
-    return li;
-}
+<dialog class="drawer" id="saved" aria-labelledby="saved-h">
+  <div class="drawer__head">
+    <h2 id="saved-h">收藏夾</h2>
+    <button type="button" class="drawer__close" data-close-saved aria-label="關閉收藏夾">✕</button>
+  </div>
+  <ol class="drawer__list" id="savedList"></ol>
+  <p class="empty" id="savedEmpty">還沒有收藏。點文章旁的 <span aria-hidden="true">☆</span> 就能存起來。</p>
+</dialog>
 
-function render() {
-  const q = $('q').value.trim().toLowerCase(), src = $('src').value;
-  const list = $('list'); list.textContent = '';
-  $('hotList').textContent = '';
-  // Google 新聞 RSS 依熱度排序，前 3 則視為最熱門；搜尋或篩選時不顯示此區塊
-  const showHot = !q && !src && items.length > 3;
-  $('hot').hidden = !showHot || tab !== 'news';
-  if (showHot) items.slice(0, 3).forEach((it, i) => $('hotList').append(card(it, i + 1)));
-  const shown = items.filter(i => (!src || i.source === src) && (!q || i.title.toLowerCase().includes(q)));
-  (showHot ? shown.slice(3) : shown).forEach(it => list.append(card(it)));
-  $('count').textContent = `共 ${shown.length} 則`;
-  $('empty').hidden = shown.length > 0;
-}
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-fetch('news.json', { cache: 'no-cache' }).then(r => r.json()).then(d => {
-  // 標題結尾的「 - 媒體名稱」已顯示在標籤上，去掉避免重複
-  items = d.items.map(i => {
-    const suffix = i.source ? ' - ' + i.source : '';
-    const title = suffix && i.title.endsWith(suffix) ? i.title.slice(0, -suffix.length) : i.title;
-    return { ...i, title };
-  });
-  const u = new Date(d.updated);
-  $('meta').textContent = '更新於 ' + (isNaN(u) ? d.updated : u.toLocaleString('zh-TW', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }));
-  for (const s of [...new Set(items.map(i => i.source).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'zh-TW'))) {
-    const o = document.createElement('option'); o.value = o.textContent = s; $('src').append(o);
-  }
-  render();
-}).catch(() => { $('meta').textContent = '載入失敗'; });
-
-// ---- Threads 熱門 ----
-let tdata = null, tkw = '', tab = 'news';
-
-function num(n) { return n >= 10000 ? (n / 10000).toFixed(1) + ' 萬' : String(n || 0); }
-
-function renderThreads() {
-  $('hot').hidden = true;
-  const list = $('list'); list.textContent = '';
-  $('kw').textContent = '';
-  if (!tdata || !tdata.groups) {
-    $('count').textContent = '';
-    $('empty').textContent = 'Threads 尚無資料（可能被 Threads 擋下，下次更新會再試）';
-    $('empty').hidden = false; return;
-  }
-  const groups = tdata.groups.filter(g => g.posts.length);
-  const mk = (label, val) => {
-    const b = document.createElement('button');
-    b.textContent = label; b.setAttribute('aria-pressed', String(tkw === val));
-    b.onclick = () => { tkw = val; renderThreads(); }; $('kw').append(b);
-  };
-  mk('全部', '');
-  groups.forEach(g => mk(g.keyword, g.keyword));
-  const q = $('q').value.trim().toLowerCase();
-  const posts = groups.filter(g => !tkw || g.keyword === tkw)
-    .flatMap(g => g.posts.map(p => ({ ...p, keyword: g.keyword })))
-    .filter((p, i, a) => a.findIndex(x => x.id === p.id) === i)
-    .filter(p => !q || (p.content + p.username).toLowerCase().includes(q))
-    .sort((a, b) => tdata.sort === 'latest'
-      ? (Date.parse(b.timestamp) || 0) - (Date.parse(a.timestamp) || 0) : b.score - a.score);
-  posts.forEach((p, i) => {
-    const li = document.createElement('li'), a = document.createElement('a');
-    a.href = p.url; a.target = '_blank'; a.rel = 'noopener';
-    const head = document.createElement('div'); head.className = 'title';
-    const r = document.createElement('span'); r.className = 'rank'; r.textContent = '#' + (i + 1);
-    head.append(r, '@' + p.username);
-    const body = document.createElement('div'); body.className = 'body';
-    body.textContent = p.content.length > 280 ? p.content.slice(0, 280) + '…' : p.content;
-    const sub = document.createElement('div'); sub.className = 'sub';
-    const c = document.createElement('span'); c.className = 'chip'; c.textContent = p.keyword; sub.append(c);
-    const st = p.stats || {};
-    const t = document.createElement('span');
-    t.textContent = `❤ ${num(st.likes)} · 💬 ${num(st.replies)} · 🔁 ${num(st.reposts)} · ${ago(p.timestamp)}`;
-    sub.append(t); a.append(head, body, sub); li.append(a); list.append(li);
-  });
-  $('count').textContent = `共 ${posts.length} 則（${tdata.note || ''}）`;
-  $('empty').textContent = '找不到符合的貼文'; $('empty').hidden = posts.length > 0;
-  const u = new Date(tdata.updated);
-  $('meta').textContent = '更新於 ' + (isNaN(u) ? '' : u.toLocaleString('zh-TW', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }));
-}
-
-// ---- Unwind AI（每日電子報） ----
-let udata = null;
-
-function renderUnwind() {
-  $('hot').hidden = true;
-  const list = $('list'); list.textContent = '';
-  if (!udata || !udata.items) {
-    $('count').textContent = '';
-    $('empty').textContent = 'Unwind AI 尚無資料（下次更新會再試）';
-    $('empty').hidden = false; return;
-  }
-  const q = $('q').value.trim().toLowerCase();
-  const shown = udata.items.filter(i => !q || (i.title + i.summary + (i.title_zh || '') + (i.summary_zh || '')).toLowerCase().includes(q));
-  for (const it of shown) {
-    const li = document.createElement('li'), a = document.createElement('a');
-    a.href = it.link; a.target = '_blank'; a.rel = 'noopener';
-    const title = document.createElement('div'); title.className = 'title'; title.textContent = it.title_zh || it.title;
-    a.append(title);
-    if (it.image) { const im = document.createElement('img'); im.className = 'thumb'; im.loading = 'lazy'; im.alt = ''; im.src = it.image; a.append(im); }
-    if (it.summary) { const b = document.createElement('div'); b.className = 'body'; b.textContent = it.summary_zh || it.summary; a.append(b); }
-    const sub = document.createElement('div'); sub.className = 'sub';
-    const c = document.createElement('span'); c.className = 'chip'; c.textContent = 'Unwind AI'; sub.append(c);
-    const t = document.createElement('span'); t.textContent = ago(it.pubDate); sub.append(t);
-    a.append(sub); li.append(a); list.append(li);
-  }
-  $('count').textContent = `共 ${shown.length} 則`;
-  $('empty').textContent = '找不到符合的文章'; $('empty').hidden = shown.length > 0;
-  const u = new Date(udata.updated);
-  $('meta').textContent = '更新於 ' + (isNaN(u) ? '' : u.toLocaleString('zh-TW', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }));
-}
-
-function setTab(t) {
-  tab = t;
-  $('tab-news').setAttribute('aria-selected', String(t === 'news'));
-  $('tab-threads').setAttribute('aria-selected', String(t === 'threads'));
-  $('tab-unwind').setAttribute('aria-selected', String(t === 'unwind'));
-  $('src').hidden = t !== 'news';
-  $('kw').hidden = t !== 'threads';
-  $('q').placeholder = t === 'news' ? '搜尋標題…' : t === 'threads' ? '搜尋貼文或帳號…' : '搜尋文章…';
-  $('empty').textContent = '找不到符合的新聞';
-  if (t === 'news') { $('kw').textContent = ''; render(); return; }
-  if (t === 'unwind') {
-    if (udata !== null) { renderUnwind(); return; }
-    $('count').textContent = '載入中…'; $('list').textContent = '';
-    fetch('unwind.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : false)
-      .catch(() => false).then(d => { udata = d; if (tab === 'unwind') renderUnwind(); });
-    return;
-  }
-  if (tdata !== null) { renderThreads(); return; }
-  $('count').textContent = '載入中…'; $('list').textContent = '';
-  fetch('threads.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : false)
-    .catch(() => false).then(d => { tdata = d; if (tab === 'threads') renderThreads(); });
-}
-$('tab-news').onclick = () => setTab('news');
-$('tab-threads').onclick = () => setTab('threads');
-$('tab-unwind').onclick = () => setTab('unwind');
-
-$('q').addEventListener('input', () => tab === 'news' ? render() : tab === 'unwind' ? renderUnwind() : renderThreads());
-$('src').addEventListener('change', render);
-</script>
+<script src="app.js" defer></script>
 </body>
 </html>
