@@ -1,5 +1,8 @@
 {
-  "keywords": ["AI", "AI threads", "台灣"],
+  "accounts": ["ftvnews", "thenewslens"],
+  "maxPostsPerAccount": 20,
+  "hotWindowHours": 72,
+  "keywords": [],
   "maxItemsPerKeyword": 40,
   "chineseOnly": true
 }
