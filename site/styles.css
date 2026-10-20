@@ -162,6 +162,7 @@ kbd {
 .bar__links a:hover { color: var(--ink); }
 .bar__links a.is-active { color: var(--accent); background: var(--accent-soft); }
 .saved-btn {
+  white-space: nowrap; flex: none;
   display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
   padding: 7px 14px; border: 1px solid var(--rule); border-radius: 999px; background: var(--card);
   font: 500 .85rem/1 var(--sans); transition: border-color .2s;
@@ -420,6 +421,13 @@ a:hover .hl, a:focus-visible .hl { background-size: 100% 1px; }
 .club__tag { display: block; margin-bottom: 6px; font: 700 .66rem/1 var(--sans); letter-spacing: .1em; color: var(--accent); }
 .club__name { display: block; font: 700 .98rem/1.35 var(--serif); }
 .club__desc { display: block; margin-top: 4px; font-size: .78rem; line-height: 1.5; color: var(--muted); }
+.clubs__feature { grid-column: 1 / -1; }
+.club--feature { padding: 18px 44px 18px 20px; background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.club--feature .club__tag { color: #06c755; }
+.club--feature .club__name { font-size: 1.25rem; }
+.club--feature .club__desc { color: color-mix(in srgb, var(--paper) 70%, transparent); }
+.club--feature .club__go { color: var(--paper); }
+.club--feature:hover { border-color: var(--accent); }
 .club__go { position: absolute; top: 12px; right: 14px; color: var(--muted); transition: transform .3s var(--ease), color .2s; }
 .club:hover .club__go { color: var(--accent); transform: translate(2px, -2px); }
 
@@ -536,6 +544,8 @@ a:hover .hl, a:focus-visible .hl { background-size: 100% 1px; }
   .briefs .item { padding: 14px 0; border-left: 0; border-bottom: 1px solid var(--rule); }
   .briefs .item:last-child { border-bottom: 0; padding-bottom: 0; }
   .bar__links { display: none; }
+  .bar [data-newsletter] { display: none; }
+  .bar__inner { gap: 10px; }
   .bar__brand { margin-right: auto; }
   .tools { width: 100%; }
   .field { width: 100%; }
