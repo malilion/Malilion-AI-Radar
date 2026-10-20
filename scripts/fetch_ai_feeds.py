@@ -3,8 +3,11 @@
 單一來源失敗只會略過該來源；全部失敗時不輸出檔案。"""
 import gzip
 import json
+import time
 import re
 import sys
+import urllib.error
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
@@ -109,12 +112,20 @@ def parse(xml, source, naive_tz=timezone.utc):
 
 def fetch(feed):
     req = urllib.request.Request(feed["url"], headers={
-        "User-Agent": "Mozilla/5.0 (compatible; daily-paper/1.0)",
+        "User-Agent": "Mozilla/5.0 (compatible; daily-paper/1.0; +https://malilion.github.io/google-news/)",
         "Accept": "application/rss+xml, application/atom+xml, application/xml;q=0.9, */*;q=0.5",
     })
     try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            data = r.read(MAX_BYTES + 1)
+        for attempt in range(3):
+            try:
+                with urllib.request.urlopen(req, timeout=30) as r:
+                    data = r.read(MAX_BYTES + 1)
+                break
+            except urllib.error.HTTPError as e:
+                # Reddit 等網站會回 429（太頻繁），等一下再試
+                if e.code != 429 or attempt == 2:
+                    raise
+                time.sleep(10 * (attempt + 1))
         if len(data) > MAX_BYTES:
             raise ValueError("檔案過大")
         if data[:2] == b"\x1f\x8b":  # 有些伺服器不管請求一律回 gzip
@@ -140,8 +151,24 @@ def main():
         cfg = json.load(f)
     cutoff = datetime.now(timezone.utc) - timedelta(days=cfg.get("days", 14))
     per = cfg.get("maxPerSource", 6)
+    # 不同網站平行抓；同一個網站依序抓並間隔幾秒，避免被限流
+    hosts = {}
+    for k, feed in enumerate(cfg["feeds"]):
+        hosts.setdefault(urllib.parse.urlparse(feed["url"]).netloc, []).append(k)
+
+    def fetch_host(idx):
+        out = []
+        for n, k in enumerate(idx):
+            if n:
+                time.sleep(3)
+            out.append((k, fetch(cfg["feeds"][k])))
+        return out
+
+    results = [None] * len(cfg["feeds"])
     with ThreadPoolExecutor(max_workers=16) as ex:
-        results = list(ex.map(fetch, cfg["feeds"]))
+        for group in ex.map(fetch_host, hosts.values()):
+            for k, r in group:
+                results[k] = r
 
     # sort = "date"：全部依時間排序；"feed"：保留各來源原本的排名（如 GitHub Trending、HN 首頁）
     by_feed = cfg.get("sort", "date") == "feed"

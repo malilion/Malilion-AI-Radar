@@ -494,9 +494,43 @@
     getJSON(BASE + url).then((d) => { data = d; render(); });
   }
 
+  // ---------- 社群活動 ----------
+  function renderEvents(d) {
+    const list = $('#events');
+    list.textContent = '';
+    const now = Date.now();
+    // 今天的版面只列還沒結束的活動；看存檔時列出當天記錄的全部
+    const items = (d?.items || []).filter((e) => DAY || Date.parse(e.start) > now - 3 * 3600e3);
+    $('#eventsEmpty').textContent = '目前沒有排定的活動。';
+    $('#eventsEmpty').hidden = items.length > 0;
+    const fmt = (opt) => new Intl.DateTimeFormat('zh-TW', { timeZone: TZ, ...opt });
+    items.forEach((e, i) => {
+      const t = new Date(e.start);
+      const entry = { id: e.link, kind: 'event', title: e.title, link: e.link, src: e.source, date: e.start };
+      const li = el('li', 'event item reveal');
+      li.style.setProperty('--d', `${i * 0.05}s`);
+      if (Date.parse(e.start) < now) li.classList.add('is-past');
+      const box = el('span', 'event__date');
+      box.append(el('span', 'event__m', fmt({ month: 'short' }).format(t)), el('span', 'event__d', fmt({ day: 'numeric' }).format(t).replace('日', '')),
+        el('span', 'event__w', `${fmt({ weekday: 'short' }).format(t)} ${fmt({ hour: '2-digit', minute: '2-digit', hour12: false }).format(t)}`));
+      const text = el('div');
+      const h = el('h4', 'event__title t');
+      h.append(el('span', 'hl', e.title));
+      text.append(h);
+      if (e.summary && e.summary !== e.title) text.append(el('p', 'event__sum', e.summary));
+      const m = el('div', 'meta');
+      m.append(el('span', 'src', e.source));
+      if (e.kind) { m.append(el('span', 'dot'), el('span', null, e.kind)); }
+      text.append(m);
+      li.append(articleLink(entry, [box, text]));
+      list.append(li);
+    });
+    observe(list);
+  }
+
   // ---------- 往期 ----------
   const issueNo = (date) => Math.max(1, Math.round((Date.parse(`${date}T00:00:00Z`) - FIRST_ISSUE) / 864e5) + 1);
-  const SECTION_NAMES = { news: '要聞', threads: '社群', unwind: '副刊', ai: 'AI', dev: '開發者' };
+  const SECTION_NAMES = { news: '要聞', threads: '社群', unwind: '副刊', ai: 'AI', dev: '開發者', events: '活動' };
 
   function archiveNote() {
     if (!DAY) return;
@@ -626,12 +660,13 @@
   loadNews();
   getJSON(BASE + 'threads.json').then((d) => { threads = d; renderThreads(); });
   getJSON(BASE + 'unwind.json').then(renderTech);
+  getJSON(BASE + 'events.json').then(renderEvents);
   feedSection({ root: '#ai', url: 'ai.json', types: { lab: '官方部落格', media: '科技媒體' } });
   feedSection({
     root: '#dev',
     url: 'dev.json',
-    types: { github: 'GitHub 趨勢', hn: 'Hacker News', papers: '論文', blogs: '部落格與社群', releases: '版本更新' },
-    ranked: ['github', 'hn'],
+    types: { github: 'GitHub 趨勢', hn: 'Hacker News', papers: '論文', blogs: '部落格與社群', reddit: 'Reddit', releases: '版本更新' },
+    ranked: ['github', 'hn', 'reddit'],
   });
   // 頁面放著不關時，每 10 分鐘更新相對時間與資料
   if (!DAY) setInterval(() => { dateline(); loadNews(); }, 10 * 60 * 1000);

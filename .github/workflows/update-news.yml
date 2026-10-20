@@ -76,6 +76,9 @@ jobs:
         if: hashFiles('threads-raw/threads.json') != ''
         continue-on-error: true
         run: python3 scripts/sanitize_threads.py threads-raw/threads.json site/threads.json
+      - name: Fetch community events
+        continue-on-error: true
+        run: python3 scripts/fetch_events.py
       - name: Merge into daily archive
         run: python3 scripts/archive.py
       - name: Commit archive

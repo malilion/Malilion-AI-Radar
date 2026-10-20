@@ -395,6 +395,32 @@ a:hover .hl, a:focus-visible .hl { background-size: 100% 1px; }
 .dispatch:hover .dispatch__img img { filter: none; }
 .dispatch .star { position: absolute; right: 0; top: 22px; margin: 0; }
 
+/* ---------- 社群與活動 ---------- */
+.community { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: clamp(28px, 4vw, 56px); }
+.sub-kicker { margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--rule-strong); font: 700 1rem/1 var(--serif); letter-spacing: .12em; }
+.events { list-style: none; margin: 0; padding: 0; }
+.event { border-bottom: 1px solid var(--rule); }
+.event > a { display: grid; grid-template-columns: 4.2em minmax(0, 1fr); gap: 16px; padding: 16px 0; }
+.event__date { text-align: center; padding: 8px 0 6px; border: 1px solid var(--rule-strong); border-radius: 3px; align-self: start; }
+.event__m { display: block; font: 700 .68rem/1 var(--sans); letter-spacing: .08em; color: var(--accent); }
+.event__d { display: block; margin: 4px 0 2px; font: 900 1.7rem/1 var(--serif); font-variant-numeric: tabular-nums; }
+.event__w { display: block; font: 500 .68rem/1 var(--sans); color: var(--muted); }
+.event__title { margin: 0 0 4px; font: 700 1.05rem/1.5 var(--serif); }
+.event__sum { margin: 0 0 6px; font-size: .84rem; line-height: 1.6; color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.event.is-past { opacity: .55; }
+.clubs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.club {
+  position: relative; display: block; height: 100%; padding: 14px 40px 14px 16px;
+  background: var(--card); border: 1px solid var(--rule); border-radius: 4px;
+  transition: border-color .2s, transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.club:hover { border-color: var(--ink); transform: translateY(-2px); box-shadow: var(--shadow); }
+.club__tag { display: block; margin-bottom: 6px; font: 700 .66rem/1 var(--sans); letter-spacing: .1em; color: var(--accent); }
+.club__name { display: block; font: 700 .98rem/1.35 var(--serif); }
+.club__desc { display: block; margin-top: 4px; font-size: .78rem; line-height: 1.5; color: var(--muted); }
+.club__go { position: absolute; top: 12px; right: 14px; color: var(--muted); transition: transform .3s var(--ease), color .2s; }
+.club:hover .club__go { color: var(--accent); transform: translate(2px, -2px); }
+
 /* ---------- 版權頁 ---------- */
 .colophon { margin-top: clamp(40px, 6vw, 80px); padding: 28px 0 calc(40px + env(safe-area-inset-bottom)); border-top: 3px double var(--rule-strong); font-size: .82rem; color: var(--ink-2); }
 .colophon .wrap { display: grid; gap: 8px; }
@@ -515,6 +541,8 @@ a:hover .hl, a:focus-visible .hl { background-size: 100% 1px; }
   .star { margin-right: -10px; }
   .rail-ctrl { display: none; }
   .dispatches { grid-template-columns: 1fr; }
+  .community { grid-template-columns: 1fr; }
+  .clubs { grid-template-columns: 1fr; }
   .dispatch > a { padding-right: 36px; }
   .dispatch__img { width: 76px; }
   .rail { grid-auto-columns: 78vw; }
