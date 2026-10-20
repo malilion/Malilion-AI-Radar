@@ -46,6 +46,12 @@ GitHub Actions（`.github/workflows/update-news.yml`）每小時整點執行一�
 - Threads 抓取是用瀏覽器自動化讀取公開頁面，可能被登入牆或機房 IP 限制擋下，且可能不符合 Threads 使用條款，請自行評估。
 - 頭版排序沿用 Google 新聞 RSS 的順序，不是實際閱讀數。
 
+## 資安設計
+
+- **隔離第三方程式**：Threads 抓取會執行 threads-toolkit 與其 npm 依賴，因此放在獨立的 `threads` job，只有 `contents: read`，拿不到部署權限、OIDC 與 secrets；它產出的 JSON 交給 `deploy` job 前，先經過 `scripts/sanitize_threads.py` 檢查欄位、型別、長度，連結只留 `https://www.threads.com/`。
+- **最小權限**：workflow 預設 `permissions: {}`，所有 checkout 都不保存憑證（`persist-credentials: false`）；`ANTHROPIC_API_KEY` 只給翻譯那一步。
+- **前端**：所有外部內容都用 `textContent` 輸出；連結與圖片只接受 http(s)；頁面帶 Content-Security-Policy，只允許自家腳本與 Google Fonts。
+
 ## 本機測試
 
 ```bash

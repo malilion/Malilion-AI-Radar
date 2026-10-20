@@ -31,6 +31,7 @@ def main():
             "pubDate": pub,
             "source": src.text if src is not None else "",
         })
+    items = [i for i in items if i["link"].startswith("https://")]
     if not items:
         sys.exit("RSS 沒有任何項目")
 

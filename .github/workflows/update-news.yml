@@ -7,23 +7,65 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+# 預設不給任何權限，各 job 只拿需要的
+permissions: {}
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  # Threads：會執行第三方程式（threads-toolkit 與其 npm 依賴），
+  # 因此隔離在沒有部署權限、沒有 secrets 的獨立 job，只把產出的 JSON 交給部署 job。
+  threads:
     runs-on: ubuntu-latest
+    timeout-minutes: 50
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout threads-toolkit
+        uses: actions/checkout@v4
+        with:
+          repository: Chuanyin1202/threads-toolkit
+          ref: a7748a8bba3e8dcae9c6ca5092aa101eb3710eb5
+          path: threads-toolkit
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch Threads trending
+        continue-on-error: true
+        working-directory: threads-toolkit
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          cp ../scripts/fetch_threads.mjs scripts/fetch_threads.mjs
+          timeout 40m node --import tsx scripts/fetch_threads.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: threads
+          path: site/threads.json
+          if-no-files-found: ignore
+          retention-days: 1
+
+  deploy:
+    needs: threads
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - run: python3 scripts/fetch_news.py
       - name: Restore translation cache
         uses: actions/cache@v4
@@ -36,28 +78,15 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python3 scripts/fetch_unwind.py
-
-      # Threads 熱門：失敗時不影響新聞部署，頁面會顯示「尚無資料」
-      - name: Checkout threads-toolkit
-        uses: actions/checkout@v4
-        with:
-          repository: Chuanyin1202/threads-toolkit
-          ref: a7748a8bba3e8dcae9c6ca5092aa101eb3710eb5
-          path: threads-toolkit
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: threads-toolkit/package-lock.json
-      - name: Fetch Threads trending
+      # Threads 失敗時不影響部署，頁面會顯示「暫時沒有資料」
+      - uses: actions/download-artifact@v4
         continue-on-error: true
-        timeout-minutes: 45
-        working-directory: threads-toolkit
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
-          cp ../scripts/fetch_threads.mjs scripts/fetch_threads.mjs
-          timeout 40m node --import tsx scripts/fetch_threads.mjs
+        with:
+          name: threads
+          path: threads-raw
+      - name: Sanitize Threads data
+        continue-on-error: true
+        run: python3 scripts/sanitize_threads.py threads-raw/threads.json site/threads.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
