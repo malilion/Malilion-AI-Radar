@@ -24,7 +24,7 @@
 |------|------|------|
 | A1 頭版、A2 要聞 | [Google 新聞 RSS（台灣）](https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant) | RSS 前 6 則排進頭版，其餘進要聞 |
 | B1 社群版 | [threads-toolkit](https://github.com/Chuanyin1202/threads-toolkit) | 追蹤帳號近 72 小時的貼文，依互動分數（讚 + 回覆×2 + 轉發×3）排序 |
-| C2 AI 業界動態 | `ai-feeds.json`：**官方部落格**（OpenAI、Google DeepMind、Google AI、Google Research、Hugging Face、NVIDIA、Mistral AI、AWS ML）與**科技媒體**（TechCrunch、The Verge、Ars Technica、WIRED、MIT Technology Review、The Decoder、MarkTechPost、iThome） | 兩類分頁切換；近 14 天、每家最多 6 則，依時間排序，可依來源篩選，標題與摘要翻成繁體中文 |
+| C2 AI 業界動態 | `ai-feeds.json`：**官方部落格**（OpenAI、Anthropic（新聞／研究／Claude）、Google DeepMind、Google AI、Google Research、Hugging Face、NVIDIA、Mistral AI、AWS ML）與**科技媒體**（TechCrunch、The Verge、Ars Technica、WIRED、MIT Technology Review、The Decoder、MarkTechPost、iThome） | 兩類分頁切換；近 14 天、每家最多 6 則，依時間排序，可依來源篩選，標題與摘要翻成繁體中文 |
 | C3 開發者雷達 | `dev-feeds.json`：GitHub Trending（今日／本週／Python）、Hacker News（首頁／最新 AI／Show HN）、arXiv（cs.AI／cs.LG／cs.CL）、Simon Willison、OpenAI 開發者社群、GitHub Releases（Codex、Claude Code、LangChain、Ollama、Open WebUI） | 五個分頁；保留各來源原本的排名順序，重複連結只留一次 |
 | C1 科技副刊 | [Unwind AI 電子報 RSS](https://rss.beehiiv.com/feeds/fMHDv0Uk41.xml) | 最新 30 篇文章，標題與摘要自動翻譯成繁體中文 |
 
