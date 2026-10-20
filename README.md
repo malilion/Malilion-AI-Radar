@@ -25,12 +25,16 @@
 
 ## 運作方式
 
-GitHub Actions（`.github/workflows/update-news.yml`）每小時整點執行一次，也可手動執行，每次會：
+兩個 GitHub Actions workflow：
+
+**Update news**（`.github/workflows/update-news.yml`）：每小時整點、push 到 main、或 Fetch Threads 完成後執行，約 1 分鐘：
 
 1. `scripts/fetch_news.py`：抓 Google 新聞，輸出 `site/news.json`
 2. `scripts/fetch_unwind.py`：抓 Unwind AI RSS 並翻譯，輸出 `site/unwind.json`
-3. `scripts/fetch_threads.mjs`：用 threads-toolkit（固定版本）逐一抓追蹤帳號的個人頁，輸出 `site/threads.json`。帳號之間間隔 20–40 秒、抓到 0 則會重試一次，每抓完一個帳號就存檔，整步上限 40 分鐘
+3. 取 Fetch Threads 最近一次成功的 `threads.json`，經 `scripts/sanitize_threads.py` 檢查後放進 `site/`
 4. 把 `site/` 部署到 GitHub Pages
+
+**Fetch Threads**（`.github/workflows/fetch-threads.yml`）：每 2 小時（半點）執行，最多 20 分鐘。`scripts/fetch_threads.mjs` 用 threads-toolkit（固定版本）逐一抓追蹤帳號的個人頁；帳號之間間隔 10–20 秒，單一帳號最多 90 秒，抓到 0 則會重試一次，每抓完一個就存檔。
 
 資料檔不放進版本庫（見 `.gitignore`），每次都是現抓現部署。Unwind AI 與 Threads 兩步失敗時不影響其他部分，對應版面會顯示「暫時沒有資料」。
 
@@ -48,7 +52,7 @@ GitHub Actions（`.github/workflows/update-news.yml`）每小時整點執行一�
 
 ## 資安設計
 
-- **隔離第三方程式**：Threads 抓取會執行 threads-toolkit 與其 npm 依賴，因此放在獨立的 `threads` job，只有 `contents: read`，拿不到部署權限、OIDC 與 secrets；它產出的 JSON 交給 `deploy` job 前，先經過 `scripts/sanitize_threads.py` 檢查欄位、型別、長度，連結只留 `https://www.threads.com/`。
+- **隔離第三方程式**：Threads 抓取會執行 threads-toolkit 與其 npm 依賴，因此放在獨立的 Fetch Threads workflow，只有 `contents: read`，拿不到部署權限、OIDC 與 secrets；它產出的 JSON 被部署前，先經過 `scripts/sanitize_threads.py` 檢查欄位、型別、長度，連結只留 `https://www.threads.com/`。
 - **最小權限**：workflow 預設 `permissions: {}`，所有 checkout 都不保存憑證（`persist-credentials: false`）；`ANTHROPIC_API_KEY` 只給翻譯那一步。
 - **前端**：所有外部內容都用 `textContent` 輸出；連結與圖片只接受 http(s)；頁面帶 Content-Security-Policy，只允許自家腳本與 Google Fonts。
 
