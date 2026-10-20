@@ -115,28 +115,11 @@
       "exclude": "alpha|beta|\\d(a|b|rc)\\d|\\brc\\b|-rc|nightly|preview"
     },
     {
-      "name": "r/LocalLLaMA",
-      "url": "https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day",
+      "name": "Reddit",
+      "url": "https://www.reddit.com/r/LocalLLaMA+ClaudeAI+AI_Agents+MachineLearning/top/.rss?t=day&limit=100",
       "type": "reddit",
-      "max": 8
-    },
-    {
-      "name": "r/ClaudeAI",
-      "url": "https://www.reddit.com/r/ClaudeAI/top/.rss?t=day",
-      "type": "reddit",
-      "max": 8
-    },
-    {
-      "name": "r/AI_Agents",
-      "url": "https://www.reddit.com/r/AI_Agents/top/.rss?t=day",
-      "type": "reddit",
-      "max": 8
-    },
-    {
-      "name": "r/MachineLearning",
-      "url": "https://www.reddit.com/r/MachineLearning/top/.rss?t=day",
-      "type": "reddit",
-      "max": 8
+      "max": 8,
+      "split": "category"
     }
   ]
 }
