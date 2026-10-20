@@ -25,8 +25,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 scripts/fetch_news.py
-      - name: Fetch Unwind AI newsletter
+      - name: Restore translation cache
+        uses: actions/cache@v4
+        with:
+          path: cache
+          key: unwind-zh-${{ github.run_id }}
+          restore-keys: unwind-zh-
+      - name: Fetch Unwind AI newsletter (translated to zh-TW)
         continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python3 scripts/fetch_unwind.py
 
       # Threads 熱門：失敗時不影響新聞部署，頁面會顯示「尚無資料」

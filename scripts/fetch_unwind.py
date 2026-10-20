@@ -2,6 +2,7 @@
 """抓取 Unwind AI（beehiiv）RSS 並輸出成 site/unwind.json。失敗時不輸出檔案、不中斷流程。"""
 import html
 import json
+import os
 import re
 import sys
 import urllib.request
@@ -13,12 +14,63 @@ FEED_URL = "https://rss.beehiiv.com/feeds/fMHDv0Uk41.xml"
 OUT = "site/unwind.json"
 TZ = timezone(timedelta(hours=8))
 MAX_ITEMS = 30
+CACHE = "cache/unwind_zh.json"  # 已翻譯的結果（以文章連結為鍵），由 Actions cache 跨次保存
+MODEL = "claude-haiku-5-5"
 NS = {"content": "http://purl.org/rss/1.0/modules/content/", "media": "http://search.yahoo.com/mrss/"}
 
 
 def text_of(raw):
     raw = re.sub(r"<(script|style).*?</\1>", "", raw or "", flags=re.S)
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", raw))).strip()
+
+
+def translate(batch):
+    """把 [{title, summary}] 翻成繁體中文，回傳等長的 list；沒有金鑰或失敗時回傳 None。"""
+    key = os.environ.get("ANTHROPIC_API_KEY")
+    if not key or not batch:
+        return None
+    prompt = (
+        "把下列 JSON 陣列中每個物件的 title 和 summary 翻譯成台灣用語的繁體中文。"
+        "保留產品名、公司名與人名的原文（例如 Claude、OpenAI），語氣精簡自然。"
+        "只輸出一個 JSON 陣列，長度與順序必須和輸入完全相同，每個物件只含 title 與 summary。\n\n"
+        + json.dumps(batch, ensure_ascii=False)
+    )
+    body = json.dumps({"model": MODEL, "max_tokens": 8000,
+                       "messages": [{"role": "user", "content": prompt}]}).encode()
+    req = urllib.request.Request(
+        "https://api.anthropic.com/v1/messages", data=body,
+        headers={"x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            text = json.load(r)["content"][0]["text"]
+        out = json.loads(text[text.index("["): text.rindex("]") + 1])
+        if len(out) != len(batch):
+            raise ValueError("翻譯結果數量不符")
+        return [{"title": str(o.get("title", "")), "summary": str(o.get("summary", ""))} for o in out]
+    except Exception as e:
+        print(f"翻譯失敗（保留原文）：{e}", file=sys.stderr)
+        return None
+
+
+def add_translations(items):
+    try:
+        with open(CACHE, encoding="utf-8") as f:
+            cache = json.load(f)
+    except Exception:
+        cache = {}
+    todo = [i for i in items if i["link"] not in cache]
+    done = translate([{"title": i["title"], "summary": i["summary"]} for i in todo])
+    if done:
+        for i, z in zip(todo, done):
+            cache[i["link"]] = z
+    for i in items:
+        z = cache.get(i["link"])
+        if z:
+            i["title_zh"], i["summary_zh"] = z["title"], z["summary"]
+    os.makedirs(os.path.dirname(CACHE), exist_ok=True)
+    with open(CACHE, "w", encoding="utf-8") as f:
+        json.dump({i["link"]: cache[i["link"]] for i in items if i["link"] in cache}, f, ensure_ascii=False)
+    print(f"翻譯：新增 {len(done or [])} 則，共 {sum('title_zh' in i for i in items)} 則有中文")
 
 
 def main():
@@ -61,6 +113,7 @@ def main():
         print("Unwind AI RSS 沒有項目", file=sys.stderr)
         return
 
+    add_translations(items)
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump({"updated": datetime.now(TZ).isoformat(timespec="seconds"), "items": items}, f, ensure_ascii=False, indent=1)
     print(f"寫入 {len(items)} 則 Unwind AI")
