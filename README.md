@@ -12,7 +12,8 @@
 - **B1 社群版**：Threads 引述卡，可依帳號篩選
 - **C1 科技副刊**：Unwind AI 橫向捲動封面卡
 - **C2 AI 業界動態**：官方部落格／科技媒體兩個分頁，可依來源篩選
-- **C3 開發者雷達**：GitHub 趨勢／Hacker News／論文／部落格／版本更新五個分頁，排行榜類顯示名次
+- **C3 開發者雷達**：GitHub 趨勢／Hacker News／論文／部落格／Reddit／版本更新六個分頁，排行榜類顯示名次
+- **C4 社群與活動**：近期社群活動與加入社群連結
 - **往期**：每天的版面都存檔，按「往期」（或 `p`）選日期回看，網址為 `?d=YYYY-MM-DD`
 - **已讀與收藏**：點過的文章變淡；☆ 收藏後按 `s` 開啟收藏夾。兩者都只存在瀏覽器（localStorage）
 
@@ -25,7 +26,8 @@
 | A1 頭版、A2 要聞 | [Google 新聞 RSS（台灣）](https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant) | RSS 前 6 則排進頭版，其餘進要聞 |
 | B1 社群版 | [threads-toolkit](https://github.com/Chuanyin1202/threads-toolkit) | 追蹤帳號近 72 小時的貼文，依互動分數（讚 + 回覆×2 + 轉發×3）排序 |
 | C2 AI 業界動態 | `ai-feeds.json`：**官方部落格**（OpenAI、Anthropic（新聞／研究／Claude）、Google DeepMind、Google AI、Google Research、Hugging Face、NVIDIA、Mistral AI、AWS ML）與**科技媒體**（TechCrunch、The Verge、Ars Technica、WIRED、MIT Technology Review、The Decoder、MarkTechPost、iThome） | 兩類分頁切換；近 14 天、每家最多 6 則，依時間排序，可依來源篩選，標題與摘要翻成繁體中文 |
-| C3 開發者雷達 | `dev-feeds.json`：GitHub Trending（今日／本週／Python）、Hacker News（首頁／最新 AI／Show HN）、arXiv（cs.AI／cs.LG／cs.CL）、Simon Willison、OpenAI 開發者社群、GitHub Releases（Codex、Claude Code、LangChain、Ollama、Open WebUI） | 五個分頁；保留各來源原本的排名順序，重複連結只留一次 |
+| C3 開發者雷達 | `dev-feeds.json`：GitHub Trending（今日／本週／Python）、Hacker News（首頁／最新 AI／Show HN）、arXiv（cs.AI／cs.LG／cs.CL）、Simon Willison、OpenAI 開發者社群、Reddit（r/LocalLLaMA、r/ClaudeAI、r/AI_Agents、r/MachineLearning 當日熱門）、GitHub Releases（Codex、Claude Code、LangChain、Ollama、Open WebUI） | 六個分頁；保留各來源原本的排名順序，重複連結只留一次 |
+| C4 社群與活動 | GDG Taipei（community.dev 公開 API）＋社群目錄 | 左為近期活動；右為加入社群連結（Hugging Face Discord、LangChain、OpenAI 論壇、生成式 AI 年會、GDG Taipei、F2E 社團、四個 Reddit 版） |
 | C1 科技副刊 | [Unwind AI 電子報 RSS](https://rss.beehiiv.com/feeds/fMHDv0Uk41.xml) | 最新 30 篇文章，標題與摘要自動翻譯成繁體中文 |
 
 ## 運作方式
@@ -36,14 +38,15 @@
 
 1. `scripts/fetch_news.py`：抓 Google 新聞，輸出 `site/news.json`
 2. `scripts/fetch_unwind.py`：抓 Unwind AI RSS 並翻譯，輸出 `site/unwind.json`
-   `scripts/fetch_ai_feeds.py`：抓 RSS／Atom 並翻譯，用 `ai-feeds.json` 輸出 `site/ai.json`、用 `dev-feeds.json` 輸出 `site/dev.json`
+   `scripts/fetch_events.py`：抓 GDG Taipei 近期活動，輸出 `site/events.json`（要加其他 community.dev 分會，改檔案裡的 `CHAPTERS`）
+   `scripts/fetch_ai_feeds.py`：抓 RSS／Atom 並翻譯（同一網站依序抓、遇到 429 會重試），用 `ai-feeds.json` 輸出 `site/ai.json`、用 `dev-feeds.json` 輸出 `site/dev.json`
 3. 取 Fetch Threads 最近一次成功的 `threads.json`，經 `scripts/sanitize_threads.py` 檢查後放進 `site/`
 4. `scripts/archive.py`：把這一輪的資料疊加進 `archive/<今天>/`（同一篇只留一份，翻譯沿用），更新 `archive/index.json`，並由 github-actions[bot] commit 回 main；某來源這一輪失敗時沿用最近一次存檔
 5. 把 `site/`（含 `archive/`）部署到 GitHub Pages
 
 **Fetch Threads**（`.github/workflows/fetch-threads.yml`）：每 2 小時（半點）執行，最多 20 分鐘。`scripts/fetch_threads.mjs` 用 threads-toolkit（固定版本）逐一抓追蹤帳號的個人頁；帳號之間間隔 10–20 秒，單一帳號最多 90 秒，抓到 0 則會重試一次，每抓完一個就存檔。
 
-**資料會疊加、永久保留**：今天的版面整天持續累積新文章，舊的不會被洗掉；過去每一天都存在 `archive/YYYY-MM-DD/`（news、threads、unwind、ai、dev 五個 JSON）。`site/*.json` 是每輪產生的暫存檔，不進版本庫。Unwind AI 與 Threads 兩步失敗時不影響其他部分，對應版面會顯示「暫時沒有資料」。
+**資料會疊加、永久保留**：今天的版面整天持續累積新文章，舊的不會被洗掉；過去每一天都存在 `archive/YYYY-MM-DD/`（news、threads、unwind、ai、dev、events 六個 JSON）。`site/*.json` 是每輪產生的暫存檔，不進版本庫。Unwind AI 與 Threads 兩步失敗時不影響其他部分，對應版面會顯示「暫時沒有資料」。
 
 ## 設定
 

@@ -13,7 +13,7 @@ import shutil
 from datetime import datetime, timedelta, timezone
 
 TZ = timezone(timedelta(hours=8))
-NAMES = ["news", "threads", "unwind", "ai", "dev"]
+NAMES = ["news", "threads", "unwind", "ai", "dev", "events"]
 ARCHIVE = "archive"
 SITE = "site"
 
@@ -51,7 +51,7 @@ def merge_list(new, old, key, now, by_date=False):
         out.append(n)
         keys.add(k)
     rest = [dict(o, latest=False) for o in old if o.get(key) and o.get(key) not in keys]
-    rest.sort(key=lambda o: o.get("pubDate") or o.get("timestamp") or "", reverse=True)
+    rest.sort(key=lambda o: o.get("pubDate") or o.get("timestamp") or o.get("start") or "", reverse=True)
     out += rest
     if by_date:
         out.sort(key=lambda o: o.get("pubDate") or "", reverse=True)
@@ -68,7 +68,10 @@ def merge(name, new, old, now):
         # 這一輪沒抓到的帳號，保留今天稍早的結果
         groups += [{"keyword": k, "posts": [dict(p, latest=False) for p in v]} for k, v in old_groups.items()]
         return {**new, "groups": groups}
-    return {**new, "items": merge_list(new.get("items", []), old.get("items", []), "link", now, by_date=(name == "ai"))}
+    merged = merge_list(new.get("items", []), old.get("items", []), "link", now, by_date=(name == "ai"))
+    if name == "events":
+        merged.sort(key=lambda o: o.get("start") or "")
+    return {**new, "items": merged}
 
 
 def count(name, data):

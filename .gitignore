@@ -8,3 +8,4 @@ site/ai.json
 __pycache__/
 site/dev.json
 site/archive/
+site/events.json

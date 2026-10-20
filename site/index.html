@@ -29,6 +29,7 @@
       <li><a href="#tech">副刊</a></li>
       <li><a href="#ai">AI 業界</a></li>
       <li><a href="#dev">開發者</a></li>
+      <li><a href="#community">活動</a></li>
     </ul>
     <button class="saved-btn" type="button" data-open-past aria-haspopup="dialog">往期</button>
     <button class="saved-btn" type="button" data-open-saved aria-haspopup="dialog">
@@ -57,6 +58,7 @@
       <li><a href="#tech"><b>C1</b>副刊</a></li>
       <li><a href="#ai"><b>C2</b>AI 業界</a></li>
       <li><a href="#dev"><b>C3</b>開發者</a></li>
+      <li><a href="#community"><b>C4</b>活動</a></li>
       <li><button type="button" data-open-past aria-haspopup="dialog"><b>◷</b>往期</button></li>
       <li><button type="button" data-open-saved aria-haspopup="dialog"><b>★</b>收藏 <span data-saved-count>0</span></button></li>
     </ul>
@@ -152,6 +154,7 @@
           <button type="button" role="tab" class="seg__btn" data-type="hn" aria-selected="false">Hacker News</button>
           <button type="button" role="tab" class="seg__btn" data-type="papers" aria-selected="false">論文</button>
           <button type="button" role="tab" class="seg__btn" data-type="blogs" aria-selected="false">部落格</button>
+          <button type="button" role="tab" class="seg__btn" data-type="reddit" aria-selected="false">Reddit</button>
           <button type="button" role="tab" class="seg__btn" data-type="releases" aria-selected="false">版本更新</button>
         </div>
       </div>
@@ -159,6 +162,36 @@
       <ol class="dispatches"></ol>
       <p class="empty" hidden></p>
       <div class="more"><button class="more__btn" type="button" hidden>顯示更多</button></div>
+    </div>
+  </section>
+
+  <section class="section" id="community" aria-labelledby="community-h">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 class="kicker" id="community-h"><span class="kicker__no">C4</span>社群與活動<span class="kicker__en">Community</span></h2>
+      </div>
+      <div class="community">
+        <div>
+          <h3 class="sub-kicker">近期活動</h3>
+          <ol class="events" id="events"></ol>
+          <p class="empty" id="eventsEmpty" hidden></p>
+        </div>
+        <div>
+          <h3 class="sub-kicker">加入社群</h3>
+          <ul class="clubs">
+          <li><a class="club" href="https://huggingface.co/discord-community" target="_blank" rel="noopener"><span class="club__tag">Discord</span><span class="club__name">Hugging Face</span><span class="club__desc">模型、資料集與開源 AI 的官方社群</span><span class="club__go" aria-hidden="true">↗</span></a></li>
+          <li><a class="club" href="https://www.langchain.com/join-community" target="_blank" rel="noopener"><span class="club__tag">社群</span><span class="club__name">LangChain</span><span class="club__desc">LangChain／LangGraph 開發者社群</span><span class="club__go" aria-hidden="true">↗</span></a></li>
+          <li><a class="club" href="https://community.openai.com/" target="_blank" rel="noopener"><span class="club__tag">論壇</span><span class="club__name">OpenAI Developer Forum</span><span class="club__desc">OpenAI 官方開發者論壇</span><span class="club__go" aria-hidden="true">↗</span></a></li>
+          <li><a class="club" href="https://gaiconf.com/" target="_blank" rel="noopener"><span class="club__tag">研討會</span><span class="club__name">生成式 AI 年會</span><span class="club__desc">GAI Conf · Agent First，兩天三場、24 位講者</span><span class="club__go" aria-hidden="true">↗</span></a></li>
+          <li><a class="club" href="https://gdg.community.dev/gdg-taipei/" target="_blank" rel="noopener"><span class="club__tag">聚會</span><span class="club__name">GDG Taipei</span><span class="club__desc">Google 開發者社群台北分會，Flutter、DevFest</span><span class="club__go" aria-hidden="true">↗</span></a></li>
+          <li><a class="club" href="https://www.facebook.com/groups/f2e.tw/" target="_blank" rel="noopener"><span class="club__tag">Facebook</span><span class="club__name">F2E 前端社群</span><span class="club__desc">台灣前端工程師社團</span><span class="club__go" aria-hidden="true">↗</span></a></li>
+          <li><a class="club" href="https://www.reddit.com/r/LocalLLaMA/" target="_blank" rel="noopener"><span class="club__tag">Reddit</span><span class="club__name">r/LocalLLaMA</span><span class="club__desc">本地端跑開源模型</span><span class="club__go" aria-hidden="true">↗</span></a></li>
+          <li><a class="club" href="https://www.reddit.com/r/ClaudeAI/" target="_blank" rel="noopener"><span class="club__tag">Reddit</span><span class="club__name">r/ClaudeAI</span><span class="club__desc">Claude 使用者討論</span><span class="club__go" aria-hidden="true">↗</span></a></li>
+          <li><a class="club" href="https://www.reddit.com/r/AI_Agents/" target="_blank" rel="noopener"><span class="club__tag">Reddit</span><span class="club__name">r/AI_Agents</span><span class="club__desc">AI Agent 開發與應用</span><span class="club__go" aria-hidden="true">↗</span></a></li>
+          <li><a class="club" href="https://www.reddit.com/r/MachineLearning/" target="_blank" rel="noopener"><span class="club__tag">Reddit</span><span class="club__name">r/MachineLearning</span><span class="club__desc">機器學習研究與論文討論</span><span class="club__go" aria-hidden="true">↗</span></a></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
 </main>
