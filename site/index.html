@@ -29,7 +29,7 @@
 <script>
 fetch('news.json', {cache:'no-cache'}).then(r => r.json()).then(d => {
   const fmt = s => { const t = new Date(s); return isNaN(t) ? s : t.toLocaleString('zh-TW'); };
-  document.getElementById('meta').textContent = '最後更新：' + fmt(d.updated) + '（每天自動更新）';
+  document.getElementById('meta').textContent = '最後更新：' + fmt(d.updated) + '（每小時自動更新）';
   const ul = document.getElementById('list');
   for (const it of d.items) {
     const li = document.createElement('li');
