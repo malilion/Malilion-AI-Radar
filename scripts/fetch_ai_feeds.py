@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""抓取 ai-feeds.json 列出的 AI 公司部落格（RSS 或 Atom），合併成 site/ai.json，標題與摘要翻成繁體中文。
+"""抓取 ai-feeds.json 列出的 AI 公司部落格與科技媒體（RSS 或 Atom），合併成 site/ai.json，標題與摘要翻成繁體中文。
 單一來源失敗只會略過該來源；全部失敗時不輸出檔案。"""
 import gzip
 import json
@@ -110,6 +110,8 @@ def fetch(feed):
         if not data.startswith(b"<"):
             raise ValueError(f"不是 XML（開頭為 {data[:16]!r}）")
         items = parse(data, feed["name"])
+        for i in items:
+            i["type"] = "media" if feed.get("type") == "media" else "lab"
         print(f"{feed['name']}: {len(items)} 則")
         return items, None
     except Exception as e:
@@ -122,7 +124,7 @@ def main():
         cfg = json.load(f)
     cutoff = datetime.now(timezone.utc) - timedelta(days=cfg.get("days", 14))
     per = cfg.get("maxPerSource", 6)
-    with ThreadPoolExecutor(max_workers=8) as ex:
+    with ThreadPoolExecutor(max_workers=16) as ex:
         results = list(ex.map(fetch, cfg["feeds"]))
 
     items, errors = [], [e for _, e in results if e]

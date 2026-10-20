@@ -125,8 +125,11 @@
   <section class="section" id="ai" aria-labelledby="ai-h">
     <div class="wrap">
       <div class="section__head">
-        <h2 class="kicker" id="ai-h"><span class="kicker__no">C2</span>AI 業界動態<span class="kicker__en">From the Labs</span></h2>
-        <p class="section__note">各家 AI 公司官方部落格，近兩週新文</p>
+        <h2 class="kicker" id="ai-h"><span class="kicker__no">C2</span>AI 業界動態<span class="kicker__en">Labs &amp; Press</span></h2>
+        <div class="seg" role="tablist" aria-label="來源類型">
+          <button type="button" role="tab" class="seg__btn" data-ai-type="lab" aria-selected="true">官方部落格</button>
+          <button type="button" role="tab" class="seg__btn" data-ai-type="media" aria-selected="false">科技媒體</button>
+        </div>
       </div>
       <div class="chips" id="aiSources" role="group" aria-label="依來源篩選"></div>
       <ol class="dispatches" id="aiList"></ol>
@@ -142,7 +145,7 @@
     <p>本報由 GitHub Actions 每小時自動採編排版。資料來源：
       <a href="https://news.google.com/?hl=zh-TW&gl=TW&ceid=TW:zh-Hant">Google 新聞</a>、
       <a href="https://www.threads.com/">Threads</a>、
-      <a href="https://www.theunwindai.com/">Unwind AI</a> 與各 AI 公司官方部落格。已讀與收藏只存在你的瀏覽器。</p>
+      <a href="https://www.theunwindai.com/">Unwind AI</a> 與各 AI 公司官方部落格、科技媒體。已讀與收藏只存在你的瀏覽器。</p>
     <p class="colophon__keys">鍵盤：<kbd>/</kbd> 搜尋　<kbd>s</kbd> 開啟收藏　<kbd>Esc</kbd> 關閉</p>
   </div>
 </footer>
