@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """抓取 ai-feeds.json 列出的 AI 公司部落格（RSS 或 Atom），合併成 site/ai.json，標題與摘要翻成繁體中文。
 單一來源失敗只會略過該來源；全部失敗時不輸出檔案。"""
+import gzip
 import json
 import re
 import sys
@@ -94,12 +95,20 @@ def parse(xml, source):
 
 
 def fetch(feed):
-    req = urllib.request.Request(feed["url"], headers={"User-Agent": "Mozilla/5.0 (compatible; daily-paper/1.0)"})
+    req = urllib.request.Request(feed["url"], headers={
+        "User-Agent": "Mozilla/5.0 (compatible; daily-paper/1.0)",
+        "Accept": "application/rss+xml, application/atom+xml, application/xml;q=0.9, */*;q=0.5",
+    })
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
             data = r.read(MAX_BYTES + 1)
         if len(data) > MAX_BYTES:
             raise ValueError("檔案過大")
+        if data[:2] == b"\x1f\x8b":  # 有些伺服器不管請求一律回 gzip
+            data = gzip.decompress(data)[:MAX_BYTES]
+        data = data.lstrip(b"\xef\xbb\xbf \t\r\n")
+        if not data.startswith(b"<"):
+            raise ValueError(f"不是 XML（開頭為 {data[:16]!r}）")
         items = parse(data, feed["name"])
         print(f"{feed['name']}: {len(items)} 則")
         return items, None
