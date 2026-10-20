@@ -52,25 +52,29 @@ def translate(batch):
         return None
 
 
-def add_translations(items):
+def add_translations(items, cache_path=CACHE):
     try:
-        with open(CACHE, encoding="utf-8") as f:
+        with open(cache_path, encoding="utf-8") as f:
             cache = json.load(f)
     except Exception:
         cache = {}
     todo = [i for i in items if i["link"] not in cache]
-    done = translate([{"title": i["title"], "summary": i["summary"]} for i in todo])
-    if done:
-        for i, z in zip(todo, done):
-            cache[i["link"]] = z
+    added = 0
+    for k in range(0, len(todo), 15):  # 分批翻譯，避免單次輸出過長
+        chunk = todo[k:k + 15]
+        done = translate([{"title": i["title"], "summary": i["summary"]} for i in chunk])
+        if done:
+            for i, z in zip(chunk, done):
+                cache[i["link"]] = z
+            added += len(done)
     for i in items:
         z = cache.get(i["link"])
         if z:
             i["title_zh"], i["summary_zh"] = z["title"], z["summary"]
-    os.makedirs(os.path.dirname(CACHE), exist_ok=True)
-    with open(CACHE, "w", encoding="utf-8") as f:
+    os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+    with open(cache_path, "w", encoding="utf-8") as f:
         json.dump({i["link"]: cache[i["link"]] for i in items if i["link"] in cache}, f, ensure_ascii=False)
-    print(f"翻譯：新增 {len(done or [])} 則，共 {sum('title_zh' in i for i in items)} 則有中文")
+    print(f"翻譯：新增 {added} 則，共 {sum('title_zh' in i for i in items)} 則有中文")
 
 
 def main():

@@ -1,0 +1,14 @@
+{
+  "days": 14,
+  "maxPerSource": 6,
+  "feeds": [
+    { "name": "OpenAI", "url": "https://openai.com/news/rss.xml" },
+    { "name": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml" },
+    { "name": "Google AI", "url": "https://blog.google/innovation-and-ai/technology/ai/rss/" },
+    { "name": "Google Research", "url": "https://research.google/blog/rss/" },
+    { "name": "Hugging Face", "url": "https://huggingface.co/blog/feed.xml" },
+    { "name": "NVIDIA", "url": "https://blogs.nvidia.com/feed/" },
+    { "name": "Mistral AI", "url": "https://mistral.ai/news/rss" },
+    { "name": "AWS Machine Learning", "url": "https://aws.amazon.com/blogs/machine-learning/feed/" }
+  ]
+}

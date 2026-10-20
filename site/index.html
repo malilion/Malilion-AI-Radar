@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https: data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>每日晨報</title>
-<meta name="description" content="每小時自動排版的台灣新聞頭版、Threads 社群精選與 AI 科技副刊。">
+<meta name="description" content="每小時自動排版的台灣新聞頭版、Threads 社群精選、AI 科技副刊與 AI 業界動態。">
 <meta name="theme-color" content="#f3eee4" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#14120f" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='6' fill='%23c2381f'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23fff' font-family='serif' font-weight='700'%3E晨%3C/text%3E%3C/svg%3E">
@@ -27,6 +27,7 @@
       <li><a href="#news">要聞</a></li>
       <li><a href="#social">社群</a></li>
       <li><a href="#tech">副刊</a></li>
+      <li><a href="#ai">AI 業界</a></li>
     </ul>
     <button class="saved-btn" type="button" data-open-saved aria-haspopup="dialog">
       收藏<span class="saved-count" data-saved-count>0</span>
@@ -51,6 +52,7 @@
       <li><a href="#news"><b>A2</b>要聞</a></li>
       <li><a href="#social"><b>B1</b>社群</a></li>
       <li><a href="#tech"><b>C1</b>副刊</a></li>
+      <li><a href="#ai"><b>C2</b>AI 業界</a></li>
       <li><button type="button" data-open-saved aria-haspopup="dialog"><b>★</b>收藏 <span data-saved-count>0</span></button></li>
     </ul>
   </div>
@@ -119,6 +121,19 @@
     <div class="rail" id="techRail" tabindex="0" aria-label="Unwind AI 文章，可左右捲動"></div>
     <div class="wrap"><p class="empty" id="techEmpty" hidden></p></div>
   </section>
+
+  <section class="section" id="ai" aria-labelledby="ai-h">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 class="kicker" id="ai-h"><span class="kicker__no">C2</span>AI 業界動態<span class="kicker__en">From the Labs</span></h2>
+        <p class="section__note">各家 AI 公司官方部落格，近兩週新文</p>
+      </div>
+      <div class="chips" id="aiSources" role="group" aria-label="依來源篩選"></div>
+      <ol class="dispatches" id="aiList"></ol>
+      <p class="empty" id="aiEmpty" hidden></p>
+      <div class="more"><button class="more__btn" id="aiMore" type="button" hidden>顯示更多</button></div>
+    </div>
+  </section>
 </main>
 
 <footer class="colophon">
@@ -127,7 +142,7 @@
     <p>本報由 GitHub Actions 每小時自動採編排版。資料來源：
       <a href="https://news.google.com/?hl=zh-TW&gl=TW&ceid=TW:zh-Hant">Google 新聞</a>、
       <a href="https://www.threads.com/">Threads</a>、
-      <a href="https://www.theunwindai.com/">Unwind AI</a>。已讀與收藏只存在你的瀏覽器。</p>
+      <a href="https://www.theunwindai.com/">Unwind AI</a> 與各 AI 公司官方部落格。已讀與收藏只存在你的瀏覽器。</p>
     <p class="colophon__keys">鍵盤：<kbd>/</kbd> 搜尋　<kbd>s</kbd> 開啟收藏　<kbd>Esc</kbd> 關閉</p>
   </div>
 </footer>
