@@ -207,14 +207,14 @@ function renderUnwind() {
     $('empty').hidden = false; return;
   }
   const q = $('q').value.trim().toLowerCase();
-  const shown = udata.items.filter(i => !q || (i.title + i.summary).toLowerCase().includes(q));
+  const shown = udata.items.filter(i => !q || (i.title + i.summary + (i.title_zh || '') + (i.summary_zh || '')).toLowerCase().includes(q));
   for (const it of shown) {
     const li = document.createElement('li'), a = document.createElement('a');
     a.href = it.link; a.target = '_blank'; a.rel = 'noopener';
-    const title = document.createElement('div'); title.className = 'title'; title.textContent = it.title;
+    const title = document.createElement('div'); title.className = 'title'; title.textContent = it.title_zh || it.title;
     a.append(title);
     if (it.image) { const im = document.createElement('img'); im.className = 'thumb'; im.loading = 'lazy'; im.alt = ''; im.src = it.image; a.append(im); }
-    if (it.summary) { const b = document.createElement('div'); b.className = 'body'; b.textContent = it.summary; a.append(b); }
+    if (it.summary) { const b = document.createElement('div'); b.className = 'body'; b.textContent = it.summary_zh || it.summary; a.append(b); }
     const sub = document.createElement('div'); sub.className = 'sub';
     const c = document.createElement('span'); c.className = 'chip'; c.textContent = 'Unwind AI'; sub.append(c);
     const t = document.createElement('span'); t.textContent = ago(it.pubDate); sub.append(t);
