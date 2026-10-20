@@ -21,6 +21,7 @@
 
 其他功能：
 
+- **電子報**：每期自動排好一份電子報（頭版與要聞、AI 業界、開發者雷達、Threads、社群活動），可「複製郵件內容」直接貼進 Gmail／Outlook／電子報平台，或下載 HTML、Markdown；網址為 `newsletter/YYYY-MM-DD.html`，`newsletter/latest.html` 為最新一期
 - **往期**：每天的版面都存檔，按「往期」選日期回看，網址為 `?d=YYYY-MM-DD`
 - **已讀**：點過的文章會變淡，可切換「只看未讀」
 - **收藏**：按 ☆ 收藏，在收藏夾集中查看
@@ -75,7 +76,8 @@
 
 2. 取 Fetch Threads 最近一次成功的 `threads.json`，經 `scripts/sanitize_threads.py` 檢查後放進 `site/`
 3. `scripts/archive.py` 把這一輪疊加進當天存檔，github-actions[bot] 把存檔 commit 回 main
-4. 把 `site/`（含存檔）部署到 GitHub Pages
+4. `scripts/build_newsletter.py` 從存檔產生每一期電子報（`site/newsletter/`）
+5. 把 `site/`（含存檔與電子報）部署到 GitHub Pages
 
 ### Fetch Threads（`.github/workflows/fetch-threads.yml`）
 

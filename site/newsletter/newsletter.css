@@ -1,0 +1,21 @@
+/* 電子報閱讀頁：工具列＋郵件本體（郵件本身的樣式都是行內樣式） */
+body { margin: 0; background: #f3eee4; font: 400 15px/1.6 -apple-system, "Segoe UI", "Noto Sans TC", "PingFang TC", sans-serif; color: #1b1814; }
+.nl-bar {
+  position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+  padding: 12px 16px; background: #1b1814; color: #f3eee4;
+}
+.nl-back { color: #f3eee4; text-decoration: none; font-weight: 700; }
+.nl-back:hover { color: #e4583b; }
+.nl-pick { display: flex; align-items: center; gap: 6px; font-size: .85rem; }
+.nl-pick select { padding: 5px 8px; border-radius: 6px; border: 1px solid #463f36; background: #f3eee4; color: #1b1814; font: inherit; }
+.nl-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.nl-actions button, .nl-actions a {
+  padding: 7px 14px; border: 1px solid #6b6155; border-radius: 999px; background: none; color: #f3eee4;
+  font-family: inherit; font-size: .85rem; font-weight: 500; line-height: 1; text-decoration: none; cursor: pointer; transition: background .2s, border-color .2s;
+}
+.nl-actions button:first-child { background: #c2381f; border-color: #c2381f; }
+.nl-actions button:hover, .nl-actions a:hover { border-color: #f3eee4; }
+.nl-hint { flex-basis: 100%; margin: 0; font-size: .78rem; color: #b9ae9c; }
+.nl-hint.is-ok { color: #8fd18f; }
+:focus-visible { outline: 2px solid #e4583b; outline-offset: 2px; }
+@media (max-width: 640px) { .nl-actions { margin-left: 0; } }

@@ -9,3 +9,5 @@ __pycache__/
 site/dev.json
 site/archive/
 site/events.json
+site/newsletter/*.html
+site/newsletter/*.md

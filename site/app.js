@@ -533,6 +533,8 @@
   const SECTION_NAMES = { news: '要聞', threads: '社群', unwind: '副刊', ai: 'AI', dev: '開發者', events: '活動' };
 
   function archiveNote() {
+    // 電子報連到正在看的這一期
+    $$('[data-newsletter]').forEach((x) => { x.href = `newsletter/${DAY || new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date())}.html`; });
     if (!DAY) return;
     const [y, m, d] = DAY.split('-').map(Number);
     const note = $('#archiveNote');
