@@ -2,7 +2,7 @@ name: Update news
 
 on:
   schedule:
-    - cron: "0 22 * * *"   # UTC 22:00 = 台灣時間 06:00，每天一次
+    - cron: "0 * * * *"   # 每小時整點執行一次
   workflow_dispatch:
   push:
     branches: [main]
