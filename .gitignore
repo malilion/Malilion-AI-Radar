@@ -5,3 +5,4 @@ site/unwind.json
 cache/
 threads-raw/
 site/ai.json
+__pycache__/
