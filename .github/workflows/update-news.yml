@@ -25,6 +25,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 scripts/fetch_news.py
+
+      # Threads 熱門：失敗時不影響新聞部署，頁面會顯示「尚無資料」
+      - name: Checkout threads-toolkit
+        uses: actions/checkout@v4
+        with:
+          repository: Chuanyin1202/threads-toolkit
+          ref: a7748a8bba3e8dcae9c6ca5092aa101eb3710eb5
+          path: threads-toolkit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: threads-toolkit/package-lock.json
+      - name: Fetch Threads trending
+        continue-on-error: true
+        working-directory: threads-toolkit
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          cp ../scripts/fetch_threads.mjs scripts/fetch_threads.mjs
+          timeout 12m node --import tsx scripts/fetch_threads.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
