@@ -49,7 +49,7 @@
 
 - **Threads 帳號與關鍵字**：編輯 `threads-keywords.json`。目前追蹤 `dcard.tw`、`ithome`、`cool3c`、`kocpc`、`ai.lanrenbao`、`darrell_tw_`、`c.yu.an_`、`kelly_guooo`、`lazyoffice2024`、`ironv.careerlife`。`accounts` 是要追蹤的帳號（不含 @），有填就以帳號模式依互動分數排序；`keywords` 是搜尋模式（未登入時對中文關鍵字常抓不到結果）。
 - **翻譯**：到 Settings → Secrets and variables → Actions 新增 `ANTHROPIC_API_KEY`。沒有設定時 Unwind AI 會顯示英文原文。翻譯結果以文章連結為鍵快取，只有新文章才會呼叫 API。
-- **AI 與開發者來源**：編輯 `ai-feeds.json`、`dev-feeds.json`。每個來源有 `name`、`url`、`type`（分頁），可選 `max`（則數上限）、`days`（覆寫天數）、`translate: false`（不翻譯）與 `tz`（日期沒有時區時的時差，如 iThome 用 `8`）；檔案層級有 `days`、`maxPerSource`、`sort`（`date` 依時間或 `feed` 保留來源排名）。已是中文的標題不會送去翻譯。
+- **AI 與開發者來源**：編輯 `ai-feeds.json`、`dev-feeds.json`。每個來源有 `name`、`url`、`type`（分頁），可選 `max`（則數上限）、`days`（覆寫天數）、`translate: false`（不翻譯）、`exclude`（標題符合此正規表示式就略過，版本更新用來排除 alpha／beta／rc）與 `tz`（日期沒有時區時的時差，如 iThome 用 `8`）；檔案層級有 `days`、`maxPerSource`、`sort`（`date` 依時間或 `feed` 保留來源排名）。已是中文的標題不會送去翻譯。
 - **更新頻率**：修改 workflow 裡的 `cron`（UTC 時間）。
 - **首次啟用**：Settings → Pages → Source 選 **GitHub Actions**，再到 Actions 手動執行一次 "Update news"。
 

@@ -75,7 +75,8 @@
       "type": "releases",
       "max": 5,
       "days": 45,
-      "translate": false
+      "translate": false,
+      "exclude": "alpha|beta|\\d(a|b|rc)\\d|\\brc\\b|-rc|nightly|preview"
     },
     {
       "name": "Claude Code",
@@ -83,7 +84,8 @@
       "type": "releases",
       "max": 5,
       "days": 45,
-      "translate": false
+      "translate": false,
+      "exclude": "alpha|beta|\\d(a|b|rc)\\d|\\brc\\b|-rc|nightly|preview"
     },
     {
       "name": "LangChain",
@@ -91,7 +93,8 @@
       "type": "releases",
       "max": 5,
       "days": 45,
-      "translate": false
+      "translate": false,
+      "exclude": "alpha|beta|\\d(a|b|rc)\\d|\\brc\\b|-rc|nightly|preview"
     },
     {
       "name": "Ollama",
@@ -99,7 +102,8 @@
       "type": "releases",
       "max": 5,
       "days": 45,
-      "translate": false
+      "translate": false,
+      "exclude": "alpha|beta|\\d(a|b|rc)\\d|\\brc\\b|-rc|nightly|preview"
     },
     {
       "name": "Open WebUI",
@@ -107,7 +111,8 @@
       "type": "releases",
       "max": 5,
       "days": 45,
-      "translate": false
+      "translate": false,
+      "exclude": "alpha|beta|\\d(a|b|rc)\\d|\\brc\\b|-rc|nightly|preview"
     }
   ]
 }

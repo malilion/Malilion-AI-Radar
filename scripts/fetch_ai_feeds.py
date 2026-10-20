@@ -150,6 +150,8 @@ def main():
     for feed, (got, _) in zip(cfg["feeds"], results):
         for i in got:
             i["date"] = i["date"] or now
+        if feed.get("exclude"):  # 例如排除預覽版："alpha|beta|rc"
+            got = [i for i in got if not re.search(feed["exclude"], i["title"], re.I)]
         since = now - timedelta(days=feed["days"]) if "days" in feed else cutoff
         fresh = [i for i in got if i["date"] >= since and i["link"] not in seen]
         if not by_feed:
