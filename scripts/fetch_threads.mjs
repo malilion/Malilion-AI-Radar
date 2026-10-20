@@ -88,17 +88,22 @@ for (const keyword of keywords) {
 
 // 帳號清單模式：抓各帳號個人頁的近期貼文（不需登入），依互動分數排出熱門
 const HOT_MS = hotWindowHours * 60 * 60 * 1000;
+// 每個帳號最多等 PER_ACCOUNT_MS，超過就跳過，避免單一帳號拖垮整輪
+const PER_ACCOUNT_MS = 90000;
+const RATE = { maxRetries: 1, backoffDelay: 5000, requestDelay: 1000 };
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(`逾時 ${ms / 1000} 秒`)), ms))]);
+
 let first = true;
 for (const username of accounts) {
     // Threads 對連續請求會回空頁面，所以帳號之間要間隔；抓到 0 則時等久一點再重試一次
-    if (!first) await sleep(20000 + Math.random() * 20000);
+    if (!first) await sleep(10000 + Math.random() * 10000);
     first = false;
     let raw = [];
     for (let attempt = 1; attempt <= 2 && raw.length === 0; attempt++) {
-        if (attempt > 1) { console.log(`@${username}: 0 則，60 秒後重試`); await sleep(60000); }
+        if (attempt > 1) { console.log(`@${username}: 0 則，30 秒後重試`); await sleep(30000); }
         current = [];
         try {
-            await profileAction({ action: 'profile', username, includePosts: true, maxItems: maxPostsPerAccount }, log);
+            await withTimeout(profileAction({ action: 'profile', username, includePosts: true, maxItems: maxPostsPerAccount, rateLimitConfig: RATE }, log), PER_ACCOUNT_MS);
         } catch (err) {
             errors.push({ keyword: '@' + username, error: err instanceof Error ? err.message : String(err) });
         }

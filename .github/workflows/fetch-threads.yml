@@ -1,0 +1,52 @@
+name: Fetch Threads
+
+# 抓 Threads 很慢且會執行第三方程式（threads-toolkit 與其 npm 依賴），
+# 因此獨立成這個 workflow：沒有部署權限、沒有 secrets，只產出 threads.json 成品。
+# 完成後由 update-news.yml（workflow_run 觸發）取用並重新部署。
+on:
+  schedule:
+    - cron: "30 */2 * * *"   # 每 2 小時（半點）一次
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: threads
+  cancel-in-progress: false
+
+jobs:
+  threads:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Checkout threads-toolkit
+        uses: actions/checkout@v4
+        with:
+          repository: Chuanyin1202/threads-toolkit
+          ref: a7748a8bba3e8dcae9c6ca5092aa101eb3710eb5
+          path: threads-toolkit
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install threads-toolkit
+        working-directory: threads-toolkit
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Fetch Threads
+        working-directory: threads-toolkit
+        run: |
+          cp ../scripts/fetch_threads.mjs scripts/fetch_threads.mjs
+          timeout 20m node --import tsx scripts/fetch_threads.mjs || echo "抓取逾時或失敗，保留已抓到的部分"
+          test -s ../site/threads.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: threads
+          path: site/threads.json
+          retention-days: 7

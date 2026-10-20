@@ -6,8 +6,12 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+  # Threads 抓完後立刻重新部署，讓社群版更新
+  workflow_run:
+    workflows: [Fetch Threads]
+    types: [completed]
 
-# 預設不給任何權限，各 job 只拿需要的
+# 預設不給任何權限，只拿需要的
 permissions: {}
 
 concurrency:
@@ -15,48 +19,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Threads：會執行第三方程式（threads-toolkit 與其 npm 依賴），
-  # 因此隔離在沒有部署權限、沒有 secrets 的獨立 job，只把產出的 JSON 交給部署 job。
-  threads:
-    runs-on: ubuntu-latest
-    timeout-minutes: 50
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Checkout threads-toolkit
-        uses: actions/checkout@v4
-        with:
-          repository: Chuanyin1202/threads-toolkit
-          ref: a7748a8bba3e8dcae9c6ca5092aa101eb3710eb5
-          path: threads-toolkit
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Fetch Threads trending
-        continue-on-error: true
-        working-directory: threads-toolkit
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
-          cp ../scripts/fetch_threads.mjs scripts/fetch_threads.mjs
-          timeout 40m node --import tsx scripts/fetch_threads.mjs
-      - uses: actions/upload-artifact@v4
-        with:
-          name: threads
-          path: site/threads.json
-          if-no-files-found: ignore
-          retention-days: 1
-
   deploy:
-    needs: threads
-    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
+      actions: read      # 讀取 Fetch Threads 最近一次成功的成品
       pages: write
       id-token: write
     environment:
@@ -78,13 +46,25 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python3 scripts/fetch_unwind.py
-      # Threads 失敗時不影響部署，頁面會顯示「暫時沒有資料」
+      # Threads：取 Fetch Threads 最近一次成功的結果；沒有時頁面顯示「暫時沒有資料」
+      - name: Find latest Threads run
+        id: threads
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          id=$(gh run list -R "$GITHUB_REPOSITORY" --workflow fetch-threads.yml --status success -L 1 --json databaseId -q '.[0].databaseId')
+          echo "run_id=$id" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v4
+        if: steps.threads.outputs.run_id != ''
         continue-on-error: true
         with:
           name: threads
           path: threads-raw
+          run-id: ${{ steps.threads.outputs.run_id }}
+          github-token: ${{ github.token }}
       - name: Sanitize Threads data
+        if: hashFiles('threads-raw/threads.json') != ''
         continue-on-error: true
         run: python3 scripts/sanitize_threads.py threads-raw/threads.json site/threads.json
       - uses: actions/configure-pages@v5
