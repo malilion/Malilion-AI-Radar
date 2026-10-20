@@ -1,76 +1,164 @@
 # Malilion AI Radar
 
-每小時自動更新的新聞彙整網站，部署在 GitHub Pages：<https://malilion.github.io/google-news/>
+每小時自動更新的新聞與 AI 情報網站：台灣要聞、Threads 社群、AI 業界動態、開發者雷達與社群活動，全部由 GitHub Actions 抓取、存檔並部署到 GitHub Pages。
+
+**網站**：<https://malilion.github.io/google-news/>
 
 ## 版面
 
-編輯感報刊設計（米白紙＋墨黑＋印章朱紅，自動深色模式；標題思源宋體、內文思源黑體），單頁由上而下：
+編輯感報刊設計：米白紙、墨黑、印章朱紅，自動切換深色模式；標題用思源宋體、內文用思源黑體。單頁由上而下：
 
-- **報頭**：國曆／民國／農曆日期、期號（2026/10/20 創刊第 1 期）、最後更新時間；捲動後收成頂部導覽列
-- **A1 頭版**：頭條、兩則次要新聞、三則短訊
-- **A2 要聞**：多欄列表，可搜尋（按 `/`）、依媒體篩選、只看未讀
-- **B1 社群版**：Threads 引述卡，可依帳號篩選
-- **C1 科技副刊**：Unwind AI 橫向捲動封面卡
-- **C2 AI 業界動態**：官方部落格／科技媒體兩個分頁，可依來源篩選
-- **C3 開發者雷達**：GitHub 趨勢／Hacker News／論文／部落格／Reddit／版本更新六個分頁，排行榜類顯示名次
-- **C4 社群與活動**：近期社群活動與加入社群連結
-- **往期**：每天的版面都存檔，按「往期」（或 `p`）選日期回看，網址為 `?d=YYYY-MM-DD`
-- **已讀與收藏**：點過的文章變淡；☆ 收藏後按 `s` 開啟收藏夾。兩者都只存在瀏覽器（localStorage）
+| 版 | 名稱 | 內容 |
+|----|------|------|
+| — | 報頭 | 國曆／民國／農曆日期、期號（2026/10/20 創刊為第 1 期）、最後更新時間；往下捲後收成頂部導覽列 |
+| A1 | 頭版 | 頭條、兩則次要新聞、三則短訊 |
+| A2 | 要聞 | 多欄新聞列表，可搜尋、依媒體篩選、只看未讀 |
+| B1 | 社群版 | Threads 貼文引述卡，依互動分數排序，可依帳號篩選 |
+| C1 | 科技副刊 | Unwind AI 電子報，橫向捲動封面卡 |
+| C2 | AI 業界動態 | 「官方部落格／科技媒體」兩個分頁，可依來源篩選 |
+| C3 | 開發者雷達 | 「GitHub 趨勢／Hacker News／論文／部落格／Reddit／版本更新」六個分頁，排行榜類標示名次 |
+| C4 | 社群與活動 | 左為近期社群活動，右為加入社群連結目錄 |
 
-前端檔案：`site/index.html`、`site/styles.css`、`site/app.js`（無框架、無建置步驟）。
+其他功能：
 
-## 內容
+- **往期**：每天的版面都存檔，按「往期」選日期回看，網址為 `?d=YYYY-MM-DD`
+- **已讀**：點過的文章會變淡，可切換「只看未讀」
+- **收藏**：按 ☆ 收藏，在收藏夾集中查看
+- 已讀與收藏只存在瀏覽器（localStorage），不會上傳
 
-| 版面 | 來源 | 說明 |
-|------|------|------|
-| A1 頭版、A2 要聞 | [Google 新聞 RSS（台灣）](https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant) | RSS 前 6 則排進頭版，其餘進要聞 |
-| B1 社群版 | [threads-toolkit](https://github.com/Chuanyin1202/threads-toolkit) | 追蹤帳號近 72 小時的貼文，依互動分數（讚 + 回覆×2 + 轉發×3）排序 |
-| C2 AI 業界動態 | `ai-feeds.json`：**官方部落格**（OpenAI、Anthropic（新聞／研究／Claude）、Google DeepMind、Google AI、Google Research、Hugging Face、NVIDIA、Mistral AI、AWS ML）與**科技媒體**（TechCrunch、The Verge、Ars Technica、WIRED、MIT Technology Review、The Decoder、MarkTechPost、iThome） | 兩類分頁切換；近 14 天、每家最多 6 則，依時間排序，可依來源篩選，標題與摘要翻成繁體中文 |
-| C3 開發者雷達 | `dev-feeds.json`：GitHub Trending（今日／本週／Python）、Hacker News（首頁／最新 AI／Show HN）、arXiv（cs.AI／cs.LG／cs.CL）、Simon Willison、OpenAI 開發者社群、Reddit（r/LocalLLaMA、r/ClaudeAI、r/AI_Agents、r/MachineLearning 當日熱門）、GitHub Releases（Codex、Claude Code、LangChain、Ollama、Open WebUI） | 六個分頁；保留各來源原本的排名順序，重複連結只留一次 |
-| C4 社群與活動 | GDG Taipei（community.dev 公開 API）＋社群目錄 | 左為近期活動；右為加入社群連結（Hugging Face Discord、LangChain、OpenAI 論壇、生成式 AI 年會、GDG Taipei、F2E 社團、四個 Reddit 版） |
-| C1 科技副刊 | [Unwind AI 電子報 RSS](https://rss.beehiiv.com/feeds/fMHDv0Uk41.xml) | 最新 30 篇文章，標題與摘要自動翻譯成繁體中文 |
+鍵盤快捷鍵：`/` 搜尋、`s` 收藏夾、`p` 往期、`Esc` 關閉。
+
+## 資料來源
+
+| 版 | 來源 | 規則 |
+|----|------|------|
+| A1、A2 | [Google 新聞 RSS（台灣）](https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant) | RSS 前 6 則排進頭版，其餘進要聞 |
+| B1 | Threads（透過 [threads-toolkit](https://github.com/Chuanyin1202/threads-toolkit)），帳號清單在 `threads-keywords.json` | 追蹤帳號近 72 小時的貼文，分數 = 讚 + 回覆×2 + 轉發×3 |
+| C1 | [Unwind AI RSS](https://rss.beehiiv.com/feeds/fMHDv0Uk41.xml) | 最新 30 篇 |
+| C2 | `ai-feeds.json` | 近 14 天、每家最多 6 則，依時間排序 |
+| C3 | `dev-feeds.json` | 保留各來源原本的排名，重複連結只留一次 |
+| C4 | GDG Taipei（community.dev 公開 API）＋ `site/index.html` 裡的社群目錄 | 只列尚未結束的活動 |
+
+**C2 官方部落格**：OpenAI、Anthropic（新聞／研究／Claude）、Google DeepMind、Google AI、Google Research、Hugging Face、NVIDIA、Mistral AI、AWS Machine Learning
+**C2 科技媒體**：TechCrunch、The Verge、Ars Technica、WIRED、MIT Technology Review、The Decoder、MarkTechPost、iThome
+
+**C3 開發者雷達**：
+
+| 分頁 | 來源 |
+|------|------|
+| GitHub 趨勢 | GitHub Trending 今日、本週、今日 Python |
+| Hacker News | 首頁、最新 AI、Show HN |
+| 論文 | arXiv cs.AI、cs.LG、cs.CL |
+| 部落格 | Simon Willison、OpenAI 開發者社群 |
+| Reddit | r/LocalLLaMA、r/ClaudeAI、r/AI_Agents、r/MachineLearning（當日熱門） |
+| 版本更新 | Codex、Claude Code、LangChain、Ollama、Open WebUI 的 GitHub Releases（只留正式版） |
+
+**C4 社群目錄**：Hugging Face Discord、LangChain 社群、OpenAI 開發者論壇、生成式 AI 年會、GDG Taipei、F2E 前端社群、四個 Reddit 版。
+
+英文標題與摘要會翻成繁體中文（需設定 `ANTHROPIC_API_KEY`，見下方「設定」）；已是中文的內容、版本號不會送去翻譯。
 
 ## 運作方式
 
-兩個 GitHub Actions workflow：
+### Update news（`.github/workflows/update-news.yml`）
 
-**Update news**（`.github/workflows/update-news.yml`）：每小時整點、push 到 main、或 Fetch Threads 完成後執行，約 1 分鐘：
+觸發時機：每小時整點、push 到 main、Fetch Threads 完成後。約 1–2 分鐘。
 
-1. `scripts/fetch_news.py`：抓 Google 新聞，輸出 `site/news.json`
-2. `scripts/fetch_unwind.py`：抓 Unwind AI RSS 並翻譯，輸出 `site/unwind.json`
-   `scripts/fetch_events.py`：抓 GDG Taipei 近期活動，輸出 `site/events.json`（要加其他 community.dev 分會，改檔案裡的 `CHAPTERS`）
-   `scripts/fetch_ai_feeds.py`：抓 RSS／Atom 並翻譯（同一網站依序抓、遇到 429 會重試），用 `ai-feeds.json` 輸出 `site/ai.json`、用 `dev-feeds.json` 輸出 `site/dev.json`
-3. 取 Fetch Threads 最近一次成功的 `threads.json`，經 `scripts/sanitize_threads.py` 檢查後放進 `site/`
-4. `scripts/archive.py`：把這一輪的資料疊加進 `archive/<今天>/`（同一篇只留一份，翻譯沿用），更新 `archive/index.json`，並由 github-actions[bot] commit 回 main；某來源這一輪失敗時沿用最近一次存檔
-5. 把 `site/`（含 `archive/`）部署到 GitHub Pages
+1. 抓資料，每支程式各自輸出一個 `site/*.json`；任何一個來源失敗都不影響其他部分：
 
-**Fetch Threads**（`.github/workflows/fetch-threads.yml`）：每 2 小時（半點）執行，最多 20 分鐘。`scripts/fetch_threads.mjs` 用 threads-toolkit（固定版本）逐一抓追蹤帳號的個人頁；帳號之間間隔 10–20 秒，單一帳號最多 90 秒，抓到 0 則會重試一次，每抓完一個就存檔。
+   | 程式 | 輸出 |
+   |------|------|
+   | `scripts/fetch_news.py` | `news.json` |
+   | `scripts/fetch_unwind.py` | `unwind.json`（含翻譯） |
+   | `scripts/fetch_ai_feeds.py` | `ai.json`（讀 `ai-feeds.json`） |
+   | `scripts/fetch_ai_feeds.py dev-feeds.json site/dev.json cache/dev_zh.json` | `dev.json` |
+   | `scripts/fetch_events.py` | `events.json` |
 
-**資料會疊加、永久保留**：今天的版面整天持續累積新文章，舊的不會被洗掉；過去每一天都存在 `archive/YYYY-MM-DD/`（news、threads、unwind、ai、dev、events 六個 JSON）。`site/*.json` 是每輪產生的暫存檔，不進版本庫。Unwind AI 與 Threads 兩步失敗時不影響其他部分，對應版面會顯示「暫時沒有資料」。
+2. 取 Fetch Threads 最近一次成功的 `threads.json`，經 `scripts/sanitize_threads.py` 檢查後放進 `site/`
+3. `scripts/archive.py` 把這一輪疊加進當天存檔，github-actions[bot] 把存檔 commit 回 main
+4. 把 `site/`（含存檔）部署到 GitHub Pages
+
+### Fetch Threads（`.github/workflows/fetch-threads.yml`）
+
+每 2 小時（半點）執行，最多 20 分鐘。`scripts/fetch_threads.mjs` 用 threads-toolkit（固定版本）逐一抓追蹤帳號的個人頁：
+
+- 每個帳號在獨立子程序執行，避免 toolkit 共用請求佇列造成第二個之後抓不到
+- 帳號之間間隔 10–20 秒，單一帳號最多 90 秒，抓到 0 則會重試一次
+
+### 存檔（資料疊加、永久保留）
+
+- **今天的版面整天累積**：舊的新聞不會被洗掉，同一篇只留一份，翻譯沿用不重複計費
+- **每天一期**：存在 `archive/YYYY-MM-DD/`，有 `news`、`threads`、`unwind`、`ai`、`dev`、`events` 六個 JSON；`archive/index.json` 是往期目錄
+- **失敗備援**：某來源這一輪失敗時，沿用最近一次的存檔，版面不會空白
+- **排名標示**：GitHub、HN、Reddit 的名次只標在這一輪仍在榜上的項目
+- `site/*.json` 是每輪的暫存檔，不進版本庫
+
+> main 每小時會多一個 `Archive …` 的 bot commit。本機修改前請先 `git pull`。
 
 ## 設定
 
-- **Threads 帳號與關鍵字**：編輯 `threads-keywords.json`。目前追蹤 `dcard.tw`、`ithome`、`cool3c`、`kocpc`、`ai.lanrenbao`、`darrell_tw_`、`c.yu.an_`、`kelly_guooo`、`lazyoffice2024`、`ironv.careerlife`。`accounts` 是要追蹤的帳號（不含 @），有填就以帳號模式依互動分數排序；`keywords` 是搜尋模式（未登入時對中文關鍵字常抓不到結果）。
-- **翻譯**：到 Settings → Secrets and variables → Actions 新增 `ANTHROPIC_API_KEY`。沒有設定時 Unwind AI 會顯示英文原文。翻譯結果以文章連結為鍵快取，只有新文章才會呼叫 API。
-- **AI 與開發者來源**：編輯 `ai-feeds.json`、`dev-feeds.json`。每個來源有 `name`、`url`、`type`（分頁），可選 `max`（則數上限）、`days`（覆寫天數）、`translate: false`（不翻譯）、`exclude`（標題符合此正規表示式就略過，版本更新用來排除 alpha／beta／rc）與 `tz`（日期沒有時區時的時差，如 iThome 用 `8`）；檔案層級有 `days`、`maxPerSource`、`sort`（`date` 依時間或 `feed` 保留來源排名）。已是中文的標題不會送去翻譯。
-- **更新頻率**：修改 workflow 裡的 `cron`（UTC 時間）。
-- **首次啟用**：Settings → Pages → Source 選 **GitHub Actions**，再到 Actions 手動執行一次 "Update news"。
+| 項目 | 怎麼改 |
+|------|--------|
+| 翻譯 | Settings → Secrets and variables → Actions 新增 `ANTHROPIC_API_KEY`。沒設定時顯示英文原文。翻譯結果以文章連結為鍵快取 |
+| Threads 帳號 | `threads-keywords.json` 的 `accounts`（不含 @）；`hotWindowHours` 是時間範圍，`keywords` 是搜尋模式（未登入時中文關鍵字常抓不到） |
+| AI／開發者來源 | `ai-feeds.json`、`dev-feeds.json`（欄位見下表） |
+| 社群活動 | `scripts/fetch_events.py` 的 `CHAPTERS`（community.dev 分會名稱與 ID） |
+| 社群目錄 | `site/index.html` 的 `#community` 區塊 |
+| 更新頻率 | 兩個 workflow 的 `cron`（UTC 時間） |
 
-## 注意事項
+`ai-feeds.json`／`dev-feeds.json` 欄位：
 
-- Threads 抓取是用瀏覽器自動化讀取公開頁面，可能被登入牆或機房 IP 限制擋下，且可能不符合 Threads 使用條款，請自行評估。
-- 頭版排序沿用 Google 新聞 RSS 的順序，不是實際閱讀數。
+| 層級 | 欄位 | 說明 |
+|------|------|------|
+| 檔案 | `days` | 只取幾天內的文章 |
+| 檔案 | `maxPerSource` | 每個來源預設則數上限 |
+| 檔案 | `sort` | `date` 全部依時間排序；`feed` 保留各來源原本的順序 |
+| 來源 | `name`、`url` | 顯示名稱與 RSS／Atom 網址 |
+| 來源 | `type` | 分頁：C2 用 `lab`、`media`；C3 用 `github`、`hn`、`papers`、`blogs`、`reddit`、`releases` |
+| 來源 | `max`、`days` | 覆寫這個來源的則數上限與天數 |
+| 來源 | `translate` | 設為 `false` 就不翻譯 |
+| 來源 | `exclude` | 標題符合此正規表示式就略過（版本更新用來排除 alpha／beta／rc） |
+| 來源 | `tz` | 日期沒有時區時的時差（小時），例如 iThome 用 `8` |
 
-## 資安設計
+## 首次啟用
 
-- **隔離第三方程式**：Threads 抓取會執行 threads-toolkit 與其 npm 依賴，因此放在獨立的 Fetch Threads workflow，只有 `contents: read`，拿不到部署權限、OIDC 與 secrets；它產出的 JSON 被部署前，先經過 `scripts/sanitize_threads.py` 檢查欄位、型別、長度，連結只留 `https://www.threads.com/`。
-- **最小權限**：workflow 預設 `permissions: {}`；Fetch Threads 的 checkout 不保存憑證。Update news 需要 `contents: write` 才能 commit 存檔，所以只執行本 repo 的程式與官方 actions；`ANTHROPIC_API_KEY` 只給翻譯步驟。
-- **前端**：所有外部內容都用 `textContent` 輸出；連結與圖片只接受 http(s)；頁面帶 Content-Security-Policy，只允許自家腳本與 Google Fonts。
+1. Settings → Pages → Source 選 **GitHub Actions**
+2. （選用）新增 `ANTHROPIC_API_KEY` secret
+3. Actions → **Update news** → Run workflow；再執行一次 **Fetch Threads**
 
 ## 本機測試
 
 ```bash
 python3 scripts/fetch_news.py
 python3 scripts/fetch_unwind.py
+python3 scripts/fetch_ai_feeds.py
+python3 scripts/fetch_ai_feeds.py dev-feeds.json site/dev.json cache/dev_zh.json
+python3 scripts/fetch_events.py
+python3 scripts/archive.py        # 會寫入 archive/，測試完可用 git checkout archive 還原
 cd site && python3 -m http.server 8000   # 開啟 http://localhost:8000
 ```
+
+Threads 需要 Node 22 與 threads-toolkit，在本機較難重現，建議直接在 Actions 執行 Fetch Threads。
+
+## 專案結構
+
+```
+.github/workflows/   update-news.yml、fetch-threads.yml
+scripts/             抓取、翻譯、清理、存檔程式
+site/                前端（index.html、styles.css、app.js）
+archive/             每日存檔（由 bot 自動 commit）
+ai-feeds.json        C2 來源
+dev-feeds.json       C3 來源
+threads-keywords.json  B1 帳號
+```
+
+## 注意事項
+
+- Threads 抓取是用瀏覽器自動化讀取公開頁面，可能被登入牆或機房 IP 擋下，也可能不符合 Threads 使用條款，請自行評估。
+- Reddit 對機房 IP 常有限流，抓取遇到 429 會等待重試，仍可能偶爾失敗。
+- 頭版排序沿用 Google 新聞 RSS 的順序，不是實際閱讀數。
+
+## 資安設計
+
+- **隔離第三方程式**：Threads 抓取會執行 threads-toolkit 與其 npm 依賴，因此放在獨立的 Fetch Threads workflow，只有 `contents: read`，拿不到部署權限、OIDC 與 secrets。它產出的 JSON 部署前先經 `scripts/sanitize_threads.py` 檢查欄位、型別與長度，連結只留 `https://www.threads.com/`。
+- **最小權限**：workflow 預設 `permissions: {}`；Fetch Threads 的 checkout 不保存憑證。Update news 需要 `contents: write` 才能 commit 存檔，所以只執行本 repo 的程式與官方 actions；`ANTHROPIC_API_KEY` 只給翻譯步驟。
+- **前端**：外部內容一律用 `textContent` 輸出；連結與圖片只接受 http(s)；頁面帶 Content-Security-Policy，只允許自家腳本與 Google Fonts。
