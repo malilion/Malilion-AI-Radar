@@ -399,6 +399,7 @@
   // ---------- AI 業界動態 ----------
   let ai = null;
   let aiSource = '';
+  let aiType = 'lab';
   let aiLimit = 10;
 
   function renderAI() {
@@ -406,9 +407,10 @@
     const chips = $('#aiSources');
     list.textContent = '';
     chips.textContent = '';
-    const items = ai?.items || [];
+    // 舊資料沒有 type 時視為官方部落格
+    const items = (ai?.items || []).filter((it) => (it.type || 'lab') === aiType);
     if (!items.length) {
-      $('#aiEmpty').textContent = 'AI 業界動態暫時沒有資料，下一次整點更新會再試。';
+      $('#aiEmpty').textContent = `${aiType === 'lab' ? '官方部落格' : '科技媒體'}暫時沒有資料，下一次整點更新會再試。`;
       $('#aiEmpty').hidden = false;
       $('#aiMore').hidden = true;
       return;
@@ -500,6 +502,13 @@
     });
     $('#threadsMore').addEventListener('click', () => { threadsLimit += PAGE; renderThreads(); });
     $('#aiMore').addEventListener('click', () => { aiLimit += 10; renderAI(); });
+    $$('[data-ai-type]').forEach((b) => b.addEventListener('click', () => {
+      aiType = b.dataset.aiType;
+      aiSource = '';
+      aiLimit = 10;
+      $$('[data-ai-type]').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
+      renderAI();
+    }));
 
     const rail = $('#techRail');
     $$('[data-rail]').forEach((b) => b.addEventListener('click', () => {

@@ -2,13 +2,80 @@
   "days": 14,
   "maxPerSource": 6,
   "feeds": [
-    { "name": "OpenAI", "url": "https://openai.com/news/rss.xml" },
-    { "name": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml" },
-    { "name": "Google AI", "url": "https://blog.google/innovation-and-ai/technology/ai/rss/" },
-    { "name": "Google Research", "url": "https://research.google/blog/rss/" },
-    { "name": "Hugging Face", "url": "https://huggingface.co/blog/feed.xml" },
-    { "name": "NVIDIA", "url": "https://blogs.nvidia.com/feed/" },
-    { "name": "Mistral AI", "url": "https://mistral.ai/news/rss" },
-    { "name": "AWS Machine Learning", "url": "https://aws.amazon.com/blogs/machine-learning/feed/" }
+    {
+      "name": "OpenAI",
+      "url": "https://openai.com/news/rss.xml",
+      "type": "lab"
+    },
+    {
+      "name": "Google DeepMind",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "type": "lab"
+    },
+    {
+      "name": "Google AI",
+      "url": "https://blog.google/innovation-and-ai/technology/ai/rss/",
+      "type": "lab"
+    },
+    {
+      "name": "Google Research",
+      "url": "https://research.google/blog/rss/",
+      "type": "lab"
+    },
+    {
+      "name": "Hugging Face",
+      "url": "https://huggingface.co/blog/feed.xml",
+      "type": "lab"
+    },
+    {
+      "name": "NVIDIA",
+      "url": "https://blogs.nvidia.com/feed/",
+      "type": "lab"
+    },
+    {
+      "name": "Mistral AI",
+      "url": "https://mistral.ai/news/rss",
+      "type": "lab"
+    },
+    {
+      "name": "AWS Machine Learning",
+      "url": "https://aws.amazon.com/blogs/machine-learning/feed/",
+      "type": "lab"
+    },
+    {
+      "name": "TechCrunch",
+      "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+      "type": "media"
+    },
+    {
+      "name": "The Verge",
+      "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml",
+      "type": "media"
+    },
+    {
+      "name": "Ars Technica",
+      "url": "https://arstechnica.com/ai/feed/",
+      "type": "media"
+    },
+    {
+      "name": "WIRED",
+      "url": "https://www.wired.com/feed/tag/ai/latest/rss",
+      "type": "media"
+    },
+    {
+      "name": "MIT Technology Review",
+      "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed",
+      "type": "media"
+    },
+    {
+      "name": "The Decoder",
+      "url": "https://the-decoder.com/feed/",
+      "type": "media"
+    },
+    {
+      "name": "MarkTechPost",
+      "url": "https://www.marktechpost.com/feed/",
+      "type": "media"
+    }
   ]
 }
