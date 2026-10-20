@@ -30,6 +30,16 @@
   input[type=search]:focus { border-color:var(--accent); }
   select { padding:9px 10px; font:inherit; font-size:.95rem; color:var(--fg); background:var(--bg);
     border:1px solid var(--line); border-radius:10px; max-width:42%; }
+  .tabs { display:flex; gap:4px; border-top:1px solid var(--line); }
+  .tab { flex:1; padding:10px 0; font:inherit; font-size:.95rem; font-weight:600; color:var(--muted);
+    background:none; border:0; border-bottom:2px solid transparent; cursor:pointer; }
+  .tab[aria-selected=true] { color:var(--accent); border-bottom-color:var(--accent); }
+  .kw { display:flex; flex-wrap:wrap; gap:6px; padding-bottom:12px; }
+  .kw button { font:inherit; font-size:.85rem; padding:3px 12px; border-radius:999px; cursor:pointer;
+    color:var(--fg); background:var(--bg); border:1px solid var(--line); }
+  .kw button[aria-pressed=true] { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .rank { font-weight:700; color:var(--accent); margin-right:6px; }
+  .body { white-space:pre-wrap; word-break:break-word; margin-top:4px; }
   main { padding:16px 0 48px; }
   ol { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
   li { background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); transition:transform .12s, border-color .12s; }
@@ -51,10 +61,15 @@
       <h1>📰 台灣新聞速報</h1>
       <div class="meta" id="meta">載入中…</div>
     </div>
-    <div class="tools">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-news" aria-selected="true">新聞</button>
+      <button class="tab" role="tab" id="tab-threads" aria-selected="false">Threads 熱門</button>
+    </div>
+    <div class="tools" id="newsTools" style="padding-top:12px">
       <input type="search" id="q" placeholder="搜尋標題…" aria-label="搜尋標題">
       <select id="src" aria-label="依媒體篩選"><option value="">全部媒體</option></select>
     </div>
+    <div class="kw" id="kw" hidden></div>
   </div>
 </header>
 <main class="wrap">
@@ -62,7 +77,7 @@
   <ol id="list"></ol>
   <div class="empty" id="empty" hidden>找不到符合的新聞</div>
 </main>
-<footer>資料來源：<a href="https://news.google.com/?hl=zh-TW&gl=TW&ceid=TW:zh-Hant" target="_blank" rel="noopener">Google 新聞</a> · 每小時自動更新</footer>
+<footer id="foot">資料來源：<a href="https://news.google.com/?hl=zh-TW&gl=TW&ceid=TW:zh-Hant" target="_blank" rel="noopener">Google 新聞</a> · 每小時自動更新</footer>
 <script>
 const $ = id => document.getElementById(id);
 let items = [];
@@ -111,7 +126,72 @@ fetch('news.json', { cache: 'no-cache' }).then(r => r.json()).then(d => {
   render();
 }).catch(() => { $('meta').textContent = '載入失敗'; });
 
-$('q').addEventListener('input', render);
+// ---- Threads 熱門 ----
+let tdata = null, tkw = '', tab = 'news';
+
+function num(n) { return n >= 10000 ? (n / 10000).toFixed(1) + ' 萬' : String(n || 0); }
+
+function renderThreads() {
+  const list = $('list'); list.textContent = '';
+  $('kw').textContent = '';
+  if (!tdata || !tdata.groups) {
+    $('count').textContent = '';
+    $('empty').textContent = 'Threads 尚無資料（可能被 Threads 擋下，下次更新會再試）';
+    $('empty').hidden = false; return;
+  }
+  const groups = tdata.groups.filter(g => g.posts.length);
+  const mk = (label, val) => {
+    const b = document.createElement('button');
+    b.textContent = label; b.setAttribute('aria-pressed', String(tkw === val));
+    b.onclick = () => { tkw = val; renderThreads(); }; $('kw').append(b);
+  };
+  mk('全部', '');
+  groups.forEach(g => mk(g.keyword, g.keyword));
+  const q = $('q').value.trim().toLowerCase();
+  const posts = groups.filter(g => !tkw || g.keyword === tkw)
+    .flatMap(g => g.posts.map(p => ({ ...p, keyword: g.keyword })))
+    .filter((p, i, a) => a.findIndex(x => x.id === p.id) === i)
+    .filter(p => !q || (p.content + p.username).toLowerCase().includes(q))
+    .sort((a, b) => b.score - a.score);
+  posts.forEach((p, i) => {
+    const li = document.createElement('li'), a = document.createElement('a');
+    a.href = p.url; a.target = '_blank'; a.rel = 'noopener';
+    const head = document.createElement('div'); head.className = 'title';
+    const r = document.createElement('span'); r.className = 'rank'; r.textContent = '#' + (i + 1);
+    head.append(r, '@' + p.username);
+    const body = document.createElement('div'); body.className = 'body';
+    body.textContent = p.content.length > 280 ? p.content.slice(0, 280) + '…' : p.content;
+    const sub = document.createElement('div'); sub.className = 'sub';
+    const c = document.createElement('span'); c.className = 'chip'; c.textContent = p.keyword; sub.append(c);
+    const st = p.stats || {};
+    const t = document.createElement('span');
+    t.textContent = `❤ ${num(st.likes)} · 💬 ${num(st.replies)} · 🔁 ${num(st.reposts)} · ${ago(p.timestamp)}`;
+    sub.append(t); a.append(head, body, sub); li.append(a); list.append(li);
+  });
+  $('count').textContent = `共 ${posts.length} 則（依 ${tdata.scoreFormula} 排序）`;
+  $('empty').textContent = '找不到符合的貼文'; $('empty').hidden = posts.length > 0;
+  const u = new Date(tdata.updated);
+  $('meta').textContent = '更新於 ' + (isNaN(u) ? '' : u.toLocaleString('zh-TW', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }));
+}
+
+function setTab(t) {
+  tab = t;
+  $('tab-news').setAttribute('aria-selected', String(t === 'news'));
+  $('tab-threads').setAttribute('aria-selected', String(t === 'threads'));
+  $('src').hidden = t !== 'news';
+  $('kw').hidden = t !== 'threads';
+  $('q').placeholder = t === 'news' ? '搜尋標題…' : '搜尋貼文或帳號…';
+  $('empty').textContent = '找不到符合的新聞';
+  if (t === 'news') { $('kw').textContent = ''; render(); return; }
+  if (tdata !== null) { renderThreads(); return; }
+  $('count').textContent = '載入中…'; $('list').textContent = '';
+  fetch('threads.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : false)
+    .catch(() => false).then(d => { tdata = d; if (tab === 'threads') renderThreads(); });
+}
+$('tab-news').onclick = () => setTab('news');
+$('tab-threads').onclick = () => setTab('threads');
+
+$('q').addEventListener('input', () => tab === 'news' ? render() : renderThreads());
 $('src').addEventListener('change', render);
 </script>
 </body>
