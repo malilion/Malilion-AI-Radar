@@ -7,3 +7,4 @@ threads-raw/
 site/ai.json
 __pycache__/
 site/dev.json
+site/archive/

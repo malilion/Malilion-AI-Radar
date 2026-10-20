@@ -13,6 +13,7 @@
 - **C1 科技副刊**：Unwind AI 橫向捲動封面卡
 - **C2 AI 業界動態**：官方部落格／科技媒體兩個分頁，可依來源篩選
 - **C3 開發者雷達**：GitHub 趨勢／Hacker News／論文／部落格四個分頁，排行榜類顯示名次
+- **往期**：每天的版面都存檔，按「往期」（或 `p`）選日期回看，網址為 `?d=YYYY-MM-DD`
 - **已讀與收藏**：點過的文章變淡；☆ 收藏後按 `s` 開啟收藏夾。兩者都只存在瀏覽器（localStorage）
 
 前端檔案：`site/index.html`、`site/styles.css`、`site/app.js`（無框架、無建置步驟）。
@@ -37,11 +38,12 @@
 2. `scripts/fetch_unwind.py`：抓 Unwind AI RSS 並翻譯，輸出 `site/unwind.json`
    `scripts/fetch_ai_feeds.py`：抓 RSS／Atom 並翻譯，用 `ai-feeds.json` 輸出 `site/ai.json`、用 `dev-feeds.json` 輸出 `site/dev.json`
 3. 取 Fetch Threads 最近一次成功的 `threads.json`，經 `scripts/sanitize_threads.py` 檢查後放進 `site/`
-4. 把 `site/` 部署到 GitHub Pages
+4. `scripts/archive.py`：把這一輪的資料疊加進 `archive/<今天>/`（同一篇只留一份，翻譯沿用），更新 `archive/index.json`，並由 github-actions[bot] commit 回 main；某來源這一輪失敗時沿用最近一次存檔
+5. 把 `site/`（含 `archive/`）部署到 GitHub Pages
 
 **Fetch Threads**（`.github/workflows/fetch-threads.yml`）：每 2 小時（半點）執行，最多 20 分鐘。`scripts/fetch_threads.mjs` 用 threads-toolkit（固定版本）逐一抓追蹤帳號的個人頁；帳號之間間隔 10–20 秒，單一帳號最多 90 秒，抓到 0 則會重試一次，每抓完一個就存檔。
 
-資料檔不放進版本庫（見 `.gitignore`），每次都是現抓現部署。Unwind AI 與 Threads 兩步失敗時不影響其他部分，對應版面會顯示「暫時沒有資料」。
+**資料會疊加、永久保留**：今天的版面整天持續累積新文章，舊的不會被洗掉；過去每一天都存在 `archive/YYYY-MM-DD/`（news、threads、unwind、ai、dev 五個 JSON）。`site/*.json` 是每輪產生的暫存檔，不進版本庫。Unwind AI 與 Threads 兩步失敗時不影響其他部分，對應版面會顯示「暫時沒有資料」。
 
 ## 設定
 
@@ -59,7 +61,7 @@
 ## 資安設計
 
 - **隔離第三方程式**：Threads 抓取會執行 threads-toolkit 與其 npm 依賴，因此放在獨立的 Fetch Threads workflow，只有 `contents: read`，拿不到部署權限、OIDC 與 secrets；它產出的 JSON 被部署前，先經過 `scripts/sanitize_threads.py` 檢查欄位、型別、長度，連結只留 `https://www.threads.com/`。
-- **最小權限**：workflow 預設 `permissions: {}`，所有 checkout 都不保存憑證（`persist-credentials: false`）；`ANTHROPIC_API_KEY` 只給翻譯那一步。
+- **最小權限**：workflow 預設 `permissions: {}`；Fetch Threads 的 checkout 不保存憑證。Update news 需要 `contents: write` 才能 commit 存檔，所以只執行本 repo 的程式與官方 actions；`ANTHROPIC_API_KEY` 只給翻譯步驟。
 - **前端**：所有外部內容都用 `textContent` 輸出；連結與圖片只接受 http(s)；頁面帶 Content-Security-Policy，只允許自家腳本與 Google Fonts。
 
 ## 本機測試
