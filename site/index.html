@@ -40,6 +40,12 @@
   .kw button[aria-pressed=true] { background:var(--accent); border-color:var(--accent); color:#fff; }
   .rank { font-weight:700; color:var(--accent); margin-right:6px; }
   .body { white-space:pre-wrap; word-break:break-word; margin-top:4px; }
+  .hot { margin-bottom:18px; }
+  .hot h2 { font-size:1rem; margin:0 0 10px; }
+  .hot ol li { border-left:4px solid var(--accent); }
+  .hot .no { display:inline-flex; align-items:center; justify-content:center; width:1.6em; height:1.6em; margin-right:8px;
+    border-radius:50%; background:var(--accent); color:#fff; font-size:.85rem; font-weight:700; }
+  .hot .title { font-size:1.08rem; }
   main { padding:16px 0 48px; }
   ol { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
   li { background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); transition:transform .12s, border-color .12s; }
@@ -74,6 +80,7 @@
 </header>
 <main class="wrap">
   <div class="count" id="count"></div>
+  <section class="hot" id="hot" hidden><h2>🔥 最熱門 Top 3</h2><ol id="hotList"></ol></section>
   <ol id="list"></ol>
   <div class="empty" id="empty" hidden>找不到符合的新聞</div>
 </main>
@@ -92,21 +99,31 @@ function ago(s) {
   return t.toLocaleDateString('zh-TW');
 }
 
-function render() {
-  const q = $('q').value.trim().toLowerCase(), src = $('src').value;
-  const list = $('list'); list.textContent = '';
-  const shown = items.filter(i => (!src || i.source === src) && (!q || i.title.toLowerCase().includes(q)));
-  for (const it of shown) {
+function card(it, rank) {
     const li = document.createElement('li');
     const a = document.createElement('a');
     a.href = it.link; a.target = '_blank'; a.rel = 'noopener';
     const title = document.createElement('div');
-    title.className = 'title'; title.textContent = it.title;
+    title.className = 'title';
+    if (rank) { const n = document.createElement('span'); n.className = 'no'; n.textContent = rank; title.append(n); }
+    title.append(it.title);
     const sub = document.createElement('div'); sub.className = 'sub';
     if (it.source) { const c = document.createElement('span'); c.className = 'chip'; c.textContent = it.source; sub.append(c); }
     const time = document.createElement('span'); time.textContent = ago(it.pubDate); sub.append(time);
-    a.append(title, sub); li.append(a); list.append(li);
-  }
+    a.append(title, sub); li.append(a);
+    return li;
+}
+
+function render() {
+  const q = $('q').value.trim().toLowerCase(), src = $('src').value;
+  const list = $('list'); list.textContent = '';
+  $('hotList').textContent = '';
+  // Google 新聞 RSS 依熱度排序，前 3 則視為最熱門；搜尋或篩選時不顯示此區塊
+  const showHot = !q && !src && items.length > 3;
+  $('hot').hidden = !showHot || tab !== 'news';
+  if (showHot) items.slice(0, 3).forEach((it, i) => $('hotList').append(card(it, i + 1)));
+  const shown = items.filter(i => (!src || i.source === src) && (!q || i.title.toLowerCase().includes(q)));
+  (showHot ? shown.slice(3) : shown).forEach(it => list.append(card(it)));
   $('count').textContent = `共 ${shown.length} 則`;
   $('empty').hidden = shown.length > 0;
 }
@@ -132,6 +149,7 @@ let tdata = null, tkw = '', tab = 'news';
 function num(n) { return n >= 10000 ? (n / 10000).toFixed(1) + ' 萬' : String(n || 0); }
 
 function renderThreads() {
+  $('hot').hidden = true;
   const list = $('list'); list.textContent = '';
   $('kw').textContent = '';
   if (!tdata || !tdata.groups) {
