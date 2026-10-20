@@ -100,7 +100,9 @@ def parse(xml, source, naive_tz=timezone.utc):
             "link": link,
             "date": i["date"],
             "summary": summary[:220] + ("…" if len(summary) > 220 else ""),
-            "image": i["image"] if i["image"].startswith("https://") else "",
+            # GitHub 頭像預設只有 60px，改要大一點的避免模糊
+            "image": re.sub(r"([?&])s=\d+", r"\1s=200", i["image"]) if i["image"].startswith("https://avatars.githubusercontent.com/")
+            else (i["image"] if i["image"].startswith("https://") else ""),
         })
     return out
 
@@ -124,6 +126,8 @@ def fetch(feed):
         items = parse(data, feed["name"], timezone(timedelta(hours=feed.get("tz", 0))))
         for i in items:
             i["type"] = feed.get("type", "lab")
+            if feed.get("translate") is False:  # 版本號、release notes 不翻譯
+                i["no_translate"] = True
         print(f"{feed['name']}: {len(items)} 則")
         return items, None
     except Exception as e:
@@ -146,7 +150,8 @@ def main():
     for feed, (got, _) in zip(cfg["feeds"], results):
         for i in got:
             i["date"] = i["date"] or now
-        fresh = [i for i in got if i["date"] >= cutoff and i["link"] not in seen]
+        since = now - timedelta(days=feed["days"]) if "days" in feed else cutoff
+        fresh = [i for i in got if i["date"] >= since and i["link"] not in seen]
         if not by_feed:
             fresh.sort(key=lambda i: i["date"], reverse=True)
         fresh = fresh[:feed.get("max", per)]
@@ -160,6 +165,8 @@ def main():
         i["pubDate"] = i.pop("date").astimezone(TZ).isoformat()
 
     add_translations(items, CACHE)
+    for i in items:
+        i.pop("no_translate", None)
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump({"updated": datetime.now(TZ).isoformat(timespec="seconds"), "items": items, "errors": errors},
                   f, ensure_ascii=False, indent=1)

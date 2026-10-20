@@ -68,6 +68,46 @@
       "url": "https://community.openai.com/latest.rss",
       "type": "blogs",
       "max": 8
+    },
+    {
+      "name": "Codex",
+      "url": "https://github.com/openai/codex/releases.atom",
+      "type": "releases",
+      "max": 5,
+      "days": 45,
+      "translate": false
+    },
+    {
+      "name": "Claude Code",
+      "url": "https://github.com/anthropics/claude-code/releases.atom",
+      "type": "releases",
+      "max": 5,
+      "days": 45,
+      "translate": false
+    },
+    {
+      "name": "LangChain",
+      "url": "https://github.com/langchain-ai/langchain/releases.atom",
+      "type": "releases",
+      "max": 5,
+      "days": 45,
+      "translate": false
+    },
+    {
+      "name": "Ollama",
+      "url": "https://github.com/ollama/ollama/releases.atom",
+      "type": "releases",
+      "max": 5,
+      "days": 45,
+      "translate": false
+    },
+    {
+      "name": "Open WebUI",
+      "url": "https://github.com/open-webui/open-webui/releases.atom",
+      "type": "releases",
+      "max": 5,
+      "days": 45,
+      "translate": false
     }
   ]
 }

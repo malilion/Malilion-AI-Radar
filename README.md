@@ -12,7 +12,7 @@
 - **B1 社群版**：Threads 引述卡，可依帳號篩選
 - **C1 科技副刊**：Unwind AI 橫向捲動封面卡
 - **C2 AI 業界動態**：官方部落格／科技媒體兩個分頁，可依來源篩選
-- **C3 開發者雷達**：GitHub 趨勢／Hacker News／論文／部落格四個分頁，排行榜類顯示名次
+- **C3 開發者雷達**：GitHub 趨勢／Hacker News／論文／部落格／版本更新五個分頁，排行榜類顯示名次
 - **往期**：每天的版面都存檔，按「往期」（或 `p`）選日期回看，網址為 `?d=YYYY-MM-DD`
 - **已讀與收藏**：點過的文章變淡；☆ 收藏後按 `s` 開啟收藏夾。兩者都只存在瀏覽器（localStorage）
 
@@ -25,7 +25,7 @@
 | A1 頭版、A2 要聞 | [Google 新聞 RSS（台灣）](https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant) | RSS 前 6 則排進頭版，其餘進要聞 |
 | B1 社群版 | [threads-toolkit](https://github.com/Chuanyin1202/threads-toolkit) | 追蹤帳號近 72 小時的貼文，依互動分數（讚 + 回覆×2 + 轉發×3）排序 |
 | C2 AI 業界動態 | `ai-feeds.json`：**官方部落格**（OpenAI、Google DeepMind、Google AI、Google Research、Hugging Face、NVIDIA、Mistral AI、AWS ML）與**科技媒體**（TechCrunch、The Verge、Ars Technica、WIRED、MIT Technology Review、The Decoder、MarkTechPost、iThome） | 兩類分頁切換；近 14 天、每家最多 6 則，依時間排序，可依來源篩選，標題與摘要翻成繁體中文 |
-| C3 開發者雷達 | `dev-feeds.json`：GitHub Trending（今日／本週／Python）、Hacker News（首頁／最新 AI／Show HN）、arXiv（cs.AI／cs.LG／cs.CL）、Simon Willison、OpenAI 開發者社群 | 四個分頁；保留各來源原本的排名順序，重複連結只留一次 |
+| C3 開發者雷達 | `dev-feeds.json`：GitHub Trending（今日／本週／Python）、Hacker News（首頁／最新 AI／Show HN）、arXiv（cs.AI／cs.LG／cs.CL）、Simon Willison、OpenAI 開發者社群、GitHub Releases（Codex、Claude Code、LangChain、Ollama、Open WebUI） | 五個分頁；保留各來源原本的排名順序，重複連結只留一次 |
 | C1 科技副刊 | [Unwind AI 電子報 RSS](https://rss.beehiiv.com/feeds/fMHDv0Uk41.xml) | 最新 30 篇文章，標題與摘要自動翻譯成繁體中文 |
 
 ## 運作方式
@@ -49,7 +49,7 @@
 
 - **Threads 帳號與關鍵字**：編輯 `threads-keywords.json`。目前追蹤 `dcard.tw`、`ithome`、`cool3c`、`kocpc`、`ai.lanrenbao`、`darrell_tw_`、`c.yu.an_`、`kelly_guooo`、`lazyoffice2024`、`ironv.careerlife`。`accounts` 是要追蹤的帳號（不含 @），有填就以帳號模式依互動分數排序；`keywords` 是搜尋模式（未登入時對中文關鍵字常抓不到結果）。
 - **翻譯**：到 Settings → Secrets and variables → Actions 新增 `ANTHROPIC_API_KEY`。沒有設定時 Unwind AI 會顯示英文原文。翻譯結果以文章連結為鍵快取，只有新文章才會呼叫 API。
-- **AI 與開發者來源**：編輯 `ai-feeds.json`、`dev-feeds.json`。每個來源有 `name`、`url`、`type`（分頁），可選 `max`（則數上限）與 `tz`（日期沒有時區時的時差，如 iThome 用 `8`）；檔案層級有 `days`、`maxPerSource`、`sort`（`date` 依時間或 `feed` 保留來源排名）。已是中文的標題不會送去翻譯。
+- **AI 與開發者來源**：編輯 `ai-feeds.json`、`dev-feeds.json`。每個來源有 `name`、`url`、`type`（分頁），可選 `max`（則數上限）、`days`（覆寫天數）、`translate: false`（不翻譯）與 `tz`（日期沒有時區時的時差，如 iThome 用 `8`）；檔案層級有 `days`、`maxPerSource`、`sort`（`date` 依時間或 `feed` 保留來源排名）。已是中文的標題不會送去翻譯。
 - **更新頻率**：修改 workflow 裡的 `cron`（UTC 時間）。
 - **首次啟用**：Settings → Pages → Source 選 **GitHub Actions**，再到 Actions 手動執行一次 "Update news"。
 
