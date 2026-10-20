@@ -116,7 +116,7 @@ def parse(xml, source, naive_tz=timezone.utc):
 
 def fetch(feed):
     req = urllib.request.Request(feed["url"], headers={
-        "User-Agent": "Mozilla/5.0 (compatible; daily-paper/1.0; +https://malilion.github.io/google-news/)",
+        "User-Agent": "Mozilla/5.0 (compatible; daily-paper/1.0; +https://malilion.github.io/Malilion-AI-Radar/)",
         "Accept": "application/rss+xml, application/atom+xml, application/xml;q=0.9, */*;q=0.5",
     })
     try:

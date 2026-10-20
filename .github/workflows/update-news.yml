@@ -33,7 +33,9 @@ jobs:
     steps:
       # 這個 job 只執行本 repo 的程式與官方 actions，保留憑證以便 push 存檔
       - uses: actions/checkout@v4
-      - run: python3 scripts/fetch_news.py
+      - name: Fetch Google News
+        continue-on-error: true
+        run: python3 scripts/fetch_news.py
       - name: Restore translation cache
         uses: actions/cache@v4
         with:

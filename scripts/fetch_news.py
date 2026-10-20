@@ -2,6 +2,7 @@
 """抓取 Google News 台灣 RSS 並輸出成 site/news.json"""
 import json
 import sys
+import time
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
@@ -12,10 +13,24 @@ OUT = "site/news.json"
 TZ = timezone(timedelta(hours=8))
 
 
-def main():
+def fetch():
+    """Google 新聞偶爾回 5xx，重試三次；仍失敗就回傳 None，交給存檔沿用上一輪。"""
     req = urllib.request.Request(RSS_URL, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        root = ET.fromstring(r.read())
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return ET.fromstring(r.read())
+        except Exception as e:
+            print(f"抓取 Google 新聞失敗（第 {attempt + 1} 次）：{e}", file=sys.stderr)
+            if attempt < 2:
+                time.sleep(10 * (attempt + 1))
+    return None
+
+
+def main():
+    root = fetch()
+    if root is None:
+        return
 
     items = []
     for it in root.iter("item"):
