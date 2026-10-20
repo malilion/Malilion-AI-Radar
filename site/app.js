@@ -1,4 +1,4 @@
-// 每日晨報 — 前端
+// Malilion AI Radar — 前端
 (() => {
   'use strict';
 
@@ -541,7 +541,7 @@
     back.href = './';
     note.append(back);
     note.hidden = false;
-    document.title = `每日晨報 · ${m}/${d}`;
+    document.title = `Malilion AI Radar · ${m}/${d}`;
   }
 
   let pastLoaded = false;
