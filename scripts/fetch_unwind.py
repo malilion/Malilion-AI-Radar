@@ -59,7 +59,7 @@ def add_translations(items, cache_path=CACHE):
     except Exception:
         cache = {}
     # 已經是中文的（如 iThome）不需要翻譯
-    todo = [i for i in items if i["link"] not in cache and len(re.findall(r"[\u3400-\u9fff]", i["title"])) < len(i["title"]) * 0.3]
+    todo = [i for i in items if i["link"] not in cache and not i.get("no_translate") and len(re.findall(r"[\u3400-\u9fff]", i["title"])) < len(i["title"]) * 0.3]
     added = 0
     for k in range(0, len(todo), 15):  # 分批翻譯，避免單次輸出過長
         chunk = todo[k:k + 15]

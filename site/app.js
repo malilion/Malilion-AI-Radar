@@ -630,7 +630,7 @@
   feedSection({
     root: '#dev',
     url: 'dev.json',
-    types: { github: 'GitHub 趨勢', hn: 'Hacker News', papers: '論文', blogs: '部落格與社群' },
+    types: { github: 'GitHub 趨勢', hn: 'Hacker News', papers: '論文', blogs: '部落格與社群', releases: '版本更新' },
     ranked: ['github', 'hn'],
   });
   // 頁面放著不關時，每 10 分鐘更新相對時間與資料
