@@ -30,12 +30,14 @@
       <li><a href="#ai">AI 業界</a></li>
       <li><a href="#dev">開發者</a></li>
     </ul>
+    <button class="saved-btn" type="button" data-open-past aria-haspopup="dialog">往期</button>
     <button class="saved-btn" type="button" data-open-saved aria-haspopup="dialog">
       收藏<span class="saved-count" data-saved-count>0</span>
     </button>
   </div>
 </nav>
 
+<p class="archive-note" id="archiveNote" hidden></p>
 <header class="masthead" id="top">
   <div class="wrap">
     <div class="masthead__meta">
@@ -55,6 +57,7 @@
       <li><a href="#tech"><b>C1</b>副刊</a></li>
       <li><a href="#ai"><b>C2</b>AI 業界</a></li>
       <li><a href="#dev"><b>C3</b>開發者</a></li>
+      <li><button type="button" data-open-past aria-haspopup="dialog"><b>◷</b>往期</button></li>
       <li><button type="button" data-open-saved aria-haspopup="dialog"><b>★</b>收藏 <span data-saved-count>0</span></button></li>
     </ul>
   </div>
@@ -166,7 +169,8 @@
       <a href="https://news.google.com/?hl=zh-TW&gl=TW&ceid=TW:zh-Hant">Google 新聞</a>、
       <a href="https://www.threads.com/">Threads</a>、
       <a href="https://www.theunwindai.com/">Unwind AI</a> 、各 AI 公司官方部落格與科技媒體、GitHub Trending、Hacker News、arXiv、Simon Willison 與 OpenAI 開發者社群。已讀與收藏只存在你的瀏覽器。</p>
-    <p class="colophon__keys">鍵盤：<kbd>/</kbd> 搜尋　<kbd>s</kbd> 開啟收藏　<kbd>Esc</kbd> 關閉</p>
+    <p>每天的版面都會存檔，可從「往期」回看任何一天。</p>
+    <p class="colophon__keys">鍵盤：<kbd>/</kbd> 搜尋　<kbd>s</kbd> 開啟收藏　<kbd>p</kbd> 往期　<kbd>Esc</kbd> 關閉</p>
   </div>
 </footer>
 
@@ -177,6 +181,15 @@
   </div>
   <ol class="drawer__list" id="savedList"></ol>
   <p class="empty" id="savedEmpty">還沒有收藏。點文章旁的 <span aria-hidden="true">☆</span> 就能存起來。</p>
+</dialog>
+
+<dialog class="drawer" id="past" aria-labelledby="past-h">
+  <div class="drawer__head">
+    <h2 id="past-h">往期</h2>
+    <button type="button" class="drawer__close" data-close-past aria-label="關閉往期">✕</button>
+  </div>
+  <div id="pastList" class="past"></div>
+  <p class="empty" id="pastEmpty" hidden>還沒有存檔。</p>
 </dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>

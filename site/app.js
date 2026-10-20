@@ -7,6 +7,10 @@
   const TZ = 'Asia/Taipei';
   const FIRST_ISSUE = Date.UTC(2026, 9, 20); // 創刊日 2026-10-20（台灣時間）
   const pad = (n) => String(n).padStart(2, '0');
+  // ?d=YYYY-MM-DD：閱讀該日存檔；沒有則是今天（持續累積）的版面
+  const qd = new URLSearchParams(location.search).get('d');
+  const DAY = /^\d{4}-\d{2}-\d{2}$/.test(qd || '') ? qd : null;
+  const BASE = DAY ? `archive/${DAY}/` : '';
   // 資料來自外部來源，連結與圖片只接受 http(s)，避免 javascript: 等協定
   const safeUrl = (u) => {
     try {
@@ -89,7 +93,7 @@
     return tens + '一二三四五六七八九'[(d % 10) - 1];
   }
   function dateline() {
-    const now = new Date();
+    const now = DAY ? new Date(`${DAY}T12:00:00+08:00`) : new Date();
     const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: TZ, year: 'numeric', month: 'numeric', day: 'numeric' })
       .formatToParts(now).map((p) => [p.type, +p.value]));
     const week = new Intl.DateTimeFormat('zh-TW', { timeZone: TZ, weekday: 'long' }).format(now);
@@ -256,7 +260,7 @@
   }
 
   async function loadNews() {
-    const d = await getJSON('news.json');
+    const d = await getJSON(BASE + 'news.json');
     news = (d?.items || []).map((n) => {
       // 標題結尾的「 - 媒體名」已在來源欄顯示
       const suffix = n.source ? ` - ${n.source}` : '';
@@ -425,7 +429,12 @@
       // 依資料原順序算出每則在各來源中的名次（GitHub、HN 這類排行榜用）
       const rank = new Map();
       const per = {};
-      items.forEach((it) => { per[it.source] = (per[it.source] || 0) + 1; rank.set(it, per[it.source]); });
+      const live = {};
+      items.forEach((it) => {
+        per[it.source] = (per[it.source] || 0) + 1;
+        // 只有這一輪仍在榜上的才標名次，今天稍早上榜過的不標
+        if (it.latest !== false) { live[it.source] = (live[it.source] || 0) + 1; rank.set(it, live[it.source]); }
+      });
       const chip = (label, value, n) => {
         const b = el('button', 'chip', label);
         b.type = 'button';
@@ -447,7 +456,7 @@
         const text = el('div');
         const h = el('h3', 'dispatch__title t');
         h.append(el('span', 'hl', title));
-        const label = ranked.includes(type) ? `${it.source} · #${rank.get(it)}` : it.source;
+        const label = ranked.includes(type) && rank.has(it) ? `${it.source} · #${rank.get(it)}` : it.source;
         text.append(el('span', 'dispatch__src', label), h);
         if (it.title_zh && it.title_zh !== it.title) text.append(el('p', 'dispatch__orig', it.title));
         const sum = it.summary_zh || it.summary;
@@ -482,7 +491,51 @@
       tabs.forEach((x) => x.setAttribute('aria-selected', String(x === b)));
       render();
     }));
-    getJSON(url).then((d) => { data = d; render(); });
+    getJSON(BASE + url).then((d) => { data = d; render(); });
+  }
+
+  // ---------- 往期 ----------
+  const issueNo = (date) => Math.max(1, Math.round((Date.parse(`${date}T00:00:00Z`) - FIRST_ISSUE) / 864e5) + 1);
+  const SECTION_NAMES = { news: '要聞', threads: '社群', unwind: '副刊', ai: 'AI', dev: '開發者' };
+
+  function archiveNote() {
+    if (!DAY) return;
+    const [y, m, d] = DAY.split('-').map(Number);
+    const note = $('#archiveNote');
+    note.textContent = `你正在閱讀 ${y} 年 ${m} 月 ${d} 日（第 ${issueNo(DAY)} 期）的存檔`;
+    const back = el('a', null, '回到今天');
+    back.href = './';
+    note.append(back);
+    note.hidden = false;
+    document.title = `每日晨報 · ${m}/${d}`;
+  }
+
+  let pastLoaded = false;
+  async function renderPast() {
+    if (pastLoaded) return;
+    pastLoaded = true;
+    const idx = await getJSON('archive/index.json');
+    const days = idx?.days || [];
+    const box = $('#pastList');
+    $('#pastEmpty').hidden = days.length > 0;
+    let month = '';
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date());
+    for (const day of days) {
+      const [y, m, d] = day.date.split('-').map(Number);
+      if (`${y}-${m}` !== month) {
+        month = `${y}-${m}`;
+        box.append(el('h3', 'past__month', `${y} 年 ${m} 月`));
+      }
+      const a = el('a', 'past__day');
+      a.href = day.date === today ? './' : `?d=${day.date}`;
+      if (day.date === (DAY || today)) a.setAttribute('aria-current', 'page');
+      const week = new Intl.DateTimeFormat('zh-TW', { timeZone: TZ, weekday: 'short' }).format(new Date(`${day.date}T12:00:00+08:00`));
+      const info = el('span', 'past__info');
+      info.append(el('b', null, `${week}　第 ${issueNo(day.date)} 期`),
+        Object.entries(day.counts || {}).filter(([, n]) => n).map(([k, n]) => `${SECTION_NAMES[k] || k} ${n}`).join(' · '));
+      a.append(el('span', 'past__date', pad(d)), info, el('span', 'past__tag', day.date === today ? '今天' : ''));
+      box.append(a);
+    }
   }
 
   // ---------- 進場動效 ----------
@@ -533,6 +586,12 @@
       if (now !== colsAt) { colsAt = now; renderThreads(); }
     }, { passive: true });
 
+    const past = $('#past');
+    const openPast = () => { renderPast(); past.showModal(); };
+    $$('[data-open-past]').forEach((b) => b.addEventListener('click', openPast));
+    $('[data-close-past]').addEventListener('click', () => past.close());
+    past.addEventListener('click', (e) => { if (e.target === past) past.close(); });
+
     const dlg = $('#saved');
     const open = () => { renderSaved(); dlg.showModal(); };
     $$('[data-open-saved]').forEach((b) => b.addEventListener('click', open));
@@ -545,6 +604,8 @@
         e.preventDefault();
         $('#q').focus({ preventScroll: true });
         $('#news').scrollIntoView({ behavior: 'smooth' });
+      } else if (e.key === 'p' && !typing && !e.metaKey && !e.ctrlKey && !dlg.open && !past.open) {
+        openPast();
       } else if (e.key === 's' && !typing && !e.metaKey && !e.ctrlKey && !dlg.open) {
         open();
       } else if (e.key === 'Escape' && typing && document.activeElement === $('#q')) {
@@ -557,13 +618,14 @@
 
   // ---------- 啟動 ----------
   dateline();
+  archiveNote();
   bind();
   setupBar();
   updateSaved();
   observe(document);
   loadNews();
-  getJSON('threads.json').then((d) => { threads = d; renderThreads(); });
-  getJSON('unwind.json').then(renderTech);
+  getJSON(BASE + 'threads.json').then((d) => { threads = d; renderThreads(); });
+  getJSON(BASE + 'unwind.json').then(renderTech);
   feedSection({ root: '#ai', url: 'ai.json', types: { lab: '官方部落格', media: '科技媒體' } });
   feedSection({
     root: '#dev',
@@ -572,5 +634,5 @@
     ranked: ['github', 'hn'],
   });
   // 頁面放著不關時，每 10 分鐘更新相對時間與資料
-  setInterval(() => { dateline(); loadNews(); }, 10 * 60 * 1000);
+  if (!DAY) setInterval(() => { dateline(); loadNews(); }, 10 * 60 * 1000);
 })();
