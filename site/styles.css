@@ -1,4 +1,4 @@
-/* 每日晨報 — 編輯感報刊樣式 */
+/* Malilion AI Radar — 編輯感報刊樣式 */
 
 :root {
   --paper: #f3eee4;
@@ -107,10 +107,12 @@ kbd {
 .masthead__title .seal { font-size: clamp(1.1rem, 3.4vw, 2.2rem); flex-direction: column; display: inline-flex; justify-content: center; width: 1.6em; height: 2.6em; }
 .masthead h1, .kicker, .lead__title, .second__title { font-feature-settings: "palt" 1; }
 .masthead h1 {
-  margin: 0;
-  font: 900 clamp(3rem, 12vw, 8.5rem)/1 var(--serif);
-  letter-spacing: .12em; margin-right: -.12em;
+  margin: 0; text-align: center;
+  font: 900 clamp(2.3rem, 8.4vw, 6.6rem)/1.02 var(--serif);
+  letter-spacing: -.01em;
 }
+.h1__a, .h1__b { white-space: nowrap; }
+.h1__b { font-weight: 500; font-style: italic; color: var(--accent); }
 .masthead__sep { margin: 0 1.2em; opacity: .5; }
 .masthead__tagline {
   margin: 0; padding-bottom: 14px; text-align: center;
@@ -151,7 +153,7 @@ kbd {
   max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter);
   height: 56px; display: flex; align-items: center; gap: 20px;
 }
-.bar__brand { display: flex; align-items: center; font: 900 1.1rem/1 var(--serif); letter-spacing: .1em; white-space: nowrap; }
+.bar__brand { display: flex; align-items: center; font: 900 1.08rem/1 var(--serif); letter-spacing: .01em; white-space: nowrap; }
 .bar__links { list-style: none; margin: 0 auto 0 0; padding: 0; display: flex; gap: 2px; }
 .bar__links a {
   display: block; padding: 8px 12px; font: 500 .88rem/1 var(--sans); color: var(--ink-2); border-radius: 999px;
@@ -425,7 +427,7 @@ a:hover .hl, a:focus-visible .hl { background-size: 100% 1px; }
 .colophon { margin-top: clamp(40px, 6vw, 80px); padding: 28px 0 calc(40px + env(safe-area-inset-bottom)); border-top: 3px double var(--rule-strong); font-size: .82rem; color: var(--ink-2); }
 .colophon .wrap { display: grid; gap: 8px; }
 .colophon p { margin: 0; }
-.colophon__title { display: flex; align-items: center; font: 900 1.2rem/1 var(--serif); letter-spacing: .12em; color: var(--ink); margin-bottom: 6px !important; }
+.colophon__title { display: flex; align-items: center; font: 900 1.2rem/1 var(--serif); letter-spacing: .01em; color: var(--ink); margin-bottom: 6px !important; }
 .colophon a { text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
 .colophon a:hover { text-decoration-color: var(--accent); }
 .colophon__keys { color: var(--muted); }
@@ -490,12 +492,13 @@ a:hover .hl, a:focus-visible .hl { background-size: 100% 1px; }
 .reveal.is-in { opacity: 1; transform: none; }
 .masthead h1 { animation: rise 1s var(--ease) both; }
 .masthead__title .seal { animation: stamp .7s .35s var(--ease) both; }
-@keyframes rise { from { opacity: 0; transform: translateY(18px); letter-spacing: .3em; } }
+@keyframes rise { from { opacity: 0; transform: translateY(18px); letter-spacing: .08em; } }
 @keyframes stamp { from { opacity: 0; transform: scale(1.6) rotate(-14deg); } }
 
 /* ---------- 響應式 ---------- */
 @media (max-width: 1024px) {
   .columns { columns: 2; }
+  .masthead__nav a, .masthead__nav button { padding: 12px 11px; letter-spacing: .06em; }
   .briefs { grid-template-columns: 1fr; padding-top: 0; }
   .briefs .item { padding: 14px 0; border-left: 0; border-bottom: 1px solid var(--rule); }
   .briefs .item:last-child { border-bottom: 0; }

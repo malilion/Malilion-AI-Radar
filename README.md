@@ -1,4 +1,4 @@
-# 每日晨報
+# Malilion AI Radar
 
 每小時自動更新的新聞彙整網站，部署在 GitHub Pages：<https://malilion.github.io/google-news/>
 
