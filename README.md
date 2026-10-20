@@ -50,7 +50,7 @@
 | Hacker News | 首頁、最新 AI、Show HN |
 | 論文 | arXiv cs.AI、cs.LG、cs.CL |
 | 部落格 | Simon Willison、OpenAI 開發者社群 |
-| Reddit | r/LocalLLaMA、r/ClaudeAI、r/AI_Agents、r/MachineLearning（當日熱門） |
+| Reddit | r/LocalLLaMA、r/ClaudeAI、r/AI_Agents、r/MachineLearning（當日熱門；四個版合併成一次請求再依版拆開） |
 | 版本更新 | Codex、Claude Code、LangChain、Ollama、Open WebUI 的 GitHub Releases（只留正式版） |
 
 **C4 社群目錄**：Hugging Face Discord、LangChain 社群、OpenAI 開發者論壇、生成式 AI 年會、GDG Taipei、F2E 前端社群、四個 Reddit 版。
@@ -116,6 +116,7 @@
 | 來源 | `type` | 分頁：C2 用 `lab`、`media`；C3 用 `github`、`hn`、`papers`、`blogs`、`reddit`、`releases` |
 | 來源 | `max`、`days` | 覆寫這個來源的則數上限與天數 |
 | 來源 | `translate` | 設為 `false` 就不翻譯 |
+| 來源 | `split` | 設為 `category` 時，把合併的 feed 依每篇的分類拆成多個來源（Reddit 用） |
 | 來源 | `exclude` | 標題符合此正規表示式就略過（版本更新用來排除 alpha／beta／rc） |
 | 來源 | `tz` | 日期沒有時區時的時差（小時），例如 iThome 用 `8` |
 
@@ -154,5 +155,5 @@ threads-keywords.json  B1 帳號
 ## 注意事項
 
 - Threads 抓取是用瀏覽器自動化讀取公開頁面，可能被登入牆或機房 IP 擋下，也可能不符合 Threads 使用條款，請自行評估。
-- Reddit 對機房 IP 常有限流，抓取遇到 429 會等待重試，仍可能偶爾失敗。
+- Reddit 未登入時每個 IP 的請求額度很小，所以四個版合併成一次請求；遇到 429 會依 Reddit 指示的秒數等待重試，仍可能偶爾失敗，失敗時沿用當天稍早的存檔。
 - 頭版排序沿用 Google 新聞 RSS 的順序，不是實際閱讀數。

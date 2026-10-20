@@ -72,7 +72,9 @@ def parse(xml, source, naive_tz=timezone.utc):
                     link = l.get("href", "")
                     break
             body = e.findtext(ATOM + "content") or ""
+            cat = e.find(ATOM + "category")
             items.append({
+                "category": cat.get("label") or cat.get("term") if cat is not None else "",
                 "title": e.findtext(ATOM + "title"),
                 "link": link,
                 "date": pd(e.findtext(ATOM + "published") or e.findtext(ATOM + "updated")),
@@ -85,6 +87,7 @@ def parse(xml, source, naive_tz=timezone.utc):
         for it in root.iter("item"):
             body = it.findtext(CONTENT + "encoded") or ""
             items.append({
+                "category": it.findtext("category") or "",
                 "title": it.findtext("title"),
                 "link": (it.findtext("link") or "").strip(),
                 "date": pd(it.findtext("pubDate") or it.findtext("{http://purl.org/dc/elements/1.1/}date")) or channel_date,
@@ -98,6 +101,7 @@ def parse(xml, source, naive_tz=timezone.utc):
             continue
         summary = clean_summary(text_of(i["raw_summary"]))
         out.append({
+            "category": i["category"],
             "source": source,
             "title": title,
             "link": link,
@@ -125,7 +129,9 @@ def fetch(feed):
                 # Reddit 等網站會回 429（太頻繁），等一下再試
                 if e.code != 429 or attempt == 2:
                     raise
-                time.sleep(10 * (attempt + 1))
+                # 依伺服器指示的秒數等待（Reddit 用 x-ratelimit-reset），最多 90 秒
+                wait = e.headers.get("Retry-After") or e.headers.get("x-ratelimit-reset") or 10 * (attempt + 1)
+                time.sleep(min(float(wait) + 1, 90))
         if len(data) > MAX_BYTES:
             raise ValueError("檔案過大")
         if data[:2] == b"\x1f\x8b":  # 有些伺服器不管請求一律回 gzip
@@ -136,6 +142,10 @@ def fetch(feed):
         # 沒有時區的日期預設為 UTC；可用 "tz": 8 指定（如 iThome 用台灣時間）
         items = parse(data, feed["name"], timezone(timedelta(hours=feed.get("tz", 0))))
         for i in items:
+            # split: category 時，一個合併的 feed（如多個 subreddit）依分類拆成多個來源
+            if feed.get("split") == "category" and i["category"]:
+                i["source"] = i["category"]
+            i.pop("category", None)
             i["type"] = feed.get("type", "lab")
             if feed.get("translate") is False:  # 版本號、release notes 不翻譯
                 i["no_translate"] = True
@@ -183,7 +193,16 @@ def main():
         fresh = [i for i in got if i["date"] >= since and i["link"] not in seen]
         if not by_feed:
             fresh.sort(key=lambda i: i["date"], reverse=True)
-        fresh = fresh[:feed.get("max", per)]
+        limit = feed.get("max", per)
+        if feed.get("split") == "category":  # 拆開的每個來源各自套用上限
+            counts, kept = {}, []
+            for i in fresh:
+                counts[i["source"]] = counts.get(i["source"], 0) + 1
+                if counts[i["source"]] <= limit:
+                    kept.append(i)
+            fresh = kept
+        else:
+            fresh = fresh[:limit]
         seen.update(i["link"] for i in fresh)
         items += fresh
     if not items:
