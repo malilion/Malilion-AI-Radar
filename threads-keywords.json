@@ -1,4 +1,5 @@
 {
   "keywords": ["AI", "AI threads", "台灣"],
-  "maxItemsPerKeyword": 30
+  "maxItemsPerKeyword": 40,
+  "chineseOnly": true
 }
