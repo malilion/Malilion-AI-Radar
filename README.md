@@ -2,7 +2,7 @@
 
 每小時自動更新的新聞與 AI 情報網站：台灣要聞、Threads 社群、AI 業界動態、開發者雷達與社群活動，全部由 GitHub Actions 抓取、存檔並部署到 GitHub Pages。
 
-**網站**：<https://malilion.github.io/google-news/>
+**網站**：<https://malilion.github.io/Malilion-AI-Radar/>
 
 ## 版面
 
