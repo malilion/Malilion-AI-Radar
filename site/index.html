@@ -3,45 +3,116 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Google 新聞 · 台灣</title>
+<title>台灣新聞速報</title>
+<meta name="description" content="每小時自動更新的 Google 新聞（台灣）頭條">
 <style>
-  :root { --bg:#fff; --fg:#202124; --muted:#5f6368; --line:#e8eaed; --link:#1a0dab; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#202124; --fg:#e8eaed; --muted:#9aa0a6; --line:#3c4043; --link:#8ab4f8; }
+  :root {
+    --bg:#f5f6f8; --card:#fff; --fg:#1f2328; --muted:#6b7280; --line:#e5e7eb;
+    --accent:#2563eb; --chip:#eef2ff; --chip-fg:#3730a3; --shadow:0 1px 2px rgba(0,0,0,.06);
   }
-  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,"Noto Sans TC",sans-serif; }
-  main { max-width:720px; margin:0 auto; padding:24px 16px; }
-  h1 { font-size:1.4rem; margin:0 0 4px; }
-  .meta { color:var(--muted); font-size:.85rem; margin-bottom:16px; }
-  ul { list-style:none; padding:0; margin:0; }
-  li { padding:12px 0; border-top:1px solid var(--line); }
-  a { color:var(--link); text-decoration:none; }
-  a:hover { text-decoration:underline; }
-  .sub { color:var(--muted); font-size:.8rem; margin-top:2px; }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#0f1115; --card:#181b21; --fg:#e6e8eb; --muted:#9aa3af; --line:#2a2f38;
+      --accent:#7aa2ff; --chip:#222a44; --chip-fg:#b7c6ff; --shadow:none;
+    }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif; }
+  header { background:var(--card); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:10; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 16px; }
+  .top { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:14px 0 8px; }
+  h1 { font-size:1.25rem; margin:0; letter-spacing:.02em; }
+  .meta { color:var(--muted); font-size:.8rem; text-align:right; }
+  .tools { display:flex; gap:8px; padding-bottom:12px; }
+  input[type=search] { flex:1; min-width:0; padding:9px 12px; font:inherit; font-size:.95rem;
+    color:var(--fg); background:var(--bg); border:1px solid var(--line); border-radius:10px; outline:none; }
+  input[type=search]:focus { border-color:var(--accent); }
+  select { padding:9px 10px; font:inherit; font-size:.95rem; color:var(--fg); background:var(--bg);
+    border:1px solid var(--line); border-radius:10px; max-width:42%; }
+  main { padding:16px 0 48px; }
+  ol { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+  li { background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); transition:transform .12s, border-color .12s; }
+  li:hover { border-color:var(--accent); transform:translateY(-1px); }
+  li a { display:block; padding:14px 16px; color:inherit; text-decoration:none; }
+  .title { font-weight:600; line-height:1.5; }
+  .sub { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:8px; font-size:.8rem; color:var(--muted); }
+  .chip { background:var(--chip); color:var(--chip-fg); padding:1px 9px; border-radius:999px; font-weight:500; }
+  .empty, .count { text-align:center; color:var(--muted); font-size:.85rem; padding:12px 0; }
+  .count { text-align:left; padding:0 0 10px; }
+  footer { text-align:center; color:var(--muted); font-size:.75rem; padding:0 0 32px; }
+  footer a { color:inherit; }
 </style>
 </head>
 <body>
-<main>
-  <h1>Google 新聞 · 台灣</h1>
-  <div class="meta" id="meta">載入中…</div>
-  <ul id="list"></ul>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <h1>📰 台灣新聞速報</h1>
+      <div class="meta" id="meta">載入中…</div>
+    </div>
+    <div class="tools">
+      <input type="search" id="q" placeholder="搜尋標題…" aria-label="搜尋標題">
+      <select id="src" aria-label="依媒體篩選"><option value="">全部媒體</option></select>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <div class="count" id="count"></div>
+  <ol id="list"></ol>
+  <div class="empty" id="empty" hidden>找不到符合的新聞</div>
 </main>
+<footer>資料來源：<a href="https://news.google.com/?hl=zh-TW&gl=TW&ceid=TW:zh-Hant" target="_blank" rel="noopener">Google 新聞</a> · 每小時自動更新</footer>
 <script>
-fetch('news.json', {cache:'no-cache'}).then(r => r.json()).then(d => {
-  const fmt = s => { const t = new Date(s); return isNaN(t) ? s : t.toLocaleString('zh-TW'); };
-  document.getElementById('meta').textContent = '最後更新：' + fmt(d.updated) + '（每小時自動更新）';
-  const ul = document.getElementById('list');
-  for (const it of d.items) {
+const $ = id => document.getElementById(id);
+let items = [];
+
+function ago(s) {
+  const t = new Date(s); if (isNaN(t)) return s || '';
+  const m = Math.round((Date.now() - t) / 60000);
+  if (m < 1) return '剛剛';
+  if (m < 60) return m + ' 分鐘前';
+  if (m < 1440) return Math.floor(m / 60) + ' 小時前';
+  if (m < 10080) return Math.floor(m / 1440) + ' 天前';
+  return t.toLocaleDateString('zh-TW');
+}
+
+function render() {
+  const q = $('q').value.trim().toLowerCase(), src = $('src').value;
+  const list = $('list'); list.textContent = '';
+  const shown = items.filter(i => (!src || i.source === src) && (!q || i.title.toLowerCase().includes(q)));
+  for (const it of shown) {
     const li = document.createElement('li');
     const a = document.createElement('a');
-    a.href = it.link; a.target = '_blank'; a.rel = 'noopener'; a.textContent = it.title;
-    const sub = document.createElement('div');
-    sub.className = 'sub';
-    sub.textContent = [it.source, fmt(it.pubDate)].filter(Boolean).join(' · ');
-    li.append(a, sub);
-    ul.append(li);
+    a.href = it.link; a.target = '_blank'; a.rel = 'noopener';
+    const title = document.createElement('div');
+    title.className = 'title'; title.textContent = it.title;
+    const sub = document.createElement('div'); sub.className = 'sub';
+    if (it.source) { const c = document.createElement('span'); c.className = 'chip'; c.textContent = it.source; sub.append(c); }
+    const time = document.createElement('span'); time.textContent = ago(it.pubDate); sub.append(time);
+    a.append(title, sub); li.append(a); list.append(li);
   }
-}).catch(() => { document.getElementById('meta').textContent = '載入失敗'; });
+  $('count').textContent = `共 ${shown.length} 則`;
+  $('empty').hidden = shown.length > 0;
+}
+
+fetch('news.json', { cache: 'no-cache' }).then(r => r.json()).then(d => {
+  // 標題結尾的「 - 媒體名稱」已顯示在標籤上，去掉避免重複
+  items = d.items.map(i => {
+    const suffix = i.source ? ' - ' + i.source : '';
+    const title = suffix && i.title.endsWith(suffix) ? i.title.slice(0, -suffix.length) : i.title;
+    return { ...i, title };
+  });
+  const u = new Date(d.updated);
+  $('meta').textContent = '更新於 ' + (isNaN(u) ? d.updated : u.toLocaleString('zh-TW', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }));
+  for (const s of [...new Set(items.map(i => i.source).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'zh-TW'))) {
+    const o = document.createElement('option'); o.value = o.textContent = s; $('src').append(o);
+  }
+  render();
+}).catch(() => { $('meta').textContent = '載入失敗'; });
+
+$('q').addEventListener('input', render);
+$('src').addEventListener('change', render);
 </script>
 </body>
 </html>
