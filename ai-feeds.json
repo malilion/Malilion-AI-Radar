@@ -76,6 +76,12 @@
       "name": "MarkTechPost",
       "url": "https://www.marktechpost.com/feed/",
       "type": "media"
+    },
+    {
+      "name": "iThome",
+      "url": "https://www.ithome.com.tw/rss",
+      "type": "media",
+      "tz": 8
     }
   ]
 }

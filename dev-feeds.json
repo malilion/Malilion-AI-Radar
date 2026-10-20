@@ -1,0 +1,73 @@
+{
+  "days": 14,
+  "maxPerSource": 6,
+  "sort": "feed",
+  "feeds": [
+    {
+      "name": "GitHub 今日趨勢",
+      "url": "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml",
+      "type": "github",
+      "max": 10
+    },
+    {
+      "name": "GitHub 本週趨勢",
+      "url": "https://mshibanami.github.io/GitHubTrendingRSS/weekly/all.xml",
+      "type": "github",
+      "max": 10
+    },
+    {
+      "name": "GitHub Python 今日",
+      "url": "https://mshibanami.github.io/GitHubTrendingRSS/daily/python.xml",
+      "type": "github",
+      "max": 8
+    },
+    {
+      "name": "Hacker News 首頁",
+      "url": "https://news.ycombinator.com/rss",
+      "type": "hn",
+      "max": 10
+    },
+    {
+      "name": "HN 最新 AI",
+      "url": "https://hnrss.org/newest?q=AI",
+      "type": "hn",
+      "max": 8
+    },
+    {
+      "name": "Show HN",
+      "url": "https://hnrss.org/show",
+      "type": "hn",
+      "max": 8
+    },
+    {
+      "name": "arXiv cs.AI",
+      "url": "https://rss.arxiv.org/rss/cs.AI",
+      "type": "papers",
+      "max": 6
+    },
+    {
+      "name": "arXiv cs.LG",
+      "url": "https://rss.arxiv.org/rss/cs.LG",
+      "type": "papers",
+      "max": 6
+    },
+    {
+      "name": "arXiv cs.CL",
+      "url": "https://rss.arxiv.org/rss/cs.CL",
+      "type": "papers",
+      "max": 6
+    },
+    {
+      "name": "Simon Willison",
+      "url": "https://simonwillison.net/atom/everything/",
+      "type": "blogs",
+      "max": 8
+    },
+    {
+      "name": "OpenAI 開發者社群",
+      "url": "https://community.openai.com/latest.rss",
+      "type": "blogs",
+      "max": 8
+    }
+  ]
+}

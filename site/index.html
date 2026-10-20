@@ -28,6 +28,7 @@
       <li><a href="#social">社群</a></li>
       <li><a href="#tech">副刊</a></li>
       <li><a href="#ai">AI 業界</a></li>
+      <li><a href="#dev">開發者</a></li>
     </ul>
     <button class="saved-btn" type="button" data-open-saved aria-haspopup="dialog">
       收藏<span class="saved-count" data-saved-count>0</span>
@@ -53,6 +54,7 @@
       <li><a href="#social"><b>B1</b>社群</a></li>
       <li><a href="#tech"><b>C1</b>副刊</a></li>
       <li><a href="#ai"><b>C2</b>AI 業界</a></li>
+      <li><a href="#dev"><b>C3</b>開發者</a></li>
       <li><button type="button" data-open-saved aria-haspopup="dialog"><b>★</b>收藏 <span data-saved-count>0</span></button></li>
     </ul>
   </div>
@@ -127,14 +129,32 @@
       <div class="section__head">
         <h2 class="kicker" id="ai-h"><span class="kicker__no">C2</span>AI 業界動態<span class="kicker__en">Labs &amp; Press</span></h2>
         <div class="seg" role="tablist" aria-label="來源類型">
-          <button type="button" role="tab" class="seg__btn" data-ai-type="lab" aria-selected="true">官方部落格</button>
-          <button type="button" role="tab" class="seg__btn" data-ai-type="media" aria-selected="false">科技媒體</button>
+          <button type="button" role="tab" class="seg__btn" data-type="lab" aria-selected="true">官方部落格</button>
+          <button type="button" role="tab" class="seg__btn" data-type="media" aria-selected="false">科技媒體</button>
         </div>
       </div>
       <div class="chips" id="aiSources" role="group" aria-label="依來源篩選"></div>
       <ol class="dispatches" id="aiList"></ol>
       <p class="empty" id="aiEmpty" hidden></p>
       <div class="more"><button class="more__btn" id="aiMore" type="button" hidden>顯示更多</button></div>
+    </div>
+  </section>
+
+  <section class="section" id="dev" aria-labelledby="dev-h">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 class="kicker" id="dev-h"><span class="kicker__no">C3</span>開發者雷達<span class="kicker__en">Dev Radar</span></h2>
+        <div class="seg" role="tablist" aria-label="分類">
+          <button type="button" role="tab" class="seg__btn" data-type="github" aria-selected="true">GitHub 趨勢</button>
+          <button type="button" role="tab" class="seg__btn" data-type="hn" aria-selected="false">Hacker News</button>
+          <button type="button" role="tab" class="seg__btn" data-type="papers" aria-selected="false">論文</button>
+          <button type="button" role="tab" class="seg__btn" data-type="blogs" aria-selected="false">部落格</button>
+        </div>
+      </div>
+      <div class="chips" role="group" aria-label="依來源篩選"></div>
+      <ol class="dispatches"></ol>
+      <p class="empty" hidden></p>
+      <div class="more"><button class="more__btn" type="button" hidden>顯示更多</button></div>
     </div>
   </section>
 </main>
@@ -145,7 +165,7 @@
     <p>本報由 GitHub Actions 每小時自動採編排版。資料來源：
       <a href="https://news.google.com/?hl=zh-TW&gl=TW&ceid=TW:zh-Hant">Google 新聞</a>、
       <a href="https://www.threads.com/">Threads</a>、
-      <a href="https://www.theunwindai.com/">Unwind AI</a> 與各 AI 公司官方部落格、科技媒體。已讀與收藏只存在你的瀏覽器。</p>
+      <a href="https://www.theunwindai.com/">Unwind AI</a> 、各 AI 公司官方部落格與科技媒體、GitHub Trending、Hacker News、arXiv、Simon Willison 與 OpenAI 開發者社群。已讀與收藏只存在你的瀏覽器。</p>
     <p class="colophon__keys">鍵盤：<kbd>/</kbd> 搜尋　<kbd>s</kbd> 開啟收藏　<kbd>Esc</kbd> 關閉</p>
   </div>
 </footer>

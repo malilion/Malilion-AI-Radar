@@ -396,74 +396,93 @@
     next.disabled = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 8;
   }
 
-  // ---------- AI 業界動態 ----------
-  let ai = null;
-  let aiSource = '';
-  let aiType = 'lab';
-  let aiLimit = 10;
+  // ---------- 多來源版面（C2 AI 業界動態、C3 開發者雷達） ----------
+  // 每個版面：上方分類切換、來源標籤篩選、清單、顯示更多
+  function feedSection({ root, url, types, ranked = [] }) {
+    const sec = $(root);
+    const list = $('.dispatches', sec);
+    const chips = $('.chips', sec);
+    const empty = $('.empty', sec);
+    const more = $('.more__btn', sec);
+    const tabs = $$('[data-type]', sec);
+    let data = null;
+    let type = tabs[0]?.dataset.type;
+    let source = '';
+    let limit = 10;
 
-  function renderAI() {
-    const list = $('#aiList');
-    const chips = $('#aiSources');
-    list.textContent = '';
-    chips.textContent = '';
-    // 舊資料沒有 type 時視為官方部落格
-    const items = (ai?.items || []).filter((it) => (it.type || 'lab') === aiType);
-    if (!items.length) {
-      $('#aiEmpty').textContent = `${aiType === 'lab' ? '官方部落格' : '科技媒體'}暫時沒有資料，下一次整點更新會再試。`;
-      $('#aiEmpty').hidden = false;
-      $('#aiMore').hidden = true;
-      return;
-    }
-    $('#aiEmpty').hidden = true;
-    const counts = {};
-    items.forEach((it) => { counts[it.source] = (counts[it.source] || 0) + 1; });
-    const chip = (label, value, n) => {
-      const b = el('button', 'chip', label);
-      b.type = 'button';
-      b.append(el('small', null, n));
-      b.setAttribute('aria-pressed', String(aiSource === value));
-      b.addEventListener('click', () => { aiSource = value; aiLimit = 10; renderAI(); });
-      chips.append(b);
-    };
-    chip('全部', '', items.length);
-    Object.keys(counts).sort().forEach((k) => chip(k, k, counts[k]));
-
-    const shown = items.filter((it) => !aiSource || it.source === aiSource);
-    shown.slice(0, aiLimit).forEach((it, i) => {
-      const title = it.title_zh || it.title;
-      const entry = { id: it.link, kind: 'ai', title, link: it.link, src: it.source, date: it.pubDate };
-      const li = el('li', 'dispatch item reveal');
-      li.style.setProperty('--d', `${(i % 2) * 0.06}s`);
-      if (read.has(entry.id)) li.classList.add('is-read');
-      const text = el('div');
-      const h = el('h3', 'dispatch__title t');
-      h.append(el('span', 'hl', title));
-      text.append(el('span', 'dispatch__src', it.source), h);
-      if (it.title_zh && it.title_zh !== it.title) text.append(el('p', 'dispatch__orig', it.title));
-      const sum = it.summary_zh || it.summary;
-      if (sum) text.append(el('p', 'dispatch__sum', sum));
-      text.append(metaLine('', it.pubDate));
-      const parts = [text];
-      const imgSrc = safeUrl(it.image);
-      if (imgSrc) {
-        const fig = el('div', 'dispatch__img');
-        const img = el('img');
-        img.src = imgSrc;
-        img.alt = '';
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.onerror = () => fig.remove();
-        fig.append(img);
-        parts.push(fig);
+    function render() {
+      list.textContent = '';
+      chips.textContent = '';
+      // 舊資料沒有 type 時歸到第一個分類
+      const items = (data?.items || []).filter((it) => (it.type || tabs[0].dataset.type) === type);
+      if (!items.length) {
+        empty.textContent = `${types[type]}暫時沒有資料，下一次整點更新會再試。`;
+        empty.hidden = false;
+        more.hidden = true;
+        return;
       }
-      li.append(articleLink(entry, parts), starButton(entry));
-      list.append(li);
-    });
-    const more = $('#aiMore');
-    more.hidden = shown.length <= aiLimit;
-    more.textContent = `顯示更多（還有 ${shown.length - aiLimit} 則）`;
-    observe(list);
+      empty.hidden = true;
+      // 依資料原順序算出每則在各來源中的名次（GitHub、HN 這類排行榜用）
+      const rank = new Map();
+      const per = {};
+      items.forEach((it) => { per[it.source] = (per[it.source] || 0) + 1; rank.set(it, per[it.source]); });
+      const chip = (label, value, n) => {
+        const b = el('button', 'chip', label);
+        b.type = 'button';
+        b.append(el('small', null, n));
+        b.setAttribute('aria-pressed', String(source === value));
+        b.addEventListener('click', () => { source = value; limit = 10; render(); });
+        chips.append(b);
+      };
+      chip('全部', '', items.length);
+      Object.keys(per).forEach((k) => chip(k, k, per[k]));
+
+      const shown = items.filter((it) => !source || it.source === source);
+      shown.slice(0, limit).forEach((it, i) => {
+        const title = it.title_zh || it.title;
+        const entry = { id: it.link, kind: type, title, link: it.link, src: it.source, date: it.pubDate };
+        const li = el('li', 'dispatch item reveal');
+        li.style.setProperty('--d', `${(i % 2) * 0.06}s`);
+        if (read.has(entry.id)) li.classList.add('is-read');
+        const text = el('div');
+        const h = el('h3', 'dispatch__title t');
+        h.append(el('span', 'hl', title));
+        const label = ranked.includes(type) ? `${it.source} · #${rank.get(it)}` : it.source;
+        text.append(el('span', 'dispatch__src', label), h);
+        if (it.title_zh && it.title_zh !== it.title) text.append(el('p', 'dispatch__orig', it.title));
+        const sum = it.summary_zh || it.summary;
+        if (sum) text.append(el('p', 'dispatch__sum', sum));
+        text.append(metaLine('', it.pubDate));
+        const parts = [text];
+        const imgSrc = safeUrl(it.image);
+        if (imgSrc) {
+          const fig = el('div', 'dispatch__img');
+          const img = el('img');
+          img.src = imgSrc;
+          img.alt = '';
+          img.loading = 'lazy';
+          img.decoding = 'async';
+          img.onerror = () => fig.remove();
+          fig.append(img);
+          parts.push(fig);
+        }
+        li.append(articleLink(entry, parts), starButton(entry));
+        list.append(li);
+      });
+      more.hidden = shown.length <= limit;
+      more.textContent = `顯示更多（還有 ${shown.length - limit} 則）`;
+      observe(list);
+    }
+
+    more.addEventListener('click', () => { limit += 10; render(); });
+    tabs.forEach((b) => b.addEventListener('click', () => {
+      type = b.dataset.type;
+      source = '';
+      limit = 10;
+      tabs.forEach((x) => x.setAttribute('aria-selected', String(x === b)));
+      render();
+    }));
+    getJSON(url).then((d) => { data = d; render(); });
   }
 
   // ---------- 進場動效 ----------
@@ -501,14 +520,6 @@
       renderNews();
     });
     $('#threadsMore').addEventListener('click', () => { threadsLimit += PAGE; renderThreads(); });
-    $('#aiMore').addEventListener('click', () => { aiLimit += 10; renderAI(); });
-    $$('[data-ai-type]').forEach((b) => b.addEventListener('click', () => {
-      aiType = b.dataset.aiType;
-      aiSource = '';
-      aiLimit = 10;
-      $$('[data-ai-type]').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
-      renderAI();
-    }));
 
     const rail = $('#techRail');
     $$('[data-rail]').forEach((b) => b.addEventListener('click', () => {
@@ -553,7 +564,13 @@
   loadNews();
   getJSON('threads.json').then((d) => { threads = d; renderThreads(); });
   getJSON('unwind.json').then(renderTech);
-  getJSON('ai.json').then((d) => { ai = d; renderAI(); });
+  feedSection({ root: '#ai', url: 'ai.json', types: { lab: '官方部落格', media: '科技媒體' } });
+  feedSection({
+    root: '#dev',
+    url: 'dev.json',
+    types: { github: 'GitHub 趨勢', hn: 'Hacker News', papers: '論文', blogs: '部落格與社群' },
+    ranked: ['github', 'hn'],
+  });
   // 頁面放著不關時，每 10 分鐘更新相對時間與資料
   setInterval(() => { dateline(); loadNews(); }, 10 * 60 * 1000);
 })();
