@@ -1,5 +1,5 @@
 {
-  "accounts": ["ftvnews", "thenewslens"],
+  "accounts": ["ftvnews", "setnews", "news.ebc", "ctinews", "nownews", "pts.news", "thenewslens", "twreporter", "bbcchinese", "dcard.tw", "ithome", "cool3c", "kocpc"],
   "maxPostsPerAccount": 20,
   "hotWindowHours": 72,
   "keywords": [],
