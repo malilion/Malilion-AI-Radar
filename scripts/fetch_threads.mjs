@@ -1,6 +1,10 @@
-// 在 threads-toolkit 目錄內執行：用它的 search action 抓各關鍵字「最新」貼文，只保留最近 24 小時，
-// 輸出到 THREADS_OUT（預設 ../site/threads.json）。單一關鍵字失敗不會中斷整個流程。
-import { readFileSync, writeFileSync } from 'node:fs';
+// 在 threads-toolkit 目錄內執行：依設定抓追蹤帳號的近期貼文（帳號模式）或關鍵字最新貼文（搜尋模式），
+// 輸出到 THREADS_OUT（預設 ../site/threads.json）。單一帳號或關鍵字失敗不會中斷整個流程。
+import { execFile } from 'node:child_process';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { Actor } from 'apify';
 import { Dataset, Log } from 'crawlee';
@@ -11,10 +15,51 @@ const configPath = process.env.THREADS_CONFIG || '../threads-keywords.json';
 const outPath = process.env.THREADS_OUT || '../site/threads.json';
 const { keywords = [], accounts = [], maxItemsPerKeyword = 20, maxPostsPerAccount = 20, hotWindowHours = 72, chineseOnly = false } = JSON.parse(readFileSync(configPath, 'utf8'));
 
-const log = new Log({ prefix: 'Threads' });
+// 子程序模式：只跑一個 action，把結果寫到檔案。
+// toolkit 的每次抓取共用 Crawlee 預設請求佇列，同一個程序內第二次抓取會直接處理 0 個請求，
+// 所以每個帳號／關鍵字都要在獨立程序執行（Crawlee 啟動時會清空預設儲存）。
+if (process.env.THREADS_CHILD) {
+    const input = JSON.parse(process.env.THREADS_CHILD);
+    const items = [];
+    Dataset.pushData = async (item) => { items.push(item); };
+    Actor.createProxyConfiguration = async () => undefined;
+    const childLog = new Log({ prefix: 'Threads' });
+    let error = null;
+    try {
+        await (input.action === 'profile' ? profileAction : searchAction)(input, childLog);
+    } catch (err) {
+        error = err instanceof Error ? err.message : String(err);
+    }
+    writeFileSync(process.env.THREADS_CHILD_OUT, JSON.stringify({ items, error }));
+    process.exit(0);
+}
+
+const SELF = fileURLToPath(import.meta.url);
+const TMP = mkdtempSync(join(tmpdir(), 'threads-'));
+let runs = 0;
+// 在子程序執行一個 action，逾時直接終止；回傳 { items, error }
+function runChild(input, timeoutMs) {
+    const out = join(TMP, `${runs++}.json`);
+    return new Promise((resolve) => {
+        const child = execFile(process.execPath, ['--import', 'tsx', SELF], {
+            env: { ...process.env, THREADS_CHILD: JSON.stringify(input), THREADS_CHILD_OUT: out },
+            timeout: timeoutMs,
+            killSignal: 'SIGKILL',
+            maxBuffer: 50 * 1024 * 1024,
+        }, (err) => {
+            try {
+                resolve(JSON.parse(readFileSync(out, 'utf8')));
+            } catch {
+                resolve({ items: [], error: err?.killed ? `逾時 ${timeoutMs / 1000} 秒` : (err?.message || '沒有輸出') });
+            }
+        });
+        child.stdout.pipe(process.stdout);
+        child.stderr.pipe(process.stderr);
+    });
+}
+// 每個帳號／關鍵字最多等 PER_RUN_MS，超過就終止子程序並跳過
+const PER_RUN_MS = 90000;
 let current = [];
-Dataset.pushData = async (item) => { current.push(item); };
-Actor.createProxyConfiguration = async () => undefined;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const isFresh = (p) => {
@@ -51,12 +96,9 @@ function save() {
     }, null, 1));
 }
 for (const keyword of keywords) {
-    current = [];
-    try {
-        await searchAction({ action: 'search', keyword, filter: 'recent', maxItems: maxItemsPerKeyword }, log);
-    } catch (err) {
-        errors.push({ keyword, error: err instanceof Error ? err.message : String(err) });
-    }
+    const res = await runChild({ action: 'search', keyword, filter: 'recent', maxItems: maxItemsPerKeyword }, PER_RUN_MS);
+    if (res.error) errors.push({ keyword, error: res.error });
+    current = res.items;
     const stat = { raw: current.length, stale: 0, spam: 0, notChinese: 0, duplicate: 0 };
     const seen = new Set();
     const posts = current
@@ -88,10 +130,7 @@ for (const keyword of keywords) {
 
 // 帳號清單模式：抓各帳號個人頁的近期貼文（不需登入），依互動分數排出熱門
 const HOT_MS = hotWindowHours * 60 * 60 * 1000;
-// 每個帳號最多等 PER_ACCOUNT_MS，超過就跳過，避免單一帳號拖垮整輪
-const PER_ACCOUNT_MS = 90000;
 const RATE = { maxRetries: 1, backoffDelay: 5000, requestDelay: 1000 };
-const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(`逾時 ${ms / 1000} 秒`)), ms))]);
 
 let first = true;
 for (const username of accounts) {
@@ -101,13 +140,9 @@ for (const username of accounts) {
     let raw = [];
     for (let attempt = 1; attempt <= 2 && raw.length === 0; attempt++) {
         if (attempt > 1) { console.log(`@${username}: 0 則，30 秒後重試`); await sleep(30000); }
-        current = [];
-        try {
-            await withTimeout(profileAction({ action: 'profile', username, includePosts: true, maxItems: maxPostsPerAccount, rateLimitConfig: RATE }, log), PER_ACCOUNT_MS);
-        } catch (err) {
-            errors.push({ keyword: '@' + username, error: err instanceof Error ? err.message : String(err) });
-        }
-        raw = current.filter((p) => p.source === 'profile_posts');
+        const res = await runChild({ action: 'profile', username, includePosts: true, maxItems: maxPostsPerAccount, rateLimitConfig: RATE }, PER_RUN_MS);
+        if (res.error) errors.push({ keyword: '@' + username, error: res.error });
+        raw = res.items.filter((p) => p.source === 'profile_posts');
     }
     const stat = { raw: raw.length, stale: 0, spam: 0, notChinese: 0, duplicate: 0 };
     const seen = new Set();
