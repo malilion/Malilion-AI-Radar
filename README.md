@@ -7,7 +7,7 @@
 | 分頁 | 來源 | 說明 |
 |------|------|------|
 | 新聞 | [Google 新聞 RSS（台灣）](https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant) | 最上方顯示「最熱門 Top 3」（取 RSS 前三則），可搜尋、依媒體篩選 |
-| Threads 熱門 | [threads-toolkit](https://github.com/Chuanyin1202/threads-toolkit) | 依關鍵字抓最近 24 小時的最新貼文，新到舊排序 |
+| Threads 熱門 | [threads-toolkit](https://github.com/Chuanyin1202/threads-toolkit) | 抓追蹤帳號清單的近期貼文，依互動分數排出熱門（也支援關鍵字搜尋模式） |
 | Unwind AI | [Unwind AI 電子報 RSS](https://rss.beehiiv.com/feeds/fMHDv0Uk41.xml) | 最新 30 篇文章，標題與摘要自動翻譯成繁體中文 |
 
 ## 運作方式
@@ -23,7 +23,7 @@ GitHub Actions（`.github/workflows/update-news.yml`）每小時整點執行一�
 
 ## 設定
 
-- **Threads 關鍵字**：編輯 `threads-keywords.json`（`keywords` 與 `maxItemsPerKeyword`）。
+- **Threads 帳號與關鍵字**：編輯 `threads-keywords.json`。`accounts` 是要追蹤的帳號（不含 @），有填就以帳號模式依互動分數排序；`keywords` 是搜尋模式（未登入時對中文關鍵字常抓不到結果）。
 - **翻譯**：到 Settings → Secrets and variables → Actions 新增 `ANTHROPIC_API_KEY`。沒有設定時 Unwind AI 會顯示英文原文。翻譯結果以文章連結為鍵快取，只有新文章才會呼叫 API。
 - **更新頻率**：修改 workflow 裡的 `cron`（UTC 時間）。
 - **首次啟用**：Settings → Pages → Source 選 **GitHub Actions**，再到 Actions 手動執行一次 "Update news"。

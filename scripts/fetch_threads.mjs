@@ -5,11 +5,11 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { Actor } from 'apify';
 import { Dataset, Log } from 'crawlee';
 
-import { searchAction } from '../src/actions/index.ts';
+import { profileAction, searchAction } from '../src/actions/index.ts';
 
 const configPath = process.env.THREADS_CONFIG || '../threads-keywords.json';
 const outPath = process.env.THREADS_OUT || '../site/threads.json';
-const { keywords, maxItemsPerKeyword = 20, chineseOnly = false } = JSON.parse(readFileSync(configPath, 'utf8'));
+const { keywords = [], accounts = [], maxItemsPerKeyword = 20, maxPostsPerAccount = 20, hotWindowHours = 72, chineseOnly = false } = JSON.parse(readFileSync(configPath, 'utf8'));
 
 const log = new Log({ prefix: 'Threads' });
 let current = [];
@@ -71,11 +71,44 @@ for (const keyword of keywords) {
     groups.push({ keyword, posts, stat });
 }
 
+// 帳號清單模式：抓各帳號個人頁的近期貼文（不需登入），依互動分數排出熱門
+const HOT_MS = hotWindowHours * 60 * 60 * 1000;
+for (const username of accounts) {
+    current = [];
+    try {
+        await profileAction({ action: 'profile', username, includePosts: true, maxItems: maxPostsPerAccount }, log);
+    } catch (err) {
+        errors.push({ keyword: '@' + username, error: err instanceof Error ? err.message : String(err) });
+    }
+    const raw = current.filter((p) => p.source === 'profile_posts');
+    const stat = { raw: raw.length, stale: 0, spam: 0, notChinese: 0, duplicate: 0 };
+    const seen = new Set();
+    const posts = raw
+        .map((p) => ({ ...p, content: cleanContent(p.content) }))
+        .filter((p) => { const t = Date.parse(p.timestamp); return Number.isNaN(t) || Date.now() - t <= HOT_MS ? true : (stat.stale++, false); })
+        .filter((p) => (isSpam(p.content) ? (stat.spam++, false) : true))
+        .filter((p) => { const k = p.id; if (seen.has(k)) { stat.duplicate++; return false; } seen.add(k); return true; })
+        .map((p) => ({
+            id: p.id,
+            url: p.url,
+            username: p.author?.username || username,
+            displayName: p.author?.displayName || '',
+            content: p.content,
+            timestamp: p.timestamp || '',
+            stats: p.stats || {},
+            score: score(p.stats),
+        }));
+    console.log(`@${username}: 保留 ${posts.length} 則`, JSON.stringify(stat));
+    groups.push({ keyword: '@' + username, posts, stat });
+}
+
 const total = groups.reduce((n, g) => n + g.posts.length, 0);
 writeFileSync(outPath, JSON.stringify({
     updated: new Date().toISOString(),
-    sort: 'latest',
-    note: '最近 24 小時，依發文時間新到舊',
+    sort: accounts.length ? 'hot' : 'latest',
+    note: accounts.length
+        ? `追蹤帳號近 ${hotWindowHours} 小時貼文，依互動分數（讚 + 回覆×2 + 轉發×3）排序`
+        : '最近 24 小時，依發文時間新到舊',
     groups,
     errors,
 }, null, 1));
