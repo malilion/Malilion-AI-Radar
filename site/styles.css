@@ -23,24 +23,6 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #14120f;
-    --paper-2: #1b1814;
-    --card: #1f1b17;
-    --ink: #ece4d6;
-    --ink-2: #c4baa9;
-    --muted: #8f8577;
-    --rule: #342e27;
-    --rule-strong: #ece4d6;
-    --accent: #e4583b;
-    --accent-ink: #14120f;
-    --accent-soft: rgba(228, 88, 59, .14);
-    --shadow: 0 18px 40px -24px rgba(0, 0, 0, .8);
-    color-scheme: dark;
-  }
-}
-
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 72px; -webkit-text-size-adjust: 100%; }
 body {
