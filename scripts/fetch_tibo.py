@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """追蹤 Tibo（@thsottiaux，OpenAI Codex 負責人）在 X 的貼文，判斷 Codex 用量額度是不是要重置了，輸出 site/tibo.json。
 
-X 未登入時沒有公開 API，所以同時試幾個來源，抓到的合併（同一則只留一份）：
-- X 官方嵌入用的 syndication 時間軸
-- Nitter 類鏡像站的 RSS（可用環境變數 TIBO_FEEDS 以逗號分隔加入自架的 RSS，例如 RSSHub）
+來源依序如下，抓到的合併（同一則只留一份）：
+- tibo-raw/posts.json：獨立 job 用 TweeterPy 抓的時間軸（scripts/fetch_tibo_x.py），這裡只取檢查過的欄位
+- X 官方嵌入用的 syndication 時間軸（從 GitHub Actions 常被 429 擋下）
+- 環境變數 TIBO_FEEDS 以逗號分隔的 RSS（例如自架的 RSSHub）
 全部失敗時不輸出檔案，由 archive.py 沿用存檔。
 
 每則貼文標記 signal：
@@ -33,7 +34,7 @@ DAYS = 14
 MAX_BYTES = 5 * 1024 * 1024
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
 SYNDICATION = f"https://syndication.twitter.com/srv/timeline-profile/screen-name/{USER}"
-MIRRORS = [f"https://{h}/{USER}/rss" for h in ("nitter.net", "xcancel.com", "nitter.poast.org", "nitter.privacydev.net")]
+RAW = "tibo-raw/posts.json"
 
 RESET = re.compile(r"\breset(?:s|ting)?\b|\brefresh(?:ed)?\b|重置|重設", re.I)
 LIMITS = re.compile(r"\b(?:rate[- ]?limits?|usage|limits?|quotas?|credits?|weekly|5[- ]?h(?:ours?)?)\b|額度|用量", re.I)
@@ -54,6 +55,28 @@ def get(url):
 def post(pid, author, text, date, kind, stats=None):
     return {"id": pid, "author": author, "link": f"https://x.com/{author}/status/{pid}", "text": text[:1000],
             "date": date, "kind": kind, "stats": stats or {}}
+
+
+def from_raw():
+    """讀 fetch_tibo_x.py 的輸出。它來自第三方套件，每個欄位都重新檢查型別與格式。"""
+    with open(RAW, "rb") as f:
+        data = f.read(MAX_BYTES + 1)
+    if len(data) > MAX_BYTES:
+        raise ValueError("檔案過大")
+    num = lambda v: v if isinstance(v, int) and not isinstance(v, bool) and 0 <= v < 1e10 else 0  # noqa: E731
+    out = []
+    for p in json.loads(data)[:200]:
+        pid, author, text = str(p.get("id") or ""), p.get("author"), p.get("text")
+        if not pid.isdigit() or not isinstance(author, str) or not re.fullmatch(r"\w{1,15}", author) or not isinstance(text, str):
+            continue
+        try:
+            date = datetime.strptime(p.get("created_at") or "", "%a %b %d %H:%M:%S %z %Y")
+        except (TypeError, ValueError):
+            continue
+        kind = p.get("kind") if p.get("kind") in ("post", "repost", "reply") else "post"
+        stats = p.get("stats") if isinstance(p.get("stats"), dict) else {}
+        out.append(post(pid, author, " ".join(text.split()), date, kind, {k: num(stats.get(k)) for k in ("likes", "replies", "reposts")}))
+    return out
 
 
 def from_syndication():
@@ -126,7 +149,8 @@ def previous(field):
 
 
 def main():
-    sources = [("X syndication", from_syndication)] + [(u, lambda u=u: from_rss(u)) for u in MIRRORS]
+    sources = [("TweeterPy", from_raw)] if os.path.exists(RAW) else []
+    sources += [("X syndication", from_syndication)]
     sources += [(u.strip(), lambda u=u.strip(): from_rss(u)) for u in os.environ.get("TIBO_FEEDS", "").split(",") if u.strip()]
     posts, errors, ok = {}, [], []
     for name, fn in sources:

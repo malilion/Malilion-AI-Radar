@@ -5,6 +5,7 @@ site/tibo.json
 site/unwind.json
 cache/
 threads-raw/
+tibo-raw/
 site/ai.json
 __pycache__/
 site/dev.json

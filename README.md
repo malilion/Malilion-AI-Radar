@@ -36,7 +36,7 @@
 |----|------|------|
 | A1、A2 | [Google 新聞 RSS（台灣）](https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant) | RSS 前 6 則排進頭版，其餘進要聞 |
 | B1 | Threads（透過 [threads-toolkit](https://github.com/Chuanyin1202/threads-toolkit)），帳號清單在 `threads-keywords.json` | 追蹤帳號近 72 小時的貼文，分數 = 讚 + 回覆×2 + 轉發×3 |
-| B2 | X：[@thsottiaux](https://x.com/thsottiaux)，經 syndication 時間軸與 Nitter 類鏡像 RSS（`scripts/fetch_tibo.py`） | 近 14 天、最多 30 則；判斷規則見下方「重置雷達」 |
+| B2 | X：[@thsottiaux](https://x.com/thsottiaux)，經 [TweeterPy](https://github.com/iSarabjitDhiman/TweeterPy)（`scripts/fetch_tibo_x.py`），備援為 X syndication 時間軸與自訂 RSS（`scripts/fetch_tibo.py`） | 近 14 天、最多 30 則；判斷規則見下方「重置雷達」 |
 | C1 | [Unwind AI RSS](https://rss.beehiiv.com/feeds/fMHDv0Uk41.xml) | 最新 30 篇 |
 | C2 | `ai-feeds.json` | 近 14 天、每家最多 6 則，依時間排序 |
 | C3 | `dev-feeds.json` | 保留各來源原本的排名，重複連結只留一次 |
@@ -76,12 +76,13 @@
 
 觸發時機：每小時整點、push 到 main、Fetch Threads 完成後。約 1–2 分鐘。
 
+0. `tibo` job：用 TweeterPy 抓 Tibo 的 X 時間軸（`scripts/fetch_tibo_x.py`），存成 artifact。它執行第三方套件，所以獨立成沒有寫入、部署權限的 job，只拿得到 `X_AUTH_TOKEN`
 1. 抓資料，每支程式各自輸出一個 `site/*.json`；任何一個來源失敗都不影響其他部分：
 
    | 程式 | 輸出 |
    |------|------|
    | `scripts/fetch_news.py` | `news.json` |
-   | `scripts/fetch_tibo.py` | `tibo.json`（含翻譯） |
+   | `scripts/fetch_tibo.py` | `tibo.json`（含翻譯；先檢查 `tibo` job 的輸出） |
    | `scripts/fetch_unwind.py` | `unwind.json`（含翻譯） |
    | `scripts/fetch_ai_feeds.py` | `ai.json`（讀 `ai-feeds.json`） |
    | `scripts/fetch_ai_feeds.py dev-feeds.json site/dev.json cache/dev_zh.json` | `dev.json` |
@@ -115,7 +116,7 @@
 |------|--------|
 | 翻譯 | Settings → Secrets and variables → Actions 新增 `ANTHROPIC_API_KEY`。沒設定時顯示英文原文。翻譯結果以文章連結為鍵快取 |
 | Threads 帳號 | `threads-keywords.json` 的 `accounts`（不含 @）；`hotWindowHours` 是時間範圍，`keywords` 是搜尋模式（未登入時中文關鍵字常抓不到） |
-| 重置雷達來源 | X 未登入沒有公開 API，`fetch_tibo.py` 依序試 X syndication 時間軸與幾個 Nitter 類鏡像站，抓到的合併。鏡像站常常掛掉；可在 Settings → Secrets and variables → Actions → Variables 新增 `TIBO_FEEDS`（逗號分隔的 RSS 網址，例如自架 RSSHub 的 `/twitter/user/thsottiaux`）當備援 |
+| 重置雷達來源 | 預設用 TweeterPy 的訪客模式。訪客模式被擋時，到 Settings → Secrets and variables → Actions 新增 secret `X_AUTH_TOKEN`（X 帳號 cookie 裡的 `auth_token`，請用小帳號，不要用個人主帳號），會改用登入模式並連回覆一起抓。另可在 Variables 新增 `TIBO_FEEDS`（逗號分隔的 RSS 網址，例如自架 RSSHub）當備援 |
 | AI／開發者來源 | `ai-feeds.json`、`dev-feeds.json`（欄位見下表） |
 | 社群活動 | `scripts/fetch_events.py` 的 `CHAPTERS`（community.dev 分會名稱與 ID） |
 | 社群目錄 | `site/index.html` 的 `#community` 區塊 |
@@ -146,6 +147,7 @@
 
 ```bash
 python3 scripts/fetch_news.py
+pip install tweeterpy==2.0.17 && python3 scripts/fetch_tibo_x.py tibo-raw/posts.json   # 需要 Python 3.12 以下
 python3 scripts/fetch_tibo.py
 python3 scripts/fetch_unwind.py
 python3 scripts/fetch_ai_feeds.py
@@ -171,7 +173,7 @@ threads-keywords.json  B1 帳號
 
 ## 注意事項
 
-- X 沒有免登入的正式管道，重置雷達靠 X 嵌入用的時間軸與第三方鏡像站，可能隨時失效；失敗時沿用最近一次存檔。
+- X 沒有免登入的正式管道，重置雷達靠 TweeterPy 模擬網頁請求，X 改版或封鎖機房 IP 時會失效，用 `X_AUTH_TOKEN` 的帳號也可能被鎖，且可能不符合 X 使用條款，請自行評估；失敗時沿用最近一次存檔。
 - Threads 抓取是用瀏覽器自動化讀取公開頁面，可能被登入牆或機房 IP 擋下，也可能不符合 Threads 使用條款，請自行評估。
 - Reddit 未登入時每個 IP 的請求額度很小，所以四個版合併成一次請求；遇到 429 會依 Reddit 指示的秒數等待重試，仍可能偶爾失敗，失敗時沿用當天稍早的存檔。
 - 頭版排序沿用 Google 新聞 RSS 的順序，不是實際閱讀數。
