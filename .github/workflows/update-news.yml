@@ -21,7 +21,9 @@ concurrency:
 jobs:
   # 用第三方套件 TweeterPy 抓 Tibo 的 X 貼文：獨立成沒有寫入權限的 job，只產出 posts.json，
   # 由 deploy job 的 fetch_tibo.py 檢查後使用
+  # B2 重置雷達暫停：X 從 Actions 抓不到資料，恢復時拿掉這個 job 與下方兩個步驟的 if: false
   tibo:
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 6
     permissions:
@@ -88,11 +90,13 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python3 scripts/fetch_ai_feeds.py dev-feeds.json site/dev.json cache/dev_zh.json
       - uses: actions/download-artifact@v4
+        if: false
         continue-on-error: true
         with:
           name: tibo
           path: tibo-raw
       - name: Fetch Tibo on X (Codex reset radar)
+        if: false
         continue-on-error: true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

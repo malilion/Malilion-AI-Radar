@@ -753,7 +753,9 @@
   observe(document);
   loadNews();
   getJSON(BASE + 'threads.json').then((d) => { threads = d; renderThreads(); });
-  getJSON(BASE + 'tibo.json').then((d) => { tibo = d; renderTibo(); });
+  // B2 隱藏時不載入
+  const tiboOn = !$('#reset').hidden;
+  if (tiboOn) getJSON(BASE + 'tibo.json').then((d) => { tibo = d; renderTibo(); });
   getJSON(BASE + 'unwind.json').then(renderTech);
   getJSON(BASE + 'events.json').then(renderEvents);
   feedSection({ root: '#ai', url: 'ai.json', types: { lab: '官方部落格', media: '科技媒體' } });
@@ -768,7 +770,7 @@
     setInterval(() => {
       dateline();
       loadNews();
-      getJSON('tibo.json').then((d) => { if (d) { tibo = d; renderTibo(); } });
+      if (tiboOn) getJSON('tibo.json').then((d) => { if (d) { tibo = d; renderTibo(); } });
     }, 10 * 60 * 1000);
   }
 })();
