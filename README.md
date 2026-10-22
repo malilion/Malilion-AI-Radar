@@ -1,6 +1,6 @@
 # Malilion AI Radar
 
-每小時自動更新的新聞與 AI 情報網站：台灣要聞、Threads 社群、AI 業界動態、開發者雷達與社群活動，全部由 GitHub Actions 抓取、存檔並部署到 GitHub Pages。
+每小時自動更新的新聞與 AI 情報網站：台灣要聞、Threads 社群、Codex 重置雷達、AI 業界動態、開發者雷達與社群活動，全部由 GitHub Actions 抓取、存檔並部署到 GitHub Pages。
 
 **網站**：<https://malilion.github.io/Malilion-AI-Radar/>
 
@@ -14,6 +14,7 @@
 | A1 | 頭版 | 頭條、兩則次要新聞、三則短訊 |
 | A2 | 要聞 | 多欄新聞列表，可搜尋、依媒體篩選、只看未讀 |
 | B1 | 社群版 | Threads 貼文引述卡，依互動分數排序，可依帳號篩選 |
+| B2 | 重置雷達 | 追蹤 Tibo（[@thsottiaux](https://x.com/thsottiaux)，OpenAI Codex 負責人）的 X 貼文，判斷 Codex 額度是不是要重置了：上方印章顯示「已重置／即將重置／未見重置訊號」，下方列出近期貼文，可只看重置訊號或談額度的貼文 |
 | C1 | 科技副刊 | Unwind AI 電子報，橫向捲動封面卡 |
 | C2 | AI 業界動態 | 「官方部落格／科技媒體」兩個分頁，可依來源篩選 |
 | C3 | 開發者雷達 | 「GitHub 趨勢／Hacker News／論文／部落格／Reddit／版本更新」六個分頁，排行榜類標示名次 |
@@ -21,7 +22,7 @@
 
 其他功能：
 
-- **電子報**：每期自動排好一份電子報（頭版與要聞、AI 業界、開發者雷達、Threads、社群活動），可「複製郵件內容」直接貼進 Gmail／Outlook／電子報平台，或下載 HTML、Markdown；網址為 `newsletter/YYYY-MM-DD.html`，`newsletter/latest.html` 為最新一期
+- **電子報**：每期自動排好一份電子報（頭版與要聞、AI 業界、開發者雷達、Threads、Codex 重置雷達、社群活動），可「複製郵件內容」直接貼進 Gmail／Outlook／電子報平台，或下載 HTML、Markdown；網址為 `newsletter/YYYY-MM-DD.html`，`newsletter/latest.html` 為最新一期
 - **往期**：每天的版面都存檔，按「往期」選日期回看，網址為 `?d=YYYY-MM-DD`
 - **已讀**：點過的文章會變淡，可切換「只看未讀」
 - **收藏**：按 ☆ 收藏，在收藏夾集中查看
@@ -35,6 +36,7 @@
 |----|------|------|
 | A1、A2 | [Google 新聞 RSS（台灣）](https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant) | RSS 前 6 則排進頭版，其餘進要聞 |
 | B1 | Threads（透過 [threads-toolkit](https://github.com/Chuanyin1202/threads-toolkit)），帳號清單在 `threads-keywords.json` | 追蹤帳號近 72 小時的貼文，分數 = 讚 + 回覆×2 + 轉發×3 |
+| B2 | X：[@thsottiaux](https://x.com/thsottiaux)，經 syndication 時間軸與 Nitter 類鏡像 RSS（`scripts/fetch_tibo.py`） | 近 14 天、最多 30 則；判斷規則見下方「重置雷達」 |
 | C1 | [Unwind AI RSS](https://rss.beehiiv.com/feeds/fMHDv0Uk41.xml) | 最新 30 篇 |
 | C2 | `ai-feeds.json` | 近 14 天、每家最多 6 則，依時間排序 |
 | C3 | `dev-feeds.json` | 保留各來源原本的排名，重複連結只留一次 |
@@ -58,6 +60,16 @@
 
 英文標題與摘要會翻成繁體中文（需設定 `ANTHROPIC_API_KEY`，見下方「設定」）；已是中文的內容、版本號不會送去翻譯。
 
+**B2 重置雷達**的判斷規則（`scripts/fetch_tibo.py` 的 `signal()`）：
+
+| 標記 | 條件 |
+|------|------|
+| 重置訊號 | 提到 reset／重置，且提到 limit、usage、quota、credits、weekly、5h 等額度字眼，或 Codex、everyone、Plus、Pro 等對象 |
+| 預告重置 | 同上，但有 will、tomorrow、soon、shortly 等未來式 |
+| 談額度 | 只提到額度字眼，沒提到 reset |
+
+網站狀態：24 小時內有「重置訊號」顯示**已重置**；48 小時內有較新的「預告重置」顯示**即將重置**；否則顯示**未見重置訊號**與最近一次重置公告的時間。最近一次的重置／預告會從存檔接續記住。這只是關鍵字判斷，請以官方公告為準。
+
 ## 運作方式
 
 ### Update news（`.github/workflows/update-news.yml`）
@@ -69,6 +81,7 @@
    | 程式 | 輸出 |
    |------|------|
    | `scripts/fetch_news.py` | `news.json` |
+   | `scripts/fetch_tibo.py` | `tibo.json`（含翻譯） |
    | `scripts/fetch_unwind.py` | `unwind.json`（含翻譯） |
    | `scripts/fetch_ai_feeds.py` | `ai.json`（讀 `ai-feeds.json`） |
    | `scripts/fetch_ai_feeds.py dev-feeds.json site/dev.json cache/dev_zh.json` | `dev.json` |
@@ -89,7 +102,7 @@
 ### 存檔（資料疊加、永久保留）
 
 - **今天的版面整天累積**：舊的新聞不會被洗掉，同一篇只留一份，翻譯沿用不重複計費
-- **每天一期**：存在 `archive/YYYY-MM-DD/`，有 `news`、`threads`、`unwind`、`ai`、`dev`、`events` 六個 JSON；`archive/index.json` 是往期目錄
+- **每天一期**：存在 `archive/YYYY-MM-DD/`，有 `news`、`threads`、`tibo`、`unwind`、`ai`、`dev`、`events` 七個 JSON；`archive/index.json` 是往期目錄
 - **失敗備援**：某來源這一輪失敗時，沿用最近一次的存檔，版面不會空白
 - **排名標示**：GitHub、HN、Reddit 的名次只標在這一輪仍在榜上的項目
 - `site/*.json` 是每輪的暫存檔，不進版本庫
@@ -102,6 +115,7 @@
 |------|--------|
 | 翻譯 | Settings → Secrets and variables → Actions 新增 `ANTHROPIC_API_KEY`。沒設定時顯示英文原文。翻譯結果以文章連結為鍵快取 |
 | Threads 帳號 | `threads-keywords.json` 的 `accounts`（不含 @）；`hotWindowHours` 是時間範圍，`keywords` 是搜尋模式（未登入時中文關鍵字常抓不到） |
+| 重置雷達來源 | X 未登入沒有公開 API，`fetch_tibo.py` 依序試 X syndication 時間軸與幾個 Nitter 類鏡像站，抓到的合併。鏡像站常常掛掉；可在 Settings → Secrets and variables → Actions → Variables 新增 `TIBO_FEEDS`（逗號分隔的 RSS 網址，例如自架 RSSHub 的 `/twitter/user/thsottiaux`）當備援 |
 | AI／開發者來源 | `ai-feeds.json`、`dev-feeds.json`（欄位見下表） |
 | 社群活動 | `scripts/fetch_events.py` 的 `CHAPTERS`（community.dev 分會名稱與 ID） |
 | 社群目錄 | `site/index.html` 的 `#community` 區塊 |
@@ -132,6 +146,7 @@
 
 ```bash
 python3 scripts/fetch_news.py
+python3 scripts/fetch_tibo.py
 python3 scripts/fetch_unwind.py
 python3 scripts/fetch_ai_feeds.py
 python3 scripts/fetch_ai_feeds.py dev-feeds.json site/dev.json cache/dev_zh.json
@@ -156,6 +171,7 @@ threads-keywords.json  B1 帳號
 
 ## 注意事項
 
+- X 沒有免登入的正式管道，重置雷達靠 X 嵌入用的時間軸與第三方鏡像站，可能隨時失效；失敗時沿用最近一次存檔。
 - Threads 抓取是用瀏覽器自動化讀取公開頁面，可能被登入牆或機房 IP 擋下，也可能不符合 Threads 使用條款，請自行評估。
 - Reddit 未登入時每個 IP 的請求額度很小，所以四個版合併成一次請求；遇到 429 會依 Reddit 指示的秒數等待重試，仍可能偶爾失敗，失敗時沿用當天稍早的存檔。
 - 頭版排序沿用 Google 新聞 RSS 的順序，不是實際閱讀數。

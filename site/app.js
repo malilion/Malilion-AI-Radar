@@ -358,6 +358,97 @@
     observe(list);
   }
 
+  // ---------- 重置雷達（Tibo on X） ----------
+  let tibo = null;
+  let tiboFilter = '';
+  let tiboLimit = 8;
+  const SIGNALS = { reset: '重置訊號', soon: '預告重置', limits: '談額度' };
+  const KINDS = { repost: '轉貼', reply: '回覆' };
+  const fullDate = (iso) => new Intl.DateTimeFormat('zh-TW', { timeZone: TZ, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(Date.parse(iso));
+
+  function renderResetStatus() {
+    const box = $('#resetStatus');
+    box.textContent = '';
+    if (!tibo) { box.hidden = true; return; }
+    box.hidden = false;
+    // 看存檔時以當天結束為準，今天則以現在為準
+    const ref = DAY ? Date.parse(`${DAY}T23:59:59+08:00`) : Date.now();
+    const age = (m) => (m ? ref - Date.parse(m.pubDate) : Infinity);
+    const r = tibo?.last_reset;
+    const s = tibo?.last_soon;
+    let state = 'none';
+    let mark = r;
+    if (age(r) >= 0 && age(r) < 24 * 3600e3) state = 'reset';
+    else if (age(s) >= 0 && age(s) < 48 * 3600e3 && (!r || Date.parse(s.pubDate) > Date.parse(r.pubDate))) { state = 'soon'; mark = s; }
+    const label = { reset: '已重置', soon: '即將重置', none: '未見重置訊號' }[state];
+    box.className = `reset reset--${state}`;
+    const stamp = el('span', 'reset__stamp', label);
+    const text = el('div', 'reset__text');
+    const head = { reset: 'Tibo 在 24 小時內宣布重置額度', soon: 'Tibo 預告即將重置額度', none: '最近沒有重置公告' }[state];
+    text.append(el('p', 'reset__head', head));
+    if (mark) {
+      const when = el('p', 'reset__when', `${state === 'soon' ? '預告' : '最近一次重置公告'}：${fullDate(mark.pubDate)}（${ago(mark.pubDate)}）`);
+      text.append(when);
+      const a = el('a', 'reset__quote', mark.text.length > 180 ? `${mark.text.slice(0, 180)}…` : mark.text);
+      const href = safeUrl(mark.link);
+      if (href) a.href = href;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      text.append(a);
+    } else {
+      text.append(el('p', 'reset__when', '近 14 天的貼文沒有提到重置'));
+    }
+    box.append(stamp, text);
+  }
+
+  function renderTibo() {
+    const list = $('#tiboList');
+    const chips = $('#tiboFilter');
+    list.textContent = '';
+    chips.textContent = '';
+    const items = tibo?.items || [];
+    renderResetStatus();
+    if (!items.length) {
+      $('#tiboEmpty').textContent = 'X 暫時抓不到 Tibo 的貼文，下一次整點更新會再試。';
+      $('#tiboEmpty').hidden = false;
+      $('#tiboMore').hidden = true;
+      return;
+    }
+    $('#tiboEmpty').hidden = true;
+    const groups = { '': items, signal: items.filter((p) => p.signal === 'reset' || p.signal === 'soon'), limits: items.filter((p) => p.signal === 'limits') };
+    for (const [value, label] of [['', '全部'], ['signal', '重置訊號'], ['limits', '談額度']]) {
+      const b = el('button', 'chip', label);
+      b.type = 'button';
+      b.append(el('small', null, groups[value].length));
+      b.setAttribute('aria-pressed', String(tiboFilter === value));
+      b.addEventListener('click', () => { tiboFilter = value; tiboLimit = 8; renderTibo(); });
+      chips.append(b);
+    }
+    const shown = groups[tiboFilter] || items;
+    shown.slice(0, tiboLimit).forEach((p, i) => {
+      const main = p.text_zh || p.text;
+      const entry = { id: p.link, kind: 'tibo', title: main.slice(0, 60), link: p.link, src: `@${p.author}`, date: p.pubDate };
+      const li = el('li', 'dispatch item reveal');
+      li.style.setProperty('--d', `${(i % 2) * 0.06}s`);
+      if (p.signal === 'reset' || p.signal === 'soon') li.classList.add('dispatch--signal');
+      if (read.has(entry.id)) li.classList.add('is-read');
+      const text = el('div');
+      const src = el('span', 'dispatch__src', `@${p.author}${KINDS[p.kind] ? ` · ${KINDS[p.kind]}` : ''}`);
+      if (SIGNALS[p.signal]) src.append(el('span', `signal signal--${p.signal}`, SIGNALS[p.signal]));
+      const h = el('h3', 'dispatch__title t');
+      h.append(el('span', 'hl', main));
+      text.append(src, h);
+      if (p.text_zh && p.text_zh !== p.text) text.append(el('p', 'dispatch__orig', p.text));
+      text.append(metaLine('', p.pubDate));
+      li.append(articleLink(entry, [text]), starButton(entry));
+      list.append(li);
+    });
+    const more = $('#tiboMore');
+    more.hidden = shown.length <= tiboLimit;
+    more.textContent = `顯示更多（還有 ${shown.length - tiboLimit} 則）`;
+    observe(list);
+  }
+
   // ---------- 科技副刊 ----------
   function renderTech(d) {
     const rail = $('#techRail');
@@ -530,7 +621,7 @@
 
   // ---------- 往期 ----------
   const issueNo = (date) => Math.max(1, Math.round((Date.parse(`${date}T00:00:00Z`) - FIRST_ISSUE) / 864e5) + 1);
-  const SECTION_NAMES = { news: '要聞', threads: '社群', unwind: '副刊', ai: 'AI', dev: '開發者', events: '活動' };
+  const SECTION_NAMES = { news: '要聞', threads: '社群', tibo: '重置', unwind: '副刊', ai: 'AI', dev: '開發者', events: '活動' };
 
   function archiveNote() {
     // 電子報連到正在看的這一期
@@ -609,6 +700,7 @@
       renderNews();
     });
     $('#threadsMore').addEventListener('click', () => { threadsLimit += PAGE; renderThreads(); });
+    $('#tiboMore').addEventListener('click', () => { tiboLimit += 8; renderTibo(); });
 
     const rail = $('#techRail');
     $$('[data-rail]').forEach((b) => b.addEventListener('click', () => {
@@ -661,6 +753,7 @@
   observe(document);
   loadNews();
   getJSON(BASE + 'threads.json').then((d) => { threads = d; renderThreads(); });
+  getJSON(BASE + 'tibo.json').then((d) => { tibo = d; renderTibo(); });
   getJSON(BASE + 'unwind.json').then(renderTech);
   getJSON(BASE + 'events.json').then(renderEvents);
   feedSection({ root: '#ai', url: 'ai.json', types: { lab: '官方部落格', media: '科技媒體' } });
@@ -671,5 +764,11 @@
     ranked: ['github', 'hn', 'reddit'],
   });
   // 頁面放著不關時，每 10 分鐘更新相對時間與資料
-  if (!DAY) setInterval(() => { dateline(); loadNews(); }, 10 * 60 * 1000);
+  if (!DAY) {
+    setInterval(() => {
+      dateline();
+      loadNews();
+      getJSON('tibo.json').then((d) => { if (d) { tibo = d; renderTibo(); } });
+    }, 10 * 60 * 1000);
+  }
 })();

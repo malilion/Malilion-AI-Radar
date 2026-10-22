@@ -13,7 +13,7 @@ import shutil
 from datetime import datetime, timedelta, timezone
 
 TZ = timezone(timedelta(hours=8))
-NAMES = ["news", "threads", "unwind", "ai", "dev", "events"]
+NAMES = ["news", "threads", "tibo", "unwind", "ai", "dev", "events"]
 ARCHIVE = "archive"
 SITE = "site"
 
@@ -43,7 +43,7 @@ def merge_list(new, old, key, now, by_date=False):
             continue
         o = old_by_key.get(k, {})
         # 翻譯只在第一次抓到時產生，這一輪沒翻到就沿用舊的
-        for f in ("title_zh", "summary_zh"):
+        for f in ("title_zh", "summary_zh", "text_zh"):
             if f not in n and f in o:
                 n[f] = o[f]
         n["first_seen"] = o.get("first_seen", now)
@@ -68,7 +68,7 @@ def merge(name, new, old, now):
         # 這一輪沒抓到的帳號，保留今天稍早的結果
         groups += [{"keyword": k, "posts": [dict(p, latest=False) for p in v]} for k, v in old_groups.items()]
         return {**new, "groups": groups}
-    merged = merge_list(new.get("items", []), old.get("items", []), "link", now, by_date=(name == "ai"))
+    merged = merge_list(new.get("items", []), old.get("items", []), "link", now, by_date=(name in ("ai", "tibo")))
     if name == "events":
         merged.sort(key=lambda o: o.get("start") or "")
     return {**new, "items": merged}

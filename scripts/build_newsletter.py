@@ -5,7 +5,7 @@
 - YYYY-MM-DD.email.html  可直接貼進 Gmail／電子報平台的郵件 HTML（表格排版、行內樣式）
 - YYYY-MM-DD.md          Markdown 版
 - latest.html            導向最新一期
-內容：頭版與要聞精選、AI 業界、開發者雷達、Threads、社群活動。
+內容：頭版與要聞精選、AI 業界、開發者雷達、Threads、Codex 重置雷達、社群活動。
 """
 import html
 import json
@@ -114,6 +114,14 @@ def collect(day):
             for p in posts[:5]]
     if rows:
         sections.append(("Threads 熱門", "On Threads", rows))
+
+    tibo = (load(day, "tibo") or {}).get("items", [])
+    label = {"reset": "重置訊號", "soon": "預告重置"}
+    rows = [dict(title=(p.get("text_zh") or p.get("text") or "")[:120], link=p["link"],
+                 meta=f"@{p.get('author', '')} · {label[p['signal']]} · {when(p.get('pubDate'))}")
+            for p in tibo if p.get("signal") in label][:3]
+    if rows:
+        sections.append(("Codex 重置雷達", "Tibo on X", rows))
 
     ev = (load(day, "events") or {}).get("items", [])
     ref = datetime.fromisoformat(f"{day}T00:00:00+08:00")

@@ -57,6 +57,12 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python3 scripts/fetch_ai_feeds.py dev-feeds.json site/dev.json cache/dev_zh.json
+      - name: Fetch Tibo on X (Codex reset radar)
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TIBO_FEEDS: ${{ vars.TIBO_FEEDS }}
+        run: python3 scripts/fetch_tibo.py
       # Threads：取 Fetch Threads 最近一次成功的結果；沒有時頁面顯示「暫時沒有資料」
       - name: Find latest Threads run
         id: threads
