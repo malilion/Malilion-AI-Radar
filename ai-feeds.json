@@ -38,6 +38,11 @@
       "type": "lab"
     },
     {
+      "name": "xAI",
+      "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_xainews.xml",
+      "type": "lab"
+    },
+    {
       "name": "Hugging Face",
       "url": "https://huggingface.co/blog/feed.xml",
       "type": "lab"
