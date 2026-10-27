@@ -93,6 +93,16 @@
       "type": "media"
     },
     {
+      "name": "Grok / xAI",
+      "url": "https://news.google.com/rss/search?q=Grok+xAI+when:7d&hl=en-US&gl=US&ceid=US:en",
+      "type": "media"
+    },
+    {
+      "name": "Grok Bot",
+      "url": "https://news.google.com/rss/search?q=%22Grok+bot%22+OR+%40grok+when:14d&hl=en-US&gl=US&ceid=US:en",
+      "type": "media"
+    },
+    {
       "name": "iThome",
       "url": "https://www.ithome.com.tw/rss",
       "type": "media",
