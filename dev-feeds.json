@@ -70,6 +70,54 @@
       "max": 8
     },
     {
+      "name": "n8n Blog",
+      "url": "https://blog.n8n.io/rss/",
+      "type": "blogs",
+      "max": 4
+    },
+    {
+      "name": "n8n 社群",
+      "url": "https://community.n8n.io/latest.rss",
+      "type": "blogs",
+      "max": 6
+    },
+    {
+      "name": "DEV Claude Code",
+      "url": "https://dev.to/feed/tag/claudecode",
+      "type": "blogs",
+      "max": 6
+    },
+    {
+      "name": "DEV Codex",
+      "url": "https://dev.to/feed/tag/codex",
+      "type": "blogs",
+      "max": 6
+    },
+    {
+      "name": "Cursor 論壇 Showcase",
+      "url": "https://forum.cursor.com/c/showcase/9.rss",
+      "type": "blogs",
+      "max": 6
+    },
+    {
+      "name": "Zapier 社群",
+      "url": "https://news.google.com/rss/search?q=site:community.zapier.com+when:14d&hl=en-US&gl=US&ceid=US:en",
+      "type": "blogs",
+      "max": 4
+    },
+    {
+      "name": "Make 社群",
+      "url": "https://community.make.com/latest.rss",
+      "type": "blogs",
+      "max": 6
+    },
+    {
+      "name": "LessWrong",
+      "url": "https://www.lesswrong.com/feed.xml?view=frontpage-rss&karmaThreshold=45",
+      "type": "blogs",
+      "max": 5
+    },
+    {
       "name": "Codex",
       "url": "https://github.com/openai/codex/releases.atom",
       "type": "releases",

@@ -63,6 +63,31 @@
       "type": "lab"
     },
     {
+      "name": "Meta AI",
+      "url": "https://news.google.com/rss/search?q=site:ai.meta.com+when:14d&hl=en-US&gl=US&ceid=US:en",
+      "type": "lab"
+    },
+    {
+      "name": "Microsoft Research",
+      "url": "https://www.microsoft.com/en-us/research/feed/",
+      "type": "lab"
+    },
+    {
+      "name": "Stability AI",
+      "url": "https://stability.ai/news-updates?format=rss",
+      "type": "lab"
+    },
+    {
+      "name": "Apple Machine Learning Research",
+      "url": "https://machinelearning.apple.com/rss.xml",
+      "type": "lab"
+    },
+    {
+      "name": "BAIR Blog",
+      "url": "https://bair.berkeley.edu/blog/feed.xml",
+      "type": "lab"
+    },
+    {
       "name": "TechCrunch",
       "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
       "type": "media"
@@ -112,6 +137,92 @@
       "url": "https://www.ithome.com.tw/rss",
       "type": "media",
       "tz": 8
+    },
+    {
+      "name": "VentureBeat",
+      "url": "https://news.google.com/rss/search?q=site:venturebeat.com+when:7d&hl=en-US&gl=US&ceid=US:en",
+      "type": "media",
+      "max": 4
+    },
+    {
+      "name": "IEEE Spectrum",
+      "url": "https://spectrum.ieee.org/feeds/topic/artificial-intelligence.rss",
+      "type": "media"
+    },
+    {
+      "name": "Axios",
+      "url": "https://api.axios.com/feed/",
+      "type": "media",
+      "max": 4,
+      "exclude": "^(?!.*(\\bAI\\b|\\bA\\.I\\.|artificial intelligence|\\bLLMs?\\b|OpenAI|Anthropic|Claude|ChatGPT|Gemini|Grok|xAI|Nvidia|Copilot|chatbot|machine learning|DeepSeek|Llama|Mistral)).*$"
+    },
+    {
+      "name": "CNBC Tech",
+      "url": "https://www.cnbc.com/id/19854910/device/rss/rss.html",
+      "type": "media",
+      "max": 4,
+      "exclude": "^(?!.*(\\bAI\\b|\\bA\\.I\\.|artificial intelligence|\\bLLMs?\\b|OpenAI|Anthropic|Claude|ChatGPT|Gemini|Grok|xAI|Nvidia|Copilot|chatbot|machine learning|DeepSeek|Llama|Mistral)).*$"
+    },
+    {
+      "name": "Engadget",
+      "url": "https://www.engadget.com/rss.xml",
+      "type": "media",
+      "max": 4,
+      "exclude": "^(?!.*(\\bAI\\b|\\bA\\.I\\.|artificial intelligence|\\bLLMs?\\b|OpenAI|Anthropic|Claude|ChatGPT|Gemini|Grok|xAI|Nvidia|Copilot|chatbot|machine learning|DeepSeek|Llama|Mistral)).*$"
+    },
+    {
+      "name": "Noema Magazine",
+      "url": "https://www.noemamag.com/feed/",
+      "type": "media",
+      "max": 4
+    },
+    {
+      "name": "Import AI",
+      "url": "https://importai.substack.com/feed",
+      "type": "media",
+      "max": 3
+    },
+    {
+      "name": "One Useful Thing",
+      "url": "https://www.oneusefulthing.org/feed",
+      "type": "media",
+      "max": 3
+    },
+    {
+      "name": "Latent Space",
+      "url": "https://www.latent.space/feed",
+      "type": "media",
+      "max": 4
+    },
+    {
+      "name": "Last Week in AI",
+      "url": "https://lastweekin.ai/feed",
+      "type": "media",
+      "max": 3
+    },
+    {
+      "name": "The Sequence",
+      "url": "https://thesequence.substack.com/feed",
+      "type": "media",
+      "max": 4
+    },
+    {
+      "name": "Eugene Yan",
+      "url": "https://eugeneyan.com/rss/",
+      "type": "media",
+      "max": 3
+    },
+    {
+      "name": "Chip Huyen",
+      "url": "https://huyenchip.com/feed.xml",
+      "type": "media",
+      "max": 3
+    },
+    {
+      "name": "Jay Alammar",
+      "url": "https://newsletter.languagemodels.co/feed",
+      "type": "media",
+      "max": 3
     }
   ]
 }
