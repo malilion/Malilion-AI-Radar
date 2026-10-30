@@ -97,6 +97,8 @@ def parse(xml, source, naive_tz=timezone.utc):
     out = []
     for i in items:
         title, link = text_of(i["title"]), i["link"].strip()
+        if link.startswith("http://"):  # 有些部落格（如 BAIR）的 feed 連結是 http，網站本身支援 https
+            link = "https://" + link[len("http://"):]
         if not title or not link.startswith("https://"):
             continue
         summary = clean_summary(text_of(i["raw_summary"]))
