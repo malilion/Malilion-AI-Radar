@@ -71,6 +71,17 @@ def per_source(items, n):
     return out
 
 
+def clip(t, n):
+    """截到 n 字，英文盡量斷在字邊界並加上省略號。"""
+    t = re.sub(r"\s+", " ", t or "").strip()
+    if len(t) <= n:
+        return t
+    cut = t[:n]
+    if " " in cut[n // 2:] and t[n] != " ":
+        cut = cut[:cut.rindex(" ")]
+    return cut.rstrip(" ,.;:，。、") + "…"
+
+
 def img_of(i):
     return safe(i.get("image"))
 
@@ -174,7 +185,7 @@ def _img(r, w):
 
 
 def _story(r, size, w, note_len):
-    note = f'''<div style="margin-top:6px;font:400 13px/1.7 {SANS};color:{INK2};">{esc(r['note'][:note_len])}</div>''' if r.get("note") else ""
+    note = f'''<div style="margin-top:6px;font:400 13px/1.7 {SANS};color:{INK2};">{esc(clip(r['note'], note_len))}</div>''' if r.get("note") else ""
     return (f'''{_img(r, w)}<a href="{esc(safe(r['link']))}" style="font:700 {size}px/1.45 {SERIF};color:{INK};text-decoration:none;">{esc(r['title'])}</a>{note}'''
             f'''<div style="margin-top:6px;font:500 12px/1.4 {SANS};color:{MUTED};">{esc(r['meta'])}</div>''')
 
@@ -246,7 +257,7 @@ def email_html(day, sections):
         else:
             for r in rows:
                 head(r)
-                note = f"""<div style="margin-top:4px;font:400 13px/1.6 {SANS};color:{INK2};">{esc(r['note'][:160])}</div>""" if r.get("note") else ""
+                note = f"""<div style="margin-top:4px;font:400 13px/1.6 {SANS};color:{INK2};">{esc(clip(r['note'], 160))}</div>""" if r.get("note") else ""
                 parts.append(f"""<tr><td style="padding:10px 32px;border-bottom:1px solid {RULE};">
 <a href="{esc(safe(r['link']))}" style="font:700 16px/1.5 {SERIF};color:{INK};text-decoration:none;">{esc(r['title'])}</a>{note}
 <div style="margin-top:4px;font:500 12px/1.4 {SANS};color:{MUTED};">{esc(r['meta'])}</div>
