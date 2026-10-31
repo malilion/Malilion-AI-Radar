@@ -208,22 +208,34 @@ def _grid(rows):
     return out
 
 
+PAGE1 = ("頭版與要聞", "AI 業界動態", "科技副刊")  # 第 1 頁：新聞與 AI；其餘進第 2 頁
+
+
 def email_html(day, sections):
+    p1 = [x for x in sections if x[0] in PAGE1]
+    p2 = [x for x in sections if x[0] not in PAGE1]
+    pages = [x for x in (p1, p2) if x]
+    total = sum(len(r) for _, _, r in sections)
+    return "\n".join(sheet(day, sec, k + 1, len(pages), total) for k, sec in enumerate(pages))
+
+
+def sheet(day, sections, page, pages, total):
     no, d = issue_of(day)
     date_text = f"{d.year} 年 {d.month} 月 {d.day} 日 星期{WEEK[d.weekday()]}"
     web = f"{SITE_URL}?d={day}"
-    total = sum(len(r) for _, _, r in sections)
-    parts = [f"""<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:{PAPER};">
-<tr><td align="center" style="padding:24px 12px;">
-<table role="presentation" width="680" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:680px;background:{CARD};border:1px solid {RULE};">
-<tr><td style="padding:28px 32px 18px;text-align:center;border-bottom:3px double {INK};">
+    mast = f"""<tr><td style="padding:28px 32px 18px;text-align:center;border-bottom:3px double {INK};">
 <div style="font:500 12px/1.4 {SANS};letter-spacing:1px;color:{INK2};">第 {no} 期　·　{date_text}　·　本期收錄 {total} 則</div>
 <div style="margin-top:10px;font:900 40px/1.1 {SERIF};color:{INK};">Malilion <span style="font-weight:500;font-style:italic;color:{ACCENT};">AI Radar</span></div>
 <div style="margin-top:8px;font:500 13px/1.5 {SERIF};letter-spacing:2px;color:{INK2};">台灣要聞 · AI 業界 · 科技副刊 · 開發者雷達</div>
-</td></tr>"""]
+</td></tr>""" if page == 1 else f"""<tr><td style="padding:16px 32px 12px;border-bottom:3px double {INK};font:900 18px/1.2 {SERIF};color:{INK};">Malilion <span style="font-weight:500;font-style:italic;color:{ACCENT};">AI Radar</span>
+<span style="float:right;font:500 12px/1.8 {SANS};color:{INK2};letter-spacing:1px;">第 {no} 期　·　{date_text}</span></td></tr>"""
+    parts = [f"""<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:{PAPER};">
+<tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="680" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:680px;background:{CARD};border:1px solid {RULE};">
+{mast}"""]
     # 本期目錄
     toc = "　·　".join(esc(t) for t, _, _ in sections)
-    parts.append(f"""<tr><td style="padding:10px 32px;border-bottom:1px solid {RULE};text-align:center;font:500 12px/1.6 {SANS};color:{MUTED};">本期內容　{toc}</td></tr>""")
+    parts.append(f"""<tr><td style="padding:10px 32px;border-bottom:1px solid {RULE};text-align:center;font:500 12px/1.6 {SANS};color:{MUTED};">第 {page} 頁　{toc}</td></tr>""")
     for title, en, rows in sections:
         rows = [r for r in rows if safe(r["link"])]
         if not rows:
@@ -262,13 +274,14 @@ def email_html(day, sections):
 <a href="{esc(safe(r['link']))}" style="font:700 16px/1.5 {SERIF};color:{INK};text-decoration:none;">{esc(r['title'])}</a>{note}
 <div style="margin-top:4px;font:500 12px/1.4 {SANS};color:{MUTED};">{esc(r['meta'])}</div>
 </td></tr>""")
-    parts.append(f"""<tr><td style="padding:28px 32px 28px;text-align:center;font:400 12px/1.7 {SANS};color:{MUTED};">
+    folio = f"""<tr><td style="padding:14px 32px;border-top:3px double {INK};text-align:center;font:500 12px/1.6 {SANS};letter-spacing:1px;color:{MUTED};">— 第 {page} 頁 / 共 {pages} 頁 —</td></tr>"""
+    if page == pages:
+        parts.append(f"""<tr><td style="padding:24px 32px 8px;text-align:center;font:400 12px/1.7 {SANS};color:{MUTED};">
 <a href="{esc(web)}" style="color:{ACCENT};font-weight:700;text-decoration:none;">在網站上閱讀完整版面 →</a><br>
 Malilion AI Radar 由 GitHub Actions 每小時自動採編。
-</td></tr>
-</table>
-</td></tr>
-</table>""")
+</td></tr>""")
+    parts.append(folio)
+    parts.append("</table>\n</td></tr>\n</table>")
     return "\n".join(parts)
 
 
@@ -276,6 +289,8 @@ def markdown(day, sections):
     no, d = issue_of(day)
     lines = [f"# Malilion AI Radar · 第 {no} 期", "", f"{d.year} 年 {d.month} 月 {d.day} 日 星期{WEEK[d.weekday()]}", ""]
     for title, _, rows in sections:
+        if title == "開發者雷達":
+            lines += ["---", "", "*第 2 頁*", ""]
         lines += [f"## {title}", ""]
         group = None
         for r in rows:
