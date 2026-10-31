@@ -19,3 +19,21 @@ body { margin: 0; background: #f3eee4; font: 400 15px/1.6 -apple-system, "Segoe 
 .nl-hint.is-ok { color: #8fd18f; }
 :focus-visible { outline: 2px solid #e4583b; outline-offset: 2px; }
 @media (max-width: 640px) { .nl-actions { margin-left: 0; } }
+
+/* 左右翻頁：窄螢幕一次一頁（可滑動、可按鈕、可用方向鍵）；寬螢幕兩頁並排成對頁 */
+#email { display: flex; align-items: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; }
+#email::-webkit-scrollbar { display: none; }
+#email > table { flex: 0 0 100%; scroll-snap-align: start; }
+.nl-pager { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 14px; }
+.nl-pager button {
+  padding: 8px 18px; border: 1px solid #1b1814; border-radius: 999px; background: none; color: #1b1814;
+  font: 500 .85rem/1 inherit; cursor: pointer; transition: background .2s, color .2s;
+}
+.nl-pager button:hover:not(:disabled) { background: #1b1814; color: #f3eee4; }
+.nl-pager button:disabled { opacity: .3; cursor: default; }
+.nl-pager span { font-size: .85rem; color: #6b6155; font-variant-numeric: tabular-nums; }
+@media (min-width: 1480px) {
+  #email { overflow: visible; justify-content: center; }
+  #email > table { flex: 0 0 50%; max-width: 760px; }
+  .nl-pager { display: none; }
+}
