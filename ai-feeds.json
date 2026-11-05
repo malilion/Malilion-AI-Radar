@@ -1,6 +1,9 @@
 {
   "days": 14,
   "maxPerSource": 6,
+  "sort": "score",
+  "halfLifeHours": 36,
+  "weights": { "lab": 1.5, "media": 1.0 },
   "feeds": [
     {
       "name": "OpenAI",
@@ -60,7 +63,8 @@
     {
       "name": "AWS Machine Learning",
       "url": "https://aws.amazon.com/blogs/machine-learning/feed/",
-      "type": "lab"
+      "type": "lab",
+      "weight": 0.7
     },
     {
       "name": "Meta AI",
