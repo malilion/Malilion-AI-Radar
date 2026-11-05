@@ -15,6 +15,7 @@ from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 
 from fetch_unwind import add_translations, text_of
+from rank import dedup, norm_link, parse_engagement, score
 
 # 可用參數覆寫：fetch_ai_feeds.py [設定檔] [輸出檔] [翻譯快取]
 CONFIG, OUT, CACHE = (sys.argv[1:4] + ["ai-feeds.json", "site/ai.json", "cache/ai_zh.json"][len(sys.argv[1:4]):])
@@ -102,7 +103,10 @@ def parse(xml, source, naive_tz=timezone.utc):
         if not title or not link.startswith("https://"):
             continue
         summary = clean_summary(text_of(i["raw_summary"]))
+        points, comments = parse_engagement(i["raw_summary"])
         out.append({
+            "points": points,
+            "comments": comments,
             "category": i["category"],
             "source": source,
             "title": title,
@@ -182,8 +186,11 @@ def main():
             for k, r in group:
                 results[k] = r
 
-    # sort = "date"：全部依時間排序；"feed"：保留各來源原本的排名（如 GitHub Trending、HN 首頁）
-    by_feed = cfg.get("sort", "date") == "feed"
+    # sort = "date"：全部依時間排序；"feed"：保留各來源原本的排名（如 GitHub Trending、HN 首頁）；
+    # "score"：依權重、互動與時間衰減計分排序（見 scripts/rank.py）
+    mode = cfg.get("sort", "date")
+    by_feed = mode == "feed"
+    by_score = mode == "score"
     now = datetime.now(timezone.utc)
     items, errors, seen = [], [e for _, e in results if e], set()
     for feed, (got, _) in zip(cfg["feeds"], results):
@@ -192,7 +199,7 @@ def main():
         if feed.get("exclude"):  # 例如排除預覽版："alpha|beta|rc"
             got = [i for i in got if not re.search(feed["exclude"], i["title"], re.I)]
         since = now - timedelta(days=feed["days"]) if "days" in feed else cutoff
-        fresh = [i for i in got if i["date"] >= since and i["link"] not in seen]
+        fresh = [i for i in got if i["date"] >= since and norm_link(i["link"]) not in seen]
         if not by_feed:
             fresh.sort(key=lambda i: i["date"], reverse=True)
         limit = feed.get("max", per)
@@ -205,14 +212,29 @@ def main():
             fresh = kept
         else:
             fresh = fresh[:limit]
-        seen.update(i["link"] for i in fresh)
+        w = feed.get("weight", cfg.get("weights", {}).get(feed.get("type", "lab"), 1.0))
+        for i in fresh:
+            i["weight"] = w
+        seen.update(norm_link(i["link"]) for i in fresh)
         items += fresh
     if not items:
         sys.exit("所有來源都沒有可用的文章")
-    if not by_feed:
+    if by_score:
+        half = cfg.get("halfLifeHours", 24)
+        for i in items:
+            i["score"] = round(score(i, now, half), 3)
+        items.sort(key=lambda i: i["score"], reverse=True)
+    elif not by_feed:
         items.sort(key=lambda i: i["date"], reverse=True)
+    # 標題相似的只留排在前面的（score 模式即分數較高者）；設 "dedup": false 可關閉
+    if cfg.get("dedup", True):
+        items, dropped = dedup(items)
+        if dropped:
+            print(f"標題／網址去重：略過 {dropped} 則")
     for i in items:
         i["pubDate"] = i.pop("date").astimezone(TZ).isoformat()
+        for f in ("weight", "points", "comments"):
+            i.pop(f, None)
 
     add_translations(items, CACHE)
     for i in items:

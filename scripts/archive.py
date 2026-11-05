@@ -12,6 +12,8 @@ import os
 import shutil
 from datetime import datetime, timedelta, timezone
 
+from rank import dedup
+
 TZ = timezone(timedelta(hours=8))
 NAMES = ["news", "threads", "tibo", "unwind", "ai", "dev", "events"]
 ARCHIVE = "archive"
@@ -68,7 +70,10 @@ def merge(name, new, old, now):
         # 這一輪沒抓到的帳號，保留今天稍早的結果
         groups += [{"keyword": k, "posts": [dict(p, latest=False) for p in v]} for k, v in old_groups.items()]
         return {**new, "groups": groups}
-    merged = merge_list(new.get("items", []), old.get("items", []), "link", now, by_date=(name in ("ai", "tibo")))
+    merged = merge_list(new.get("items", []), old.get("items", []), "link", now, by_date=(name == "tibo" or (name == "ai" and not any("score" in i for i in new.get("items", [])))))
+    if name == "news":
+        # 同一篇文章在不同輪次的網址可能不同，合併後再依標題去重，保留較新的那則
+        merged, _ = dedup(merged)
     if name == "events":
         merged.sort(key=lambda o: o.get("start") or "")
     return {**new, "items": merged}

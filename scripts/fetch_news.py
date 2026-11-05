@@ -8,6 +8,8 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 
+from rank import dedup
+
 RSS_URL = "https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
 OUT = "site/news.json"
 TZ = timezone(timedelta(hours=8))
@@ -49,6 +51,10 @@ def main():
     items = [i for i in items if i["link"].startswith("https://")]
     if not items:
         sys.exit("RSS 沒有任何項目")
+    # 同一事件多家報導只留排在前面的（標題相似度比對，見 scripts/rank.py）
+    items, dropped = dedup(items)
+    if dropped:
+        print(f"標題去重：略過 {dropped} 則")
 
     data = {"updated": datetime.now(TZ).isoformat(timespec="seconds"), "items": items}
     with open(OUT, "w", encoding="utf-8") as f:
