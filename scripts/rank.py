@@ -22,20 +22,32 @@ def _tokens(title):
     return re.findall(r"[0-9a-z]+|[一-鿿]", title.lower())
 
 
-def similar(a, b, threshold=0.85):
+def similar(a, b, threshold=0.85, cjk_threshold=0.6):
     """兩個標題是否是同一件事。數字不同（版本號、期數）一律視為不同。"""
     ta, tb = _tokens(a), _tokens(b)
     if not ta or not tb:
         return False
     if {t for t in ta if t.isdigit()} != {t for t in tb if t.isdigit()}:
         return False
+    # 中文標題沒有空格，用字的雙連詞（bigram）比對
+    ca, cb = [t for t in ta if "\u4e00" <= t <= "\u9fff"], [t for t in tb if "\u4e00" <= t <= "\u9fff"]
+    if len(ca) >= 10 and len(cb) >= 10:
+        ba, bb = set(zip(ca, ca[1:])), set(zip(cb, cb[1:]))
+        if len(ba & bb) / len(ba | bb) >= cjk_threshold:
+            return True
     sa, sb = set(ta), set(tb)
     if len(sa) >= 4 and len(sa & sb) / len(sa | sb) >= 0.75:
         return True
     return SequenceMatcher(None, " ".join(ta), " ".join(tb)).ratio() >= threshold
 
 
-def dedup(items, enabled_types=None):
+def strip_source(title, source=""):
+    """去掉標題結尾的「 - 媒體名」（Google 新聞格式），比對時才不會被媒體名影響。"""
+    suffix = " - " + source
+    return title[: -len(suffix)] if source and title.endswith(suffix) else title
+
+
+def dedup(items):
     """依目前順序保留第一則，丟掉後面網址相同或標題相似的。回傳 (保留清單, 丟掉的數量)。"""
     kept, links = [], set()
     for it in items:
@@ -43,7 +55,7 @@ def dedup(items, enabled_types=None):
         if k in links:
             continue
         check = it.get("type") not in NO_TITLE_DEDUP
-        if check and any(o.get("type") not in NO_TITLE_DEDUP and similar(it["title"], o["title"]) for o in kept):
+        if check and any(o.get("type") not in NO_TITLE_DEDUP and similar(strip_source(it["title"], it.get("source", "")), strip_source(o["title"], o.get("source", ""))) for o in kept):
             continue
         links.add(k)
         kept.append(it)
