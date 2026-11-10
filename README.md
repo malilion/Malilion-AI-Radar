@@ -4,6 +4,8 @@
 
 **網站**：<https://malilion.github.io/Malilion-AI-Radar/>
 
+[![Malilion AI Radar 首頁：報刊風版面](docs/screenshot.webp)](https://malilion.github.io/Malilion-AI-Radar/)
+
 ## 版面
 
 編輯感報刊設計：米白紙、墨黑、印章朱紅，固定淺色版面；標題用思源宋體、內文用思源黑體。單頁由上而下：
@@ -177,3 +179,8 @@ threads-keywords.json  B1 帳號
 - Threads 抓取是用瀏覽器自動化讀取公開頁面，可能被登入牆或機房 IP 擋下，也可能不符合 Threads 使用條款，請自行評估。
 - Reddit 未登入時每個 IP 的請求額度很小，所以四個版合併成一次請求；遇到 429 會依 Reddit 指示的秒數等待重試，仍可能偶爾失敗，失敗時沿用當天稍早的存檔。
 - 頭版排序沿用 Google 新聞 RSS 的順序，不是實際閱讀數。
+
+---
+
+<!-- malilion-ecosystem-footer -->
+<p align="center"><sub>🦁 碼力獅 <a href="https://github.com/malilion">MaliLion</a> 生態系的一員 · <a href="https://malilion.com">malilion.com</a> · <a href="https://github.com/malilion?tab=repositories">更多作品</a></sub></p>
