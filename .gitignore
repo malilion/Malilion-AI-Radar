@@ -13,3 +13,6 @@ site/archive/
 site/events.json
 site/newsletter/*.html
 site/newsletter/*.md
+
+site/hf-papers.json
+site/hf-papers.tmp

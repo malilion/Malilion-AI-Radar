@@ -584,3 +584,7 @@ a:hover .hl, a:focus-visible .hl { background-size: 100% 1px; }
   .bar, .tools, .star, .chips, .more, .rail-ctrl, .skip, .toast { display: none !important; }
   body::before { display: none; }
 }
+
+/* HF 榜單的期間與備援狀態 */
+.papers-status { color: var(--muted); font-size: .8rem; line-height: 1.6; margin: 0 0 16px; }
+.papers-status a { text-decoration: underline; }

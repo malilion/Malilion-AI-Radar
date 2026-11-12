@@ -20,6 +20,7 @@
 | C1 | 科技副刊 | Unwind AI 電子報，橫向捲動封面卡 |
 | C2 | AI 業界動態 | 「官方部落格／科技媒體」兩個分頁，可依來源篩選 |
 | C3 | 開發者雷達 | 「GitHub 趨勢／Hacker News／論文／部落格／Reddit／版本更新」六個分頁，排行榜類標示名次 |
+| C5 | Hugging Face 熱門論文 | 每日／每週／每月 trending 榜、票數與摘要 |
 | C4 | 社群與活動 | 左為近期社群活動，右為加入社群連結目錄（第一張為本站 LINE 社群「碼力獅冒險公會」） |
 
 其他功能：
@@ -160,6 +161,16 @@ cd site && python3 -m http.server 8000   # 開啟 http://localhost:8000
 ```
 
 Threads 需要 Node 22 與 threads-toolkit，在本機較難重現，建議直接在 Actions 執行 Fetch Threads。
+
+## Hugging Face 熱門論文
+
+獨立的 **C5 Hugging Face 熱門論文** 區塊提供「每日／每週／每月」切換，每榜最多 30 篇，保留 Hugging Face `trending` 順序，顯示名次、票數、英文摘要及原論文連結。可收藏、標記已讀、查看往期，電子報每榜選入前 3 篇。
+
+- 使用公開 `https://huggingface.co/api/daily_papers` API，不需要金鑰或額外套件；與官方 `huggingface_hub.HfApi.list_daily_papers` 的參數一致。
+- 日榜使用最近有投稿的日期，避免週末空榜；週榜使用當前 UTC 的 ISO 週（`week=YYYY-Www`），月榜使用當前 UTC 月（`month=YYYY-MM`），皆指定 `sort=trending`。不是自行把日榜累加成週／月榜；票數也不等於 trending 分數。
+- 跟隨 Update news 工作流程每 2 小時更新，輸出 `site/hf-papers.json`，存檔為 `archive/YYYY-MM-DD/hf-papers.json`。排名採當次快照，避免混入已下榜論文；同一論文可出現在不同榜。
+- 單榜失敗時沿用最近一次的該榜，保留原期間與更新時間並標示過期；三榜全失敗以非零狀態結束，CI 仍會繼續其他來源。首次尚無資料或舊存檔沒有此區時顯示空狀態。
+- 本機執行 `python3 scripts/fetch_hf_papers.py`；需允許連線至 `huggingface.co`。驗證：`python3 -m unittest discover -s tests -v`。
 
 ## 專案結構
 

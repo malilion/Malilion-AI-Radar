@@ -126,6 +126,9 @@ jobs:
       - name: Fetch community events
         continue-on-error: true
         run: python3 scripts/fetch_events.py
+      - name: Fetch Hugging Face trending papers (daily, weekly, monthly)
+        continue-on-error: true
+        run: python3 scripts/fetch_hf_papers.py
       - name: Merge into daily archive
         run: python3 scripts/archive.py
       - name: Build newsletter

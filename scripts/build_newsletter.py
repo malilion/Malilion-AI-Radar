@@ -133,6 +133,18 @@ def collect(day):
     if rows:
         sections.append(("開發者雷達", "Dev Radar", rows))
 
+    hf = load(day, "hf-papers") or {}
+    papers = hf.get("items", [])
+    rows = []
+    for period, label in (("daily", "每日"), ("weekly", "每週"), ("monthly", "每月")):
+        for i in [p for p in papers if p.get("type") == period][:3]:
+            rows.append(dict(title=i["title"], link=i["link"], group=label,
+                             meta=f"Hugging Face · #{i.get('rank', '')} · ▲ {i.get('upvotes', 0)}"
+                                  + (f" · 備援榜單 {when(hf['periods'][period].get('updated'))}" if hf.get("periods", {}).get(period, {}).get("stale") else ""),
+                             note=i.get("summary") or ""))
+    if rows:
+        sections.append(("Hugging Face 熱門論文", "Trending Papers", rows))
+
     th = load(day, "threads") or {}
     posts = sorted({p["id"]: p for g in th.get("groups", []) for p in g.get("posts", [])}.values(), key=lambda p: -p.get("score", 0))
     rows = []

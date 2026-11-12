@@ -15,7 +15,7 @@ from datetime import datetime, timedelta, timezone
 from rank import dedup
 
 TZ = timezone(timedelta(hours=8))
-NAMES = ["news", "threads", "tibo", "unwind", "ai", "dev", "events"]
+NAMES = ["news", "threads", "tibo", "unwind", "ai", "dev", "events", "hf-papers"]
 ARCHIVE = "archive"
 SITE = "site"
 
@@ -63,6 +63,9 @@ def merge_list(new, old, key, now, by_date=False):
 def merge(name, new, old, now):
     if not old:
         old = {}
+    if name == "hf-papers":
+        # 榜單是當次快照，不疊加已下榜論文，也不跨期間去重。
+        return new
     if name == "threads":
         old_groups = {g["keyword"]: g["posts"] for g in old.get("groups", [])}
         groups = [{"keyword": g["keyword"], "posts": merge_list(g["posts"], old_groups.pop(g["keyword"], []), "id", now)}

@@ -508,6 +508,18 @@
     function render() {
       list.textContent = '';
       chips.textContent = '';
+      const status = $('.papers-status', sec);
+      if (status) {
+        const info = data?.periods?.[type];
+        status.textContent = info?.updated
+          ? `${info.stale ? '抓取失敗，沿用上次榜單' : 'Hugging Face trending 排序'} · ${info.period === 'latest' ? '最新日榜' : (info.period || '')} · 更新於 ${new Intl.DateTimeFormat('zh-TW', { timeZone: TZ, dateStyle: 'short', timeStyle: 'short' }).format(new Date(info.updated))}`
+          : '尚未取得榜單，等待下次更新。';
+        if (info?.sourceUrl) {
+          const a = el('a', null, ' 查看原榜 ↗');
+          a.href = safeUrl(info.sourceUrl); a.target = '_blank'; a.rel = 'noopener';
+          status.append(a);
+        }
+      }
       // 舊資料沒有 type 時歸到第一個分類
       const items = (data?.items || []).filter((it) => (it.type || tabs[0].dataset.type) === type);
       if (!items.length) {
@@ -548,7 +560,7 @@
         const h = el('h3', 'dispatch__title t');
         h.append(el('span', 'hl', title));
         const label = ranked.includes(type) && rank.has(it) ? `${it.source} · #${rank.get(it)}` : it.source;
-        text.append(el('span', 'dispatch__src', label), h);
+        text.append(el('span', 'dispatch__src', root === '#hf-papers' ? `${it.source} · #${it.rank} · ▲ ${it.upvotes || 0}` : label), h);
         if (it.title_zh && it.title_zh !== it.title) text.append(el('p', 'dispatch__orig', it.title));
         const sum = it.summary_zh || it.summary;
         if (sum) text.append(el('p', 'dispatch__sum', sum));
@@ -621,7 +633,7 @@
 
   // ---------- 往期 ----------
   const issueNo = (date) => Math.max(1, Math.round((Date.parse(`${date}T00:00:00Z`) - FIRST_ISSUE) / 864e5) + 1);
-  const SECTION_NAMES = { news: '要聞', threads: '社群', tibo: '重置', unwind: '副刊', ai: 'AI', dev: '開發者', events: '活動' };
+  const SECTION_NAMES = { news: '要聞', threads: '社群', tibo: '重置', unwind: '副刊', ai: 'AI', dev: '開發者', events: '活動', 'hf-papers': 'HF 論文' };
 
   function archiveNote() {
     // 電子報連到正在看的這一期
@@ -765,6 +777,7 @@
     types: { github: 'GitHub 趨勢', hn: 'Hacker News', papers: '論文', blogs: '部落格與社群', reddit: 'Reddit', releases: '版本更新' },
     ranked: ['github', 'hn', 'reddit'],
   });
+  feedSection({ root: '#hf-papers', url: 'hf-papers.json', types: { daily: '每日熱門論文', weekly: '每週熱門論文', monthly: '每月熱門論文' } });
   // 頁面放著不關時，每 10 分鐘更新相對時間與資料
   if (!DAY) {
     setInterval(() => {

@@ -29,6 +29,7 @@
       <li><a href="#tech">副刊</a></li>
       <li><a href="#ai">AI 業界</a></li>
       <li><a href="#dev">開發者</a></li>
+      <li><a href="#hf-papers">HF 論文</a></li>
       <li><a href="#community">活動</a></li>
     </ul>
     <a class="saved-btn" data-newsletter href="newsletter/latest.html" target="_blank" rel="noopener">電子報</a>
@@ -59,6 +60,7 @@
       <li><a href="#tech"><b>C1</b>副刊</a></li>
       <li><a href="#ai"><b>C2</b>AI 業界</a></li>
       <li><a href="#dev"><b>C3</b>開發者</a></li>
+      <li><a href="#hf-papers"><b>C5</b>HF 論文</a></li>
       <li><a href="#community"><b>C4</b>活動</a></li>
       <li><a data-newsletter href="newsletter/latest.html" target="_blank" rel="noopener"><b>✉</b>電子報</a></li>
       <li><button type="button" data-open-past aria-haspopup="dialog"><b>◷</b>往期</button></li>
@@ -176,6 +178,24 @@
         </div>
       </div>
       <div class="chips" role="group" aria-label="依來源篩選"></div>
+      <ol class="dispatches"></ol>
+      <p class="empty" hidden></p>
+      <div class="more"><button class="more__btn" type="button" hidden>顯示更多</button></div>
+    </div>
+  </section>
+
+  <section class="section" id="hf-papers" aria-labelledby="hf-papers-h">
+    <div class="wrap">
+      <div class="section__head">
+        <h2 class="kicker" id="hf-papers-h"><span class="kicker__no">C5</span>Hugging Face 熱門論文<span class="kicker__en">Trending Papers</span></h2>
+        <div class="seg" role="tablist" aria-label="論文榜單期間">
+          <button type="button" role="tab" class="seg__btn" data-type="daily" aria-selected="true">每日</button>
+          <button type="button" role="tab" class="seg__btn" data-type="weekly" aria-selected="false">每週</button>
+          <button type="button" role="tab" class="seg__btn" data-type="monthly" aria-selected="false">每月</button>
+        </div>
+      </div>
+      <p class="papers-status" aria-live="polite"></p>
+      <div class="chips" role="group" aria-label="論文來源"></div>
       <ol class="dispatches"></ol>
       <p class="empty" hidden></p>
       <div class="more"><button class="more__btn" type="button" hidden>顯示更多</button></div>
