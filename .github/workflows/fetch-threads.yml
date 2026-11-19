@@ -31,7 +31,7 @@ jobs:
           ref: a7748a8bba3e8dcae9c6ca5092aa101eb3710eb5
           path: threads-toolkit
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           check-latest: true
