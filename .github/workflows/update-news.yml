@@ -29,7 +29,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -64,7 +64,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       # 這個 job 只執行本 repo 的程式與官方 actions，保留憑證以便 push 存檔
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Fetch Google News
         continue-on-error: true
         run: python3 scripts/fetch_news.py

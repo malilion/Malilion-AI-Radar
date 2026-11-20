@@ -21,11 +21,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Checkout threads-toolkit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Chuanyin1202/threads-toolkit
           ref: a7748a8bba3e8dcae9c6ca5092aa101eb3710eb5
