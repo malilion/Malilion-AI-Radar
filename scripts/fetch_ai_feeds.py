@@ -3,6 +3,7 @@
 單一來源失敗只會略過該來源；全部失敗時不輸出檔案。"""
 import gzip
 import json
+import os
 import time
 import re
 import sys
@@ -120,8 +121,20 @@ def parse(xml, source, naive_tz=timezone.utc):
     return out
 
 
+def resolve_url(url):
+    """"rsshub:/anthropic/news" 這類網址換成 RSSHUB_BASE（自架 RSSHub 網址）下的完整網址；
+    沒設定 RSSHUB_BASE 時回傳 None，該來源直接略過。"""
+    if not url.startswith("rsshub:"):
+        return url
+    base = os.environ.get("RSSHUB_BASE", "").strip().rstrip("/")
+    return base + url[len("rsshub:"):] if base else None
+
+
 def fetch(feed):
-    req = urllib.request.Request(feed["url"], headers={
+    url = resolve_url(feed["url"])
+    if url is None:
+        return [], None
+    req = urllib.request.Request(url, headers={
         "User-Agent": "Mozilla/5.0 (compatible; daily-paper/1.0; +https://malilion.github.io/Malilion-AI-Radar/)",
         "Accept": "application/rss+xml, application/atom+xml, application/xml;q=0.9, */*;q=0.5",
     })
@@ -170,7 +183,7 @@ def main():
     # 不同網站平行抓；同一個網站依序抓並間隔幾秒，避免被限流
     hosts = {}
     for k, feed in enumerate(cfg["feeds"]):
-        hosts.setdefault(urllib.parse.urlparse(feed["url"]).netloc, []).append(k)
+        hosts.setdefault(urllib.parse.urlparse(resolve_url(feed["url"]) or "").netloc, []).append(k)
 
     def fetch_host(idx):
         out = []

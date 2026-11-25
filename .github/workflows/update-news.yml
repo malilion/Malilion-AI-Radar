@@ -83,11 +83,13 @@ jobs:
         continue-on-error: true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RSSHUB_BASE: ${{ vars.RSSHUB_BASE }}
         run: python3 scripts/fetch_ai_feeds.py
       - name: Fetch developer feeds (GitHub Trending, HN, arXiv, blogs)
         continue-on-error: true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RSSHUB_BASE: ${{ vars.RSSHUB_BASE }}
         run: python3 scripts/fetch_ai_feeds.py dev-feeds.json site/dev.json cache/dev_zh.json
       - uses: actions/download-artifact@v4
         if: false
