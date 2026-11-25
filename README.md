@@ -121,6 +121,7 @@
 | Threads 帳號 | `threads-keywords.json` 的 `accounts`（不含 @）；`hotWindowHours` 是時間範圍，`keywords` 是搜尋模式（未登入時中文關鍵字常抓不到） |
 | 重置雷達來源 | 預設用 TweeterPy 的訪客模式。訪客模式被擋時，到 Settings → Secrets and variables → Actions 新增 secret `X_AUTH_TOKEN`（X 帳號 cookie 裡的 `auth_token`，請用小帳號，不要用個人主帳號），會改用登入模式並連回覆一起抓。另可在 Variables 新增 `TIBO_FEEDS`（逗號分隔的 RSS 網址，例如自架 RSSHub）當備援 |
 | AI／開發者來源 | `ai-feeds.json`、`dev-feeds.json`（欄位見下表） |
+| RSSHub 來源 | 網址寫成 `rsshub:/anthropic/news` 的來源，會接在 Variables 的 `RSSHUB_BASE`（自架 [RSSHub](https://github.com/DIYgod/RSSHub) 網址，不含結尾斜線）後面抓；沒設定就略過，不算錯誤。公開的 rsshub.app 會擋 GitHub Actions，請自架 |
 | 社群活動 | `scripts/fetch_events.py` 的 `CHAPTERS`（community.dev 分會名稱與 ID） |
 | 社群目錄 | `site/index.html` 的 `#community` 區塊 |
 | 更新頻率 | 兩個 workflow 的 `cron`（UTC 時間） |

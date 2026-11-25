@@ -118,6 +118,30 @@
       "max": 5
     },
     {
+      "name": "Ollama Blog",
+      "url": "rsshub:/ollama/blog",
+      "type": "blogs",
+      "max": 3
+    },
+    {
+      "name": "LangChain Blog",
+      "url": "rsshub:/langchain/blog",
+      "type": "blogs",
+      "max": 3
+    },
+    {
+      "name": "Product Hunt",
+      "url": "rsshub:/producthunt/feed",
+      "type": "blogs",
+      "max": 5
+    },
+    {
+      "name": "HelloGitHub",
+      "url": "rsshub:/hellogithub/article",
+      "type": "blogs",
+      "max": 3
+    },
+    {
       "name": "Codex",
       "url": "https://github.com/openai/codex/releases.atom",
       "type": "releases",
@@ -161,6 +185,34 @@
       "days": 45,
       "translate": false,
       "exclude": "alpha|beta|\\d(a|b|rc)\\d|\\brc\\b|-rc|nightly|preview"
+    },
+    {
+      "name": "Cursor Changelog",
+      "url": "rsshub:/cursor/changelog",
+      "type": "releases",
+      "translate": false,
+      "max": 3
+    },
+    {
+      "name": "Windsurf Changelog",
+      "url": "rsshub:/windsurf/changelog",
+      "type": "releases",
+      "translate": false,
+      "max": 3
+    },
+    {
+      "name": "ChatGPT Release Notes",
+      "url": "rsshub:/openai/chatgpt/release-notes",
+      "type": "releases",
+      "translate": false,
+      "max": 3
+    },
+    {
+      "name": "Claude Code Changelog",
+      "url": "rsshub:/claude/code/changelog",
+      "type": "releases",
+      "translate": false,
+      "max": 3
     },
     {
       "name": "Reddit",

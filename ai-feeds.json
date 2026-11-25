@@ -92,6 +92,57 @@
       "type": "lab"
     },
     {
+      "name": "Anthropic Engineering",
+      "url": "rsshub:/anthropic/engineering",
+      "type": "lab"
+    },
+    {
+      "name": "Claude Blog",
+      "url": "rsshub:/claude/blog",
+      "type": "lab"
+    },
+    {
+      "name": "Claude Dev Blog",
+      "url": "rsshub:/claude/dev/blog",
+      "type": "lab"
+    },
+    {
+      "name": "Meta AI Blog",
+      "url": "rsshub:/meta/ai/blog",
+      "type": "lab"
+    },
+    {
+      "name": "DeepSeek",
+      "url": "rsshub:/deepseek/news",
+      "type": "lab"
+    },
+    {
+      "name": "Qwen",
+      "url": "rsshub:/qwen/blog",
+      "type": "lab"
+    },
+    {
+      "name": "Kimi",
+      "url": "rsshub:/kimi/blog",
+      "type": "lab"
+    },
+    {
+      "name": "Perplexity",
+      "url": "rsshub:/perplexity/blog",
+      "type": "lab"
+    },
+    {
+      "name": "Cohere",
+      "url": "rsshub:/cohere/blog",
+      "type": "lab"
+    },
+    {
+      "name": "Google Jules",
+      "url": "rsshub:/google/jules/changelog",
+      "type": "lab",
+      "max": 3
+    },
+    {
       "name": "TechCrunch",
       "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
       "type": "media"
@@ -227,6 +278,18 @@
       "url": "https://newsletter.languagemodels.co/feed",
       "type": "media",
       "max": 3
+    },
+    {
+      "name": "量子位",
+      "url": "rsshub:/qbitai/category/资讯",
+      "type": "media",
+      "max": 4
+    },
+    {
+      "name": "AIbase",
+      "url": "rsshub:/aibase/news",
+      "type": "media",
+      "max": 4
     }
   ]
 }
