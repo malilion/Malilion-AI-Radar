@@ -49,7 +49,7 @@ jobs:
           path: tibo-raw/posts.json
           retention-days: 1
 
-  deploy:
+  build:
     needs: tibo
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
@@ -57,11 +57,7 @@ jobs:
     permissions:
       contents: write    # 把每日存檔 commit 回 main
       actions: read      # 讀取 Fetch Threads 最近一次成功的成品
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      pages: read        # configure-pages 讀取 Pages 設定
     steps:
       # 這個 job 只執行本 repo 的程式與官方 actions，保留憑證以便 push 存檔
       - uses: actions/checkout@v7
@@ -152,5 +148,19 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site
+
+  # deploy-pages 一開始就列出本次 run 的 artifacts；跟上傳放在同一個 job 時，
+  # 常常還看不到剛上傳的 github-pages（actions/deploy-pages#451）。拆成下一個 job 就穩定。
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v5
