@@ -127,6 +127,12 @@ jobs:
       - name: Fetch Hugging Face trending papers (daily, weekly, monthly)
         continue-on-error: true
         run: python3 scripts/fetch_hf_papers.py
+      - name: Fetch iPAS exam schedule
+        continue-on-error: true
+        run: python3 scripts/fetch_cert_schedules.py
+      - name: Build AI certificates (status, countdown, calendar)
+        continue-on-error: true
+        run: python3 scripts/build_certs.py
       - name: Merge into daily archive
         run: python3 scripts/archive.py
       - name: Build newsletter

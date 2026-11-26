@@ -631,17 +631,20 @@
     observe(list);
   }
 
-  // ---------- 免費 AI 證照（靜態清單，不隨存檔變動） ----------
+  // ---------- AI 證照（資料由 scripts/build_certs.py 產生） ----------
   function certSection() {
     const chips = $('#certs .chips');
     const list = $('#certList');
+    const COST = { free: '免費', freemium: '免費上課／付費領證', paid: '需報名費', voucher_available: '常有免費或折扣券' };
+    const SCHED = { fixed_batch: '固定梯次', on_demand: '隨報隨考', campaign: '限時活動' };
+    const STATUS = { upcoming: '即將開放', open: '報名中', closing_soon: '即將截止', closed: '已截止' };
     let all = [];
     let cur = '全部';
     function render() {
       chips.textContent = '';
-      const domains = ['全部', ...new Set(all.map((c) => c.domain))];
-      domains.forEach((d) => {
-        const n = d === '全部' ? all.length : all.filter((c) => c.domain === d).length;
+      const cats = ['全部', ...new Set(all.flatMap((c) => c.category))];
+      cats.forEach((d) => {
+        const n = d === '全部' ? all.length : all.filter((c) => c.category.includes(d)).length;
         const b = el('button', 'chip', d);
         b.type = 'button';
         b.setAttribute('aria-pressed', String(d === cur));
@@ -650,16 +653,21 @@
         chips.append(b);
       });
       list.textContent = '';
-      all.filter((c) => cur === '全部' || c.domain === cur).forEach((c) => {
+      all.filter((c) => cur === '全部' || c.category.includes(cur)).forEach((c) => {
+        const n = c.next;
         const li = el('li');
         const a = el('a', 'club');
-        a.href = safeUrl(c.link);
+        a.href = safeUrl(c.official_url);
         a.target = '_blank';
         a.rel = 'noopener';
-        a.append(el('span', 'club__tag', `${c.free ? '免費證書' : '免費學習'} · ${c.provider}`),
+        const when = n
+          ? `${STATUS[n.status]} · ${n.batch_name}${n.days_left != null ? `（剩 ${n.days_left} 天）` : ''}${n.stale ? ' · 待確認' : ''}`
+          : c.schedule_type === 'fixed_batch' ? '梯次待公告，請看官網' : SCHED[c.schedule_type];
+        a.append(el('span', 'club__tag', `${COST[c.cost_type] || c.cost_type} · ${c.issuer}`),
           el('span', 'club__name', c.title),
-          el('span', 'club__desc', `${c.topics}`),
-          el('span', 'club__desc', `${c.duration} · ${c.credential}`),
+          el('span', 'club__desc', `${c.level} · ${c.language.join('／')}${c.validity_years ? ` · 效期 ${c.validity_years} 年` : ''}`),
+          el('span', 'club__desc', `${c.regular_price}`),
+          el('span', `club__desc cert-when${n ? ` is-${n.status}` : ''}`, when),
           el('span', 'club__go', '↗'));
         a.lastChild.setAttribute('aria-hidden', 'true');
         li.append(a);

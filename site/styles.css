@@ -439,6 +439,9 @@ a:hover .hl, a:focus-visible .hl { background-size: 100% 1px; }
 @media (max-width: 900px) { .certs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .certs { grid-template-columns: 1fr; } }
 
+.cert-when { font-weight: 700; color: var(--ink-2); }
+.cert-when.is-open, .cert-when.is-closing_soon { color: var(--accent); }
+
 /* ---------- 版權頁 ---------- */
 .colophon { margin-top: clamp(40px, 6vw, 80px); padding: 28px 0 calc(40px + env(safe-area-inset-bottom)); border-top: 3px double var(--rule-strong); font-size: .82rem; color: var(--ink-2); }
 .colophon .wrap { display: grid; gap: 8px; }
