@@ -1,0 +1,23 @@
+name: 新增或更正證照梯次／優惠
+description: 回報新的報名梯次、免費活動、折扣券，或更正過期資訊
+labels: [certs]
+body:
+  - type: input
+    id: cert
+    attributes: { label: 證照（cert_id 或名稱）, placeholder: ipas-ai-planner }
+    validations: { required: true }
+  - type: input
+    id: batch
+    attributes: { label: 梯次或活動名稱 }
+    validations: { required: true }
+  - type: input
+    id: dates
+    attributes: { label: 報名起訖與考試日期, description: "YYYY-MM-DD；考試可填區間 YYYY-MM-DD/YYYY-MM-DD" }
+    validations: { required: true }
+  - type: textarea
+    id: promo
+    attributes: { label: 優惠說明（選填） }
+  - type: input
+    id: source
+    attributes: { label: 官方來源網址, description: 請提供官方簡章或活動頁，不接受第三方轉載 }
+    validations: { required: true }

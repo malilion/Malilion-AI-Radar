@@ -1,0 +1,315 @@
+{
+ "certifications": [
+  {
+   "cert_id": "ipas-ai-planner",
+   "title": "iPAS AI 應用規劃師（初級／中級）",
+   "issuer": "經濟部產業發展署 iPAS",
+   "category": [
+    "台灣官方",
+    "商業應用"
+   ],
+   "level": "入門／中級",
+   "schedule_type": "fixed_batch",
+   "cost_type": "paid",
+   "regular_price": "依當期簡章（115–116 年有團報／優惠價）",
+   "language": [
+    "繁體中文"
+   ],
+   "validity_years": null,
+   "official_url": "https://ipd.nat.gov.tw/ipas/certification/AIAP/news",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "aiatc-ai",
+   "title": "台灣人工智慧學校 AIATC 認證",
+   "issuer": "台灣人工智慧學校",
+   "category": [
+    "台灣官方",
+    "技術開發"
+   ],
+   "level": "依認證等級",
+   "schedule_type": "fixed_batch",
+   "cost_type": "paid",
+   "regular_price": "依官網公告",
+   "language": [
+    "繁體中文"
+   ],
+   "validity_years": null,
+   "official_url": "https://aiatc.tw/",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "csf-tqc-ai",
+   "title": "TQC+ 人工智慧相關檢定",
+   "issuer": "中華民國電腦技能基金會（CSF）",
+   "category": [
+    "台灣官方",
+    "技術開發"
+   ],
+   "level": "依檢定科目",
+   "schedule_type": "fixed_batch",
+   "cost_type": "paid",
+   "regular_price": "依考期查詢表",
+   "language": [
+    "繁體中文"
+   ],
+   "validity_years": null,
+   "official_url": "https://www.csf.org.tw/",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "ms-ai-900",
+   "title": "Microsoft Azure AI Fundamentals（AI-900）",
+   "issuer": "Microsoft",
+   "category": [
+    "雲端 AI",
+    "國際認證"
+   ],
+   "level": "入門／基礎",
+   "schedule_type": "on_demand",
+   "cost_type": "voucher_available",
+   "regular_price": "依地區定價；Virtual Training Day 常送折扣券",
+   "language": [
+    "英文",
+    "繁體中文"
+   ],
+   "validity_years": null,
+   "official_url": "https://learn.microsoft.com/credentials/certifications/azure-ai-fundamentals/",
+   "prep_resources": [
+    "https://events.microsoft.com/"
+   ]
+  },
+  {
+   "cert_id": "aws-aif-c01",
+   "title": "AWS Certified AI Practitioner（AIF-C01）",
+   "issuer": "AWS",
+   "category": [
+    "雲端 AI",
+    "國際認證"
+   ],
+   "level": "入門／基礎",
+   "schedule_type": "on_demand",
+   "cost_type": "voucher_available",
+   "regular_price": "USD 100（活動期間常有考試折扣）",
+   "language": [
+    "英文"
+   ],
+   "validity_years": 3,
+   "official_url": "https://aws.amazon.com/certification/certified-ai-practitioner/",
+   "prep_resources": [
+    "https://aws.amazon.com/events/"
+   ]
+  },
+  {
+   "cert_id": "gcp-genai-leader",
+   "title": "Google Cloud Generative AI Leader",
+   "issuer": "Google Cloud",
+   "category": [
+    "雲端 AI",
+    "國際認證"
+   ],
+   "level": "入門／基礎",
+   "schedule_type": "on_demand",
+   "cost_type": "voucher_available",
+   "regular_price": "USD 99（活動期間可能送考試券）",
+   "language": [
+    "英文"
+   ],
+   "validity_years": 3,
+   "official_url": "https://cloud.google.com/learn/certification/generative-ai-leader",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "nvidia-dli",
+   "title": "NVIDIA Deep Learning Institute 課程與證書",
+   "issuer": "NVIDIA",
+   "category": [
+    "技術開發",
+    "國際認證"
+   ],
+   "level": "基礎／中級",
+   "schedule_type": "on_demand",
+   "cost_type": "freemium",
+   "regular_price": "部分自學課程免費，工作坊與證書依課程",
+   "language": [
+    "英文"
+   ],
+   "validity_years": null,
+   "official_url": "https://www.nvidia.com/en-us/training/",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "hf-learn",
+   "title": "Hugging Face Learn（LLM、Agents、Diffusion 等課程）",
+   "issuer": "Hugging Face",
+   "category": [
+    "免費課程",
+    "技術開發"
+   ],
+   "level": "基礎／中級",
+   "schedule_type": "on_demand",
+   "cost_type": "free",
+   "regular_price": "Free",
+   "language": [
+    "英文"
+   ],
+   "validity_years": null,
+   "official_url": "https://huggingface.co/learn",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "dlai-short-courses",
+   "title": "DeepLearning.AI Short Courses",
+   "issuer": "DeepLearning.AI",
+   "category": [
+    "免費課程",
+    "技術開發"
+   ],
+   "level": "基礎／中級",
+   "schedule_type": "on_demand",
+   "cost_type": "free",
+   "regular_price": "Free（以課程頁標示為準）",
+   "language": [
+    "英文"
+   ],
+   "validity_years": null,
+   "official_url": "https://www.deeplearning.ai/short-courses/",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "anthropic-academy",
+   "title": "Anthropic Academy",
+   "issuer": "Anthropic",
+   "category": [
+    "免費課程",
+    "技術開發"
+   ],
+   "level": "入門／中級",
+   "schedule_type": "on_demand",
+   "cost_type": "free",
+   "regular_price": "Free（以課程頁標示為準）",
+   "language": [
+    "英文"
+   ],
+   "validity_years": null,
+   "official_url": "https://anthropic.skilljar.com/",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "openai-academy",
+   "title": "OpenAI Academy",
+   "issuer": "OpenAI",
+   "category": [
+    "免費課程",
+    "商業應用"
+   ],
+   "level": "入門／中級",
+   "schedule_type": "on_demand",
+   "cost_type": "free",
+   "regular_price": "Free（以課程頁標示為準）",
+   "language": [
+    "英文"
+   ],
+   "validity_years": null,
+   "official_url": "https://academy.openai.com/",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "kaggle-learn",
+   "title": "Kaggle Learn 微課程",
+   "issuer": "Kaggle",
+   "category": [
+    "免費課程",
+    "技術開發"
+   ],
+   "level": "入門／基礎",
+   "schedule_type": "on_demand",
+   "cost_type": "free",
+   "regular_price": "Free",
+   "language": [
+    "英文"
+   ],
+   "validity_years": null,
+   "official_url": "https://www.kaggle.com/learn",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "tw-sme-learning",
+   "title": "中小企業網路大學校 AI 專區",
+   "issuer": "經濟部中小及新創企業署",
+   "category": [
+    "台灣官方",
+    "免費課程",
+    "商業應用"
+   ],
+   "level": "入門／基礎",
+   "schedule_type": "on_demand",
+   "cost_type": "free",
+   "regular_price": "Free",
+   "language": [
+    "繁體中文"
+   ],
+   "validity_years": null,
+   "official_url": "https://smelearning.sme.gov.tw/",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "tw-itri-college",
+   "title": "工研院產業學院 AI 課程",
+   "issuer": "工研院產業學院",
+   "category": [
+    "台灣官方",
+    "免費課程",
+    "技術開發"
+   ],
+   "level": "基礎／中級",
+   "schedule_type": "campaign",
+   "cost_type": "freemium",
+   "regular_price": "部分課程免費；結訓證書依課程規定",
+   "language": [
+    "繁體中文"
+   ],
+   "validity_years": null,
+   "official_url": "https://college.itri.org.tw/",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "tw-moda-training",
+   "title": "數位發展部數位培訓平台",
+   "issuer": "數位發展部",
+   "category": [
+    "台灣官方",
+    "免費課程"
+   ],
+   "level": "入門／基礎",
+   "schedule_type": "campaign",
+   "cost_type": "free",
+   "regular_price": "Free（依課程）",
+   "language": [
+    "繁體中文"
+   ],
+   "validity_years": null,
+   "official_url": "https://training.moda.gov.tw/",
+   "prep_resources": []
+  },
+  {
+   "cert_id": "tw-elearn-hrd",
+   "title": "e等公務園+ 生成式 AI 課程",
+   "issuer": "人事行政總處",
+   "category": [
+    "台灣官方",
+    "免費課程"
+   ],
+   "level": "入門／基礎",
+   "schedule_type": "on_demand",
+   "cost_type": "free",
+   "regular_price": "Free",
+   "language": [
+    "繁體中文"
+   ],
+   "validity_years": null,
+   "official_url": "https://elearn.hrd.gov.tw/mooc/index.php",
+   "prep_resources": []
+  }
+ ]
+}

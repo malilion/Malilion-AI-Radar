@@ -16,3 +16,5 @@ site/newsletter/*.md
 
 site/hf-papers.json
 site/hf-papers.tmp
+site/certs.json
+site/ai-certs.ics
