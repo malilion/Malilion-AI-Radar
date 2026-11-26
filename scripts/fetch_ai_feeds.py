@@ -124,6 +124,8 @@ def parse(xml, source, naive_tz=timezone.utc):
 def resolve_url(url):
     """"rsshub:/anthropic/news" 這類網址換成 RSSHUB_BASE（自架 RSSHub 網址）下的完整網址；
     沒設定 RSSHUB_BASE 時回傳 None，該來源直接略過。"""
+    if url.startswith("local:"):  # 本機產生的檔案（如 cache/gh-trending-daily.xml），相對於執行目錄
+        return "file://" + os.path.abspath(url[len("local:"):])
     if not url.startswith("rsshub:"):
         return url
     base = os.environ.get("RSSHUB_BASE", "").strip().rstrip("/")
@@ -131,6 +133,17 @@ def resolve_url(url):
 
 
 def fetch(feed):
+    """抓一個來源；失敗或沒有內容時，若設定了 fallback 就改抓備援網址。"""
+    items, err = fetch_one(feed)
+    if (err or not items) and feed.get("fallback"):
+        print(f"{feed['name']}: 主要來源無資料，改用備援", file=sys.stderr)
+        items2, err2 = fetch_one({**feed, "url": feed["fallback"]})
+        if items2:
+            return items2, None
+    return items, err
+
+
+def fetch_one(feed):
     url = resolve_url(feed["url"])
     if url is None:
         return [], None

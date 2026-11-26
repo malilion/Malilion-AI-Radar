@@ -73,3 +73,38 @@ def test_newsletter_cert_rows():
     rows = n.cert_rows(certs, n=3)
     assert [r["title"] for r in rows] == ["A", "C", "B"]  # 梯次優先，其後台灣官方的常駐課程，D 是付費固定梯次不列
     assert "剩 3 天" in rows[0]["meta"] and rows[1]["group"] == "隨時可學"
+
+
+GH_PAGE = """<div><article class="Box-row"><h2 class="h3 lh-condensed"><a href="/owner/repo-a" data-view-component="true">
+  <span class="text-normal">owner /</span> repo-a</a></h2>
+<p class="col-9 color-fg-muted my-1 pr-4">Does &amp; things</p>
+<div><span itemprop="programmingLanguage">Python</span><span class="d-inline-block float-sm-right">1,234 stars today</span></div></article>
+<article class="Box-row"><h2 class="h3"><a href="/o2/b">o2 / b</a></h2><span>56 stars today</span></article></div>"""
+
+
+def test_github_trending_parse_and_rss():
+    import fetch_github_trending as g
+    from datetime import datetime, timezone
+    repos = g.parse(GH_PAGE)
+    assert [r["repo"] for r in repos] == ["owner/repo-a", "o2/b"]
+    assert repos[0]["desc"] == "Does & things" and repos[0]["lang"] == "Python" and repos[0]["stars"] == "1,234" and repos[1]["desc"] == ""
+    xml = g.rss("T", "https://github.com/trending", repos, datetime(2026, 11, 26, tzinfo=timezone.utc))
+    import fetch_ai_feeds as f
+    items = f.parse(xml.encode(), "S")
+    assert [i["title"] for i in items] == ["owner/repo-a", "o2/b"] and items[0]["link"] == "https://github.com/owner/repo-a"
+
+
+def test_local_feed_and_fallback(tmp_path, monkeypatch):
+    import fetch_github_trending as g
+    import fetch_ai_feeds as f
+    from datetime import datetime, timezone
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "cache").mkdir()
+    (tmp_path / "cache/x.xml").write_text(g.rss("T", "https://github.com", g.parse(GH_PAGE), datetime.now(timezone.utc)), encoding="utf-8")
+    items, err = f.fetch({"name": "t", "url": "local:cache/x.xml", "type": "github"})
+    assert len(items) == 2 and err is None
+    # 本機檔不存在 → 走 fallback（這裡用另一個存在的本機檔代替網路來源）
+    items, err = f.fetch({"name": "t", "url": "local:cache/missing.xml", "fallback": "local:cache/x.xml", "type": "github"})
+    assert len(items) == 2 and err is None
+    items, err = f.fetch({"name": "t", "url": "local:cache/missing.xml", "type": "github"})
+    assert items == [] and err

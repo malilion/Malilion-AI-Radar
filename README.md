@@ -54,7 +54,7 @@
 
 | 分頁 | 來源 |
 |------|------|
-| GitHub 趨勢 | GitHub Trending 今日、本週、今日 Python |
+| GitHub 趨勢 | GitHub Trending 今日、本週、今日 Python。`scripts/fetch_github_trending.py` 直接抓 github.com/trending 轉成 `cache/gh-trending-*.xml`；抓不到或頁面改版時退回第三方 RSS（mshibanami/GitHubTrendingRSS，該來源曾停更兩天，所以只當備援） |
 | Hacker News | 首頁、最新 AI、Show HN |
 | 論文 | arXiv cs.AI、cs.LG、cs.CL |
 | 部落格 | Simon Willison、OpenAI 開發者社群 |
@@ -139,6 +139,7 @@
 | 檔案 | `sort` | `date` 全部依時間排序；`feed` 保留各來源原本的順序 |
 | 來源 | `name`、`url` | 顯示名稱與 RSS／Atom 網址 |
 | 來源 | `type` | 分頁：C2 用 `lab`、`media`；C3 用 `github`、`hn`、`papers`、`blogs`、`reddit`、`releases` |
+| 來源 | `fallback` | 主要網址失敗或沒有內容時改抓的備援網址；`url` 寫成 `local:cache/xxx.xml` 表示讀本機產生的檔案 |
 | 來源 | `max`、`days` | 覆寫這個來源的則數上限與天數 |
 | 來源 | `translate` | 設為 `false` 就不翻譯 |
 | 來源 | `split` | 設為 `category` 時，把合併的 feed 依每篇的分類拆成多個來源（Reddit 用） |
