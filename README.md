@@ -26,7 +26,7 @@
 
 其他功能：
 
-- **電子報**：每期自動排好一份電子報（頭版與要聞、AI 業界、開發者雷達、Threads、Codex 重置雷達、社群活動），可「複製郵件內容」直接貼進 Gmail／Outlook／電子報平台，或下載 HTML、Markdown；網址為 `newsletter/YYYY-MM-DD.html`，`newsletter/latest.html` 為最新一期
+- **電子報**：每期自動排好一份電子報（頭版與要聞、AI 業界、開發者雷達、Threads、Codex 重置雷達、社群活動、AI 證照與課程），可「複製郵件內容」直接貼進 Gmail／Outlook／電子報平台，或下載 HTML、Markdown；網址為 `newsletter/YYYY-MM-DD.html`，`newsletter/latest.html` 為最新一期
 - **往期**：每天的版面都存檔，按「往期」選日期回看，網址為 `?d=YYYY-MM-DD`
 - **已讀**：點過的文章會變淡，可切換「只看未讀」
 - **收藏**：按 ☆ 收藏，在收藏夾集中查看

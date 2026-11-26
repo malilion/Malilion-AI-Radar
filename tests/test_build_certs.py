@@ -59,3 +59,17 @@ def test_ms_diff_and_report():
     added, removed = m.diff({"z": {"title": "Old AI", "url": "https://x/z", "levels": []}}, got)
     assert list(added) == ["a"] and list(removed) == ["z"]
     assert "Azure AI Fundamentals" in m.report(added, removed)
+
+
+def test_newsletter_cert_rows():
+    import build_newsletter as n
+    certs = [
+        {"title": "A", "issuer": "I", "official_url": "https://a", "category": ["台灣官方"], "schedule_type": "fixed_batch", "cost_type": "paid",
+         "next": {"status": "closing_soon", "batch_name": "b", "days_left": 3, "reg_end": "2026-12-04", "exam_date": "2026-12-20"}},
+        {"title": "B", "issuer": "I", "official_url": "https://b", "category": [], "schedule_type": "on_demand", "cost_type": "free", "next": None, "regular_price": "Free"},
+        {"title": "C", "issuer": "I", "official_url": "https://c", "category": ["台灣官方"], "schedule_type": "on_demand", "cost_type": "free", "next": None, "regular_price": "Free"},
+        {"title": "D", "issuer": "I", "official_url": "https://d", "category": [], "schedule_type": "fixed_batch", "cost_type": "paid", "next": None},
+    ]
+    rows = n.cert_rows(certs, n=3)
+    assert [r["title"] for r in rows] == ["A", "C", "B"]  # 梯次優先，其後台灣官方的常駐課程，D 是付費固定梯次不列
+    assert "剩 3 天" in rows[0]["meta"] and rows[1]["group"] == "隨時可學"
