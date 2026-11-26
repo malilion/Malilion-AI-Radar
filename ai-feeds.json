@@ -290,6 +290,12 @@
       "url": "rsshub:/aibase/news",
       "type": "media",
       "max": 4
+    },
+    {
+      "name": "AWS 訓練與認證",
+      "url": "https://aws.amazon.com/blogs/training-and-certification/feed/",
+      "type": "media",
+      "max": 3
     }
   ]
 }

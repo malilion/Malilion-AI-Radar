@@ -1,0 +1,156 @@
+{
+ "certification.agentic-ai-business-professional": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "GitHub Certified: Agentic AI Business Professional (beta)",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/agentic-ai-business-professional/"
+ },
+ "certification.agentic-ai-business-solutions-architect": {
+  "levels": [
+   "advanced"
+  ],
+  "title": "Microsoft Certified: Agentic AI Business Solutions Architect Expert",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/agentic-ai-business-solutions-architect/"
+ },
+ "certification.agentic-ai-developer": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "GitHub Certified: Agentic AI Developer",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/agentic-ai-developer/"
+ },
+ "certification.ai-agent-builder-associate": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: AI Agent Builder Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/ai-agent-builder-associate/"
+ },
+ "certification.ai-business-professional": {
+  "levels": [
+   "beginner"
+  ],
+  "title": "Microsoft Certified: AI Business Professional",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/ai-business-professional/"
+ },
+ "certification.ai-services-administrator-associate": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft 365 Certified: Microsoft 365 and AI Services Administrator Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/ai-services-administrator-associate/"
+ },
+ "certification.ai-transformation-leader": {
+  "levels": [
+   "beginner"
+  ],
+  "title": "Microsoft Certified: AI Transformation Leader",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/ai-transformation-leader/"
+ },
+ "certification.azure-ai-apps-and-agents-developer-associate": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: Azure AI Apps and Agents Developer Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-apps-and-agents-developer-associate/"
+ },
+ "certification.azure-ai-cloud-developer-associate": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: Azure AI Cloud Developer Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-cloud-developer-associate/"
+ },
+ "certification.azure-ai-engineer": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: Azure AI Engineer Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-engineer/"
+ },
+ "certification.azure-ai-fundamentals": {
+  "levels": [
+   "beginner"
+  ],
+  "title": "Microsoft Certified: Azure AI Fundamentals",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-fundamentals/"
+ },
+ "certification.azure-cosmos-db-developer-specialty": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: Azure Cosmos DB AI Developer Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/azure-cosmos-db-developer-specialty/"
+ },
+ "certification.azure-data-scientist": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: Azure Data Scientist Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/azure-data-scientist/"
+ },
+ "certification.cloud-and-ai-security-engineer-associate": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: Cloud and AI Security Engineer Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/cloud-and-ai-security-engineer-associate/"
+ },
+ "certification.copilot-and-agent-administration-fundamentals": {
+  "levels": [
+   "beginner"
+  ],
+  "title": "Microsoft 365 Certified: Copilot and Agent Administration Fundamentals",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/copilot-and-agent-administration-fundamentals/"
+ },
+ "certification.d365-contact-center-ai-engineer-associate": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: Dynamics 365 Contact Center AI Engineer Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/d365-contact-center-ai-engineer-associate/"
+ },
+ "certification.d365-sales-ai-consultant-associate": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: Dynamics 365 Sales AI Consultant Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/d365-sales-ai-consultant-associate/"
+ },
+ "certification.developing-ai-enabled-database-solutions": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: SQL AI Developer Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/developing-ai-enabled-database-solutions/"
+ },
+ "certification.github-copilot": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "GitHub Copilot",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/github-copilot/"
+ },
+ "certification.multi-agent-ai-solutions-expert": {
+  "levels": [
+   "advanced"
+  ],
+  "title": "Microsoft Certified: Multi-Agent AI Solutions Expert",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/multi-agent-ai-solutions-expert/"
+ },
+ "certification.operationalizing-machine-learning-and-generative-ai-solutions": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: Machine Learning Operations Engineer Associate",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/operationalizing-machine-learning-and-generative-ai-solutions/"
+ },
+ "certification.supply-chain-management-ai-consultant-associate": {
+  "levels": [
+   "intermediate"
+  ],
+  "title": "Microsoft Certified: Supply Chain Management AI Consultant Associate (beta)",
+  "url": "https://learn.microsoft.com/en-us/credentials/certifications/supply-chain-management-ai-consultant-associate/"
+ }
+}

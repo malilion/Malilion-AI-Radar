@@ -48,7 +48,7 @@
 | C6 | `data/certifications.json`、`data/schedules.json`（本站自行依官方頁面整理） | `scripts/build_certs.py` 每小時算出報名狀態（即將開放／報名中／7 天內截止／已截止），輸出 `site/certs.json` 與 `site/ai-certs.ics`；`last_verified` 超過 90 天會標「待確認」 |
 
 **C2 官方部落格**：OpenAI、Anthropic（新聞／研究／Claude）、Google DeepMind、Google AI、Google Research、Hugging Face、NVIDIA、Mistral AI、AWS Machine Learning
-**C2 科技媒體**：TechCrunch、The Verge、Ars Technica、WIRED、MIT Technology Review、The Decoder、MarkTechPost、iThome
+**C2 科技媒體**：AWS 訓練與認證（考試折扣與活動公告）、TechCrunch、The Verge、Ars Technica、WIRED、MIT Technology Review、The Decoder、MarkTechPost、iThome
 
 **C3 開發者雷達**：
 
@@ -125,6 +125,7 @@
 | AI／開發者來源 | `ai-feeds.json`、`dev-feeds.json`（欄位見下表） |
 | RSSHub 來源 | 網址寫成 `rsshub:/anthropic/news` 的來源，會接在 Variables 的 `RSSHUB_BASE`（自架 [RSSHub](https://github.com/DIYgod/RSSHub) 網址，不含結尾斜線）後面抓；沒設定就略過，不算錯誤。公開的 rsshub.app 會擋 GitHub Actions，請自架 |
 | 證照與梯次 | `data/certifications.json`（證照主檔）、`data/schedules.json`（梯次與優惠）。欄位：證照 `cert_id`、`title`、`issuer`、`category`、`level`、`schedule_type`（`fixed_batch`／`on_demand`／`campaign`）、`cost_type`（`free`／`freemium`／`paid`／`voucher_available`）、`regular_price`、`language`、`validity_years`、`official_url`、`prep_resources`；梯次 `schedule_id`、`cert_id`、`batch_name`、`reg_start`、`reg_end`、`exam_date`（可為 `YYYY-MM-DD/YYYY-MM-DD` 區間）、`promo_detail`、`source_url`、`last_verified`。`status` 由腳本計算，不必手填。也可用 Issue 範本「新增或更正證照梯次／優惠」投稿，來源請用官方頁面 |
+| Microsoft AI 認證提醒 | `.github/workflows/watch-ms-certs.yml` 每週一比對 Microsoft Learn 公開目錄 API，有新增或下架的 AI 相關認證就自動開 Issue，並更新快照 `data/ms-ai-certs.json`。收到後再決定要不要加進 `data/certifications.json` |
 | 社群活動 | `scripts/fetch_events.py` 的 `CHAPTERS`（community.dev 分會名稱與 ID） |
 | 社群目錄 | `site/index.html` 的 `#community` 區塊 |
 | 更新頻率 | 兩個 workflow 的 `cron`（UTC 時間） |

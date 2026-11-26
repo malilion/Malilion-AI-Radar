@@ -47,3 +47,15 @@ def test_ipas_parse():
     assert reg["mid"][1][2] is None
     out = f.build(exam, reg, date(2026, 1, 1))
     assert out[0]["reg_end"] == "2026-02-10" and out[0]["exam_date"] == "2026-03-21"
+
+
+def test_ms_diff_and_report():
+    import check_ms_certs as m
+    cat = {"certifications": [
+        {"uid": "a", "title": "Azure AI Fundamentals", "url": "https://x/a?WT=1", "levels": ["beginner"]},
+        {"uid": "b", "title": "Azure Storage Admin", "url": "https://x/b", "levels": []}]}
+    got = m.pick(cat)
+    assert list(got) == ["a"] and got["a"]["url"] == "https://x/a"
+    added, removed = m.diff({"z": {"title": "Old AI", "url": "https://x/z", "levels": []}}, got)
+    assert list(added) == ["a"] and list(removed) == ["z"]
+    assert "Azure AI Fundamentals" in m.report(added, removed)
