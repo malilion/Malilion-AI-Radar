@@ -20,8 +20,8 @@
 | C1 | 科技副刊 | Unwind AI 電子報，橫向捲動封面卡 |
 | C2 | AI 業界動態 | 「官方部落格／科技媒體」兩個分頁，可依來源篩選 |
 | C3 | 開發者雷達 | 「GitHub 趨勢／Hacker News／論文／部落格／Reddit／版本更新」六個分頁，排行榜類標示名次 |
-| C5 | Hugging Face 熱門論文 | 每日／每週／每月 trending 榜、票數與摘要 |
-| C4 | 社群與活動 | 左為近期社群活動，右為加入社群連結目錄（第一張為本站 LINE 社群「碼力獅冒險公會」） |
+| C4 | Hugging Face 熱門論文 | 每日／每週／每月 trending 榜、票數與摘要 |
+| C5 | 社群與活動 | 左為近期社群活動，右為加入社群連結目錄（第一張為本站 LINE 社群「碼力獅冒險公會」） |
 | C6 | 免費 AI 證照 | 15 門免費 AI／ML／LLM 課程與證書，可依領域篩選，標示「免費證書」或「免費學習」 |
 
 其他功能：
@@ -44,7 +44,7 @@
 | C1 | [Unwind AI RSS](https://rss.beehiiv.com/feeds/fMHDv0Uk41.xml) | 最新 30 篇 |
 | C2 | `ai-feeds.json` | 近 14 天、每家最多 6 則，依時間排序 |
 | C3 | `dev-feeds.json` | 保留各來源原本的排名，重複連結只留一次 |
-| C4 | GDG Taipei（community.dev 公開 API）＋ `site/index.html` 裡的社群目錄 | 只列尚未結束的活動 |
+| C5 | GDG Taipei（community.dev 公開 API）＋ `site/index.html` 裡的社群目錄 | 只列尚未結束的活動 |
 | C6 | `site/certs.json`（手動維護） | 整理自 [free-ai-certification](https://github.com/balavenkatesh3322/free-ai-certification)（MIT）；Salesforce 免費考試已於 2025/3 結束，故未收錄 |
 
 **C2 官方部落格**：OpenAI、Anthropic（新聞／研究／Claude）、Google DeepMind、Google AI、Google Research、Hugging Face、NVIDIA、Mistral AI、AWS Machine Learning
@@ -61,7 +61,7 @@
 | Reddit | r/LocalLLaMA、r/ClaudeAI、r/AI_Agents、r/MachineLearning（當日熱門；四個版合併成一次請求再依版拆開） |
 | 版本更新 | Codex、Claude Code、LangChain、Ollama、Open WebUI 的 GitHub Releases（只留正式版） |
 
-**C4 社群目錄**：碼力獅冒險公會（LINE，本站社群）、Hugging Face Discord、LangChain 社群、OpenAI 開發者論壇、生成式 AI 年會、GDG Taipei、F2E 前端社群、四個 Reddit 版。
+**C5 社群目錄**：碼力獅冒險公會（LINE，本站社群）、Hugging Face Discord、LangChain 社群、OpenAI 開發者論壇、生成式 AI 年會、GDG Taipei、F2E 前端社群、四個 Reddit 版。
 
 英文標題與摘要會翻成繁體中文（需設定 `ANTHROPIC_API_KEY`，見下方「設定」）；已是中文的內容、版本號不會送去翻譯。
 
@@ -167,7 +167,7 @@ Threads 需要 Node 22 與 threads-toolkit，在本機較難重現，建議直�
 
 ## Hugging Face 熱門論文
 
-獨立的 **C5 Hugging Face 熱門論文** 區塊提供「每日／每週／每月」切換，每榜最多 30 篇，保留 Hugging Face `trending` 順序，顯示名次、票數、英文摘要及原論文連結。可收藏、標記已讀、查看往期，電子報每榜選入前 3 篇。
+獨立的 **C4 Hugging Face 熱門論文** 區塊提供「每日／每週／每月」切換，每榜最多 30 篇，保留 Hugging Face `trending` 順序，顯示名次、票數、英文摘要及原論文連結。可收藏、標記已讀、查看往期，電子報每榜選入前 3 篇。
 
 - 使用公開 `https://huggingface.co/api/daily_papers` API，不需要金鑰或額外套件；與官方 `huggingface_hub.HfApi.list_daily_papers` 的參數一致。
 - 日榜使用最近有投稿的日期，避免週末空榜；週榜使用當前 UTC 的 ISO 週（`week=YYYY-Www`），月榜使用當前 UTC 月（`month=YYYY-MM`），皆指定 `sort=trending`。不是自行把日榜累加成週／月榜；票數也不等於 trending 分數。
