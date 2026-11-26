@@ -159,6 +159,8 @@ jobs:
   # 常常還看不到剛上傳的 github-pages（actions/deploy-pages#451）。拆成下一個 job 就穩定。
   deploy:
     needs: build
+    # tibo 被停用（if: false）時，預設的成功條件會連祖先 job 一起判斷而跳過 deploy，所以明確只看 build
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
