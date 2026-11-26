@@ -656,7 +656,7 @@
         a.href = safeUrl(c.link);
         a.target = '_blank';
         a.rel = 'noopener';
-        a.append(el('span', 'club__tag', `${c.free ? '免費證書' : '免費學習'} · ${c.provider}`),
+        a.append(el('span', 'club__tag', `${c.tag || (c.free ? '免費證書' : '免費學習')} · ${c.provider}`),
           el('span', 'club__name', c.title),
           el('span', 'club__desc', `${c.topics}`),
           el('span', 'club__desc', `${c.duration} · ${c.credential}`),
