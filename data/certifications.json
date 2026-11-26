@@ -11,7 +11,7 @@
    "level": "入門／中級",
    "schedule_type": "fixed_batch",
    "cost_type": "paid",
-   "regular_price": "依當期簡章（115–116 年有團報／優惠價）",
+   "regular_price": "依當期簡章（團報 40 人以上同單位另有規定）",
    "language": [
     "繁體中文"
    ],
@@ -28,9 +28,9 @@
     "技術開發"
    ],
    "level": "依認證等級",
-   "schedule_type": "fixed_batch",
+   "schedule_type": "on_demand",
    "cost_type": "paid",
-   "regular_price": "依官網公告",
+   "regular_price": "隨時付費報名（實體上機），依官網公告",
    "language": [
     "繁體中文"
    ],

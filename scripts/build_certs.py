@@ -72,6 +72,14 @@ def main():
     today = now.astimezone(TW).date()
     certs = json.loads((ROOT / "data/certifications.json").read_text(encoding="utf-8"))["certifications"]
     scheds = json.loads((ROOT / "data/schedules.json").read_text(encoding="utf-8"))["schedules"]
+    # 自動抓取的梯次（fetch_cert_schedules.py）；schedule_id 相同時以手動維護的為準
+    auto = ROOT / "site/schedules.auto.json"
+    if auto.exists():
+        have = {x["schedule_id"] for x in scheds}
+        try:
+            scheds += [x for x in json.loads(auto.read_text(encoding="utf-8"))["schedules"] if x["schedule_id"] not in have]
+        except (ValueError, KeyError) as e:
+            print(f"略過自動梯次：{e}", file=sys.stderr)
     ids = {c["cert_id"] for c in certs}
     bad = [s["schedule_id"] for s in scheds if s["cert_id"] not in ids]
     if bad:

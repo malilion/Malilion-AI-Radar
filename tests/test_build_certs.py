@@ -36,3 +36,14 @@ def test_data_consistent():
         assert c["schedule_type"] in {"fixed_batch", "on_demand", "campaign"}
         assert c["cost_type"] in {"free", "freemium", "paid", "voucher_available"}
         assert c["official_url"].startswith("https://")
+
+
+def test_ipas_parse():
+    import fetch_cert_schedules as f
+    exam = f.parse_exam_dates("初級\n考試\n考試日期\n第一次：115/03/21(六)\n第二次：115/05/16(六)\n中級\n考試\n考試日期\n第一次：115/05/23(六)\n")
+    assert exam["basic"][2] == date(2026, 5, 16) and exam["mid"][1] == date(2026, 5, 23)
+    reg = f.parse_registration("《初級》\n第一次考試：\n個人報名：115/01/01~115/02/10中午12點止\n團體報名：115/01/01~115/02/09中午12點止\n《中級》\n第一次考試：\n個人報名：115/01/01~115/04/10中午12點止\n")
+    assert reg["basic"][1] == (date(2026, 1, 1), date(2026, 2, 10), date(2026, 2, 9))
+    assert reg["mid"][1][2] is None
+    out = f.build(exam, reg, date(2026, 1, 1))
+    assert out[0]["reg_end"] == "2026-02-10" and out[0]["exam_date"] == "2026-03-21"
