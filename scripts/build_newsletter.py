@@ -5,7 +5,7 @@
 - YYYY-MM-DD.email.html  可直接貼進 Gmail／電子報平台的郵件 HTML（表格排版、行內樣式）
 - YYYY-MM-DD.md          Markdown 版
 - latest.html            導向最新一期
-內容：頭版與要聞精選、AI 業界、開發者雷達、Threads、Codex 重置雷達、社群活動。
+內容：頭版與要聞精選、AI 業界、開發者雷達、Threads、Codex 重置雷達、社群活動、AI 證照與課程。
 """
 import html
 import json
@@ -86,9 +86,31 @@ def img_of(i):
     return safe(i.get("image"))
 
 
-def collect(day):
+def cert_rows(certs, n=6):
+    """從 site/certs.json（build_certs.py 產生）挑出電子報要放的證照：
+    先列報名中或即將開放的梯次（依截止日），再用常駐的免費／有折扣課程補滿，台灣官方優先。"""
+    status = {"upcoming": "即將開放", "open": "報名中", "closing_soon": "即將截止"}
+    active = sorted((c for c in certs if c.get("next")), key=lambda c: (c["next"].get("days_left") is None, c["next"].get("days_left") or 0))
+    rows = []
+    for c in active[:n]:
+        nx = c["next"]
+        left = f" · 剩 {nx['days_left']} 天" if nx.get("days_left") is not None else ""
+        note = "；".join(x for x in (f"報名至 {nx['reg_end']}" if nx.get("reg_end") else "", f"考試／活動 {nx['exam_date']}" if nx.get("exam_date") else "") if x)
+        rows.append(dict(title=c["title"], link=c["official_url"], group="報名中與即將開放", note=note,
+                         meta=f"{c['issuer']} · {status.get(nx['status'], nx['status'])} · {nx['batch_name']}{left}"))
+    free = [c for c in certs if not c.get("next") and c.get("schedule_type") != "fixed_batch" and c.get("cost_type") in ("free", "freemium", "voucher_available")]
+    free.sort(key=lambda c: "台灣官方" not in c.get("category", []))
+    cost = {"free": "免費", "freemium": "免費上課／付費領證", "voucher_available": "常有免費或折扣券"}
+    for c in free[: max(0, n - len(rows))]:
+        rows.append(dict(title=c["title"], link=c["official_url"], group="隨時可學", note=c.get("regular_price", ""),
+                         meta=f"{c['issuer']} · {cost[c['cost_type']]}"))
+    return rows
+
+
+def collect(day, live=False):
     """整理一期電子報的內容，回傳 [(版名, 英文, [條目])]。
-    條目為 dict(title, link, meta, note, image, group)；版面由 LAYOUT 決定。"""
+    條目為 dict(title, link, meta, note, image, group)；版面由 LAYOUT 決定。
+    live=True（最新一期）才讀目前的 site/certs.json 並存成當天快照；過去的期數讀自己的快照，不會被今天的資料改寫。"""
     sections = []
     news = (load(day, "news") or {}).get("items", [])
     if news:
@@ -176,6 +198,22 @@ def collect(day):
                              meta=f"{start.month}/{start.day}（{WEEK[start.weekday()]}）{start:%H:%M} · {e.get('source', '')}"))
     if rows:
         sections.append(("社群活動", "Events", rows[:6]))
+
+    snap = os.path.join(ARCHIVE, day, "certs-picks.json")
+    rows = None
+    if live:
+        try:
+            with open(os.path.join("site", "certs.json"), encoding="utf-8") as f:
+                rows = cert_rows(json.load(f).get("items", []))
+        except (OSError, ValueError):
+            rows = None
+        if rows:
+            with open(snap, "w", encoding="utf-8") as f:
+                json.dump(rows, f, ensure_ascii=False, indent=1)
+    if rows is None:
+        rows = load(day, "certs-picks") or []
+    if rows:
+        sections.append(("AI 證照與課程", "Certifications", rows))
     return sections
 
 
@@ -355,7 +393,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     days = sorted((d for d in os.listdir(ARCHIVE) if len(d) == 10 and os.path.isdir(os.path.join(ARCHIVE, d))), reverse=True)
     for day in days:
-        sections = collect(day)
+        sections = collect(day, live=(day == days[0]))
         if not sections:
             continue
         body = email_html(day, sections)
