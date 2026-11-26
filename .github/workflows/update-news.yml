@@ -90,7 +90,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           RSSHUB_BASE: ${{ vars.RSSHUB_BASE }}
         run: python3 scripts/fetch_ai_feeds.py dev-feeds.json site/dev.json cache/dev_zh.json
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         if: false
         continue-on-error: true
         with:
@@ -112,7 +112,7 @@ jobs:
         run: |
           id=$(gh run list -R "$GITHUB_REPOSITORY" --workflow fetch-threads.yml --status success -L 1 --json databaseId -q '.[0].databaseId')
           echo "run_id=$id" >> "$GITHUB_OUTPUT"
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         if: steps.threads.outputs.run_id != ''
         continue-on-error: true
         with:
