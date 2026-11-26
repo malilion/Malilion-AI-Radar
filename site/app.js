@@ -631,6 +631,45 @@
     observe(list);
   }
 
+  // ---------- 免費 AI 證照（靜態清單，不隨存檔變動） ----------
+  function certSection() {
+    const chips = $('#certs .chips');
+    const list = $('#certList');
+    let all = [];
+    let cur = '全部';
+    function render() {
+      chips.textContent = '';
+      const domains = ['全部', ...new Set(all.map((c) => c.domain))];
+      domains.forEach((d) => {
+        const n = d === '全部' ? all.length : all.filter((c) => c.domain === d).length;
+        const b = el('button', 'chip', d);
+        b.type = 'button';
+        b.setAttribute('aria-pressed', String(d === cur));
+        b.append(el('small', null, String(n)));
+        b.addEventListener('click', () => { cur = d; render(); });
+        chips.append(b);
+      });
+      list.textContent = '';
+      all.filter((c) => cur === '全部' || c.domain === cur).forEach((c) => {
+        const li = el('li');
+        const a = el('a', 'club');
+        a.href = safeUrl(c.link);
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.append(el('span', 'club__tag', `${c.free ? '免費證書' : '免費學習'} · ${c.provider}`),
+          el('span', 'club__name', c.title),
+          el('span', 'club__desc', `${c.topics}`),
+          el('span', 'club__desc', `${c.duration} · ${c.credential}`),
+          el('span', 'club__go', '↗'));
+        a.lastChild.setAttribute('aria-hidden', 'true');
+        li.append(a);
+        list.append(li);
+      });
+      $('#certsEmpty').hidden = all.length > 0;
+    }
+    getJSON('certs.json').then((d) => { all = d?.items || []; render(); });
+  }
+
   // ---------- 往期 ----------
   const issueNo = (date) => Math.max(1, Math.round((Date.parse(`${date}T00:00:00Z`) - FIRST_ISSUE) / 864e5) + 1);
   const SECTION_NAMES = { news: '要聞', threads: '社群', tibo: '重置', unwind: '副刊', ai: 'AI', dev: '開發者', events: '活動', 'hf-papers': 'HF 論文' };
@@ -778,6 +817,7 @@
     ranked: ['github', 'hn', 'reddit'],
   });
   feedSection({ root: '#hf-papers', url: 'hf-papers.json', types: { daily: '每日熱門論文', weekly: '每週熱門論文', monthly: '每月熱門論文' } });
+  certSection();
   // 頁面放著不關時，每 10 分鐘更新相對時間與資料
   if (!DAY) {
     setInterval(() => {
