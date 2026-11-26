@@ -58,7 +58,7 @@
 | Hacker News | 首頁、最新 AI、Show HN |
 | 論文 | arXiv cs.AI、cs.LG、cs.CL |
 | 部落格 | Simon Willison、OpenAI 開發者社群 |
-| Reddit | r/LocalLLaMA、r/ClaudeAI、r/AI_Agents、r/MachineLearning（當日熱門；四個版合併成一次請求再依版拆開） |
+| Reddit | r/LocalLLaMA、r/ClaudeAI、r/AI_Agents、r/MachineLearning（當日熱門；四個版合併成一次請求再依版拆開）；另有獨立請求抓 r/AzureCertification、r/AWSCertifications 的本週熱門，讀考證心得與考試資訊，失敗時不影響其他 Reddit 版） |
 | 版本更新 | Codex、Claude Code、LangChain、Ollama、Open WebUI 的 GitHub Releases（只留正式版） |
 
 **C5 社群目錄**：碼力獅冒險公會（LINE，本站社群）、Hugging Face Discord、LangChain 社群、OpenAI 開發者論壇、生成式 AI 年會、GDG Taipei、F2E 前端社群、四個 Reddit 版。

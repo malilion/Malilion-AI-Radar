@@ -220,6 +220,13 @@
       "type": "reddit",
       "max": 8,
       "split": "category"
+    },
+    {
+      "name": "Reddit 證照",
+      "url": "https://www.reddit.com/r/AzureCertification+AWSCertifications/top/.rss?t=week&limit=50",
+      "type": "reddit",
+      "max": 6,
+      "split": "category"
     }
   ]
 }
