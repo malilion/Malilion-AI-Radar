@@ -46,7 +46,7 @@ jobs:
           cp ../scripts/fetch_threads.mjs scripts/fetch_threads.mjs
           timeout 20m node --import tsx scripts/fetch_threads.mjs || echo "抓取逾時或失敗，保留已抓到的部分"
           test -s ../site/threads.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: threads
           path: site/threads.json
