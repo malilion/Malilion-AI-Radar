@@ -22,6 +22,7 @@
 | C3 | 開發者雷達 | 「GitHub 趨勢／Hacker News／論文／部落格／Reddit／版本更新」六個分頁，排行榜類標示名次 |
 | C5 | Hugging Face 熱門論文 | 每日／每週／每月 trending 榜、票數與摘要 |
 | C4 | 社群與活動 | 左為近期社群活動，右為加入社群連結目錄（第一張為本站 LINE 社群「碼力獅冒險公會」） |
+| C6 | 免費 AI 證照 | 15 門免費 AI／ML／LLM 課程與證書，可依領域篩選，標示「免費證書」或「免費學習」 |
 
 其他功能：
 
@@ -44,6 +45,7 @@
 | C2 | `ai-feeds.json` | 近 14 天、每家最多 6 則，依時間排序 |
 | C3 | `dev-feeds.json` | 保留各來源原本的排名，重複連結只留一次 |
 | C4 | GDG Taipei（community.dev 公開 API）＋ `site/index.html` 裡的社群目錄 | 只列尚未結束的活動 |
+| C6 | `site/certs.json`（手動維護） | 整理自 [free-ai-certification](https://github.com/balavenkatesh3322/free-ai-certification)（MIT）；Salesforce 免費考試已於 2025/3 結束，故未收錄 |
 
 **C2 官方部落格**：OpenAI、Anthropic（新聞／研究／Claude）、Google DeepMind、Google AI、Google Research、Hugging Face、NVIDIA、Mistral AI、AWS Machine Learning
 **C2 科技媒體**：TechCrunch、The Verge、Ars Technica、WIRED、MIT Technology Review、The Decoder、MarkTechPost、iThome

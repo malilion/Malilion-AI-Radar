@@ -1,0 +1,155 @@
+{
+ "source": "https://github.com/balavenkatesh3322/free-ai-certification",
+ "items": [
+  {
+   "domain": "AI／機器學習／資料科學",
+   "provider": "Google Cloud",
+   "title": "Build and Deploy Machine Learning Solutions on Vertex AI",
+   "free": true,
+   "credential": "Digital Badge",
+   "topics": "Vertex AI, AutoML, Custom Training, Model Deployment",
+   "duration": "7 hours",
+   "link": "https://www.cloudskillsboost.google/course_templates/684"
+  },
+  {
+   "domain": "AI／機器學習／資料科學",
+   "provider": "IBM",
+   "title": "Artificial Intelligence Fundamentals",
+   "free": true,
+   "credential": "Digital Badge",
+   "topics": "AI concepts, ML, Deep Learning, Chatbots, AI Ethics",
+   "duration": "10 hours",
+   "link": "https://skillsbuild.org/students/course-catalog/artificial-intelligence"
+  },
+  {
+   "domain": "AI／機器學習／資料科學",
+   "provider": "IBM",
+   "title": "Data Fundamentals",
+   "free": true,
+   "credential": "Digital Badge",
+   "topics": "Data analytics, methodologies, tools, Python",
+   "duration": "7 hours",
+   "link": "https://skillsbuild.org/students/course-catalog/data-science"
+  },
+  {
+   "domain": "AI／機器學習／資料科學",
+   "provider": "IBM",
+   "title": "AI for Everyone: Master the Basics",
+   "free": true,
+   "credential": "Digital Badge",
+   "topics": "AI applications, ML, Deep Learning, Neural Networks, Gen AI",
+   "duration": "4 weeks (1-2 hrs/week)",
+   "link": "https://www.edx.org/learn/artificial-intelligence/ibm-ai-for-everyone-master-the-basics"
+  },
+  {
+   "domain": "深度學習",
+   "provider": "Great Learning",
+   "title": "Introduction to Deep Learning",
+   "free": true,
+   "credential": "Completion Certificate",
+   "topics": "Deep Learning, Neural Networks, CNN, RNN, Python",
+   "duration": "3.5 hours",
+   "link": "https://www.mygreatlearning.com/academy/learn-for-free/courses/introduction-to-deep-learning"
+  },
+  {
+   "domain": "生成式 AI 與 LLM",
+   "provider": "IBM",
+   "title": "Generative AI: Introduction and Applications",
+   "free": true,
+   "credential": "Digital Badge",
+   "topics": "Generative AI, ChatGPT, Prompt Engineering, LLMs",
+   "duration": "1-4 weeks",
+   "link": "https://www.edx.org/learn/artificial-intelligence/generative-ai-introduction-and-applications"
+  },
+  {
+   "domain": "生成式 AI 與 LLM",
+   "provider": "IBM",
+   "title": "Generative AI in Action",
+   "free": true,
+   "credential": "Digital Badge",
+   "topics": "Gen AI principles, Prompt Engineering, Python libraries",
+   "duration": "5+ hours",
+   "link": "https://skillsbuild.org/students/course-catalog/artificial-intelligence"
+  },
+  {
+   "domain": "生成式 AI 與 LLM",
+   "provider": "Google Cloud",
+   "title": "Introduction to Generative AI",
+   "free": false,
+   "credential": "Audit Only",
+   "topics": "Generative AI, Application Development, AI, ML Methods",
+   "duration": "1-4 weeks",
+   "link": "https://www.coursera.org/learn/introduction-to-generative-ai"
+  },
+  {
+   "domain": "生成式 AI 與 LLM",
+   "provider": "DeepLearning.AI",
+   "title": "ChatGPT Prompt Engineering for Developers",
+   "free": false,
+   "credential": "Completion Email Only",
+   "topics": "Prompt Engineering, LLMs for summarizing, inferring",
+   "duration": "1.5 hours",
+   "link": "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/"
+  },
+  {
+   "domain": "生成式 AI 與 LLM",
+   "provider": "Cohere",
+   "title": "LLM University",
+   "free": false,
+   "credential": "Not mentioned",
+   "topics": "LLM basics, architecture, fine-tuning, applications",
+   "duration": "Self-paced",
+   "link": "https://cohere.com/llmu"
+  },
+  {
+   "domain": "生成式 AI 與 LLM",
+   "provider": "Hugging Face",
+   "title": "NLP Course",
+   "free": false,
+   "credential": "Not mentioned",
+   "topics": "NLP basics, LLMs, Transformers, text generation",
+   "duration": "Self-paced",
+   "link": "https://huggingface.co/course/chapter0/1"
+  },
+  {
+   "domain": "AI 安全與治理",
+   "provider": "Securiti Education",
+   "title": "AI Security & Governance Certification",
+   "free": true,
+   "credential": "Completion Certificate",
+   "topics": "Gen AI risks, Global AI laws, LLM firewalls",
+   "duration": "2-2.5 hours",
+   "link": "https://education.securiti.ai/certifications/ai-governance/"
+  },
+  {
+   "domain": "其他 AI 相關",
+   "provider": "OpenCV University",
+   "title": "Free OpenCV Course",
+   "free": true,
+   "credential": "Official Certification",
+   "topics": "Image/Video manipulation, Object/Face detection",
+   "duration": "3 hours",
+   "link": "https://opencv.org/university/free-opencv-course/"
+  },
+  {
+   "domain": "其他 AI 相關",
+   "provider": "Great Learning",
+   "title": "Reinforcement Learning with Python",
+   "free": true,
+   "credential": "Completion Certificate",
+   "topics": "RL introduction, Q-learning, Python implementation",
+   "duration": "8.25 hours",
+   "link": "https://www.mygreatlearning.com/academy/learn-for-free/courses/reinforcement-learning-with-python"
+  },
+  {
+   "domain": "其他 AI 相關",
+   "provider": "Great Learning",
+   "title": "Introduction to Natural Language Processing",
+   "free": true,
+   "credential": "Completion Certificate",
+   "topics": "NLP basics, Text Mining, Chatbots, Sentiment Analysis",
+   "duration": "4.5 hours",
+   "link": "https://www.mygreatlearning.com/nlp/free-courses"
+  }
+ ]
+}
