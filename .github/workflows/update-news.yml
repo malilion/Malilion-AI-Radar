@@ -153,7 +153,7 @@ jobs:
             sleep $((i * 5))
           done
           echo "::warning::存檔 push 失敗，下一輪會再試"
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site
