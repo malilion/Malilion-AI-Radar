@@ -3,11 +3,11 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
       day: monday
       time: "09:00"
       timezone: Asia/Taipei
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     groups:
       github-actions-minor-patch:
         update-types:
