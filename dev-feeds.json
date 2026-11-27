@@ -145,6 +145,12 @@
       "max": 3
     },
     {
+      "name": "Antigravity 論壇",
+      "url": "https://discuss.ai.google.dev/c/antigravity/64.rss",
+      "type": "blogs",
+      "max": 5
+    },
+    {
       "name": "Codex",
       "url": "https://github.com/openai/codex/releases.atom",
       "type": "releases",

@@ -1,0 +1,16 @@
+{
+  "accounts": [
+    {
+      "user": "thsottiaux",
+      "product": "codex",
+      "label": "Codex",
+      "scope": "codex|everyone|all users|plus|pro|business|enterprise"
+    },
+    {
+      "user": "_mohansolo",
+      "product": "agy",
+      "label": "agy",
+      "scope": "agy|antigravity|gemini|everyone|all users|plus|pro|ultra"
+    }
+  ]
+}

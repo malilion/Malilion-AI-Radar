@@ -383,6 +383,8 @@ a:hover .hl, a:focus-visible .hl { background-size: 100% 1px; }
 .reset { display: flex; align-items: center; gap: clamp(16px, 3vw, 32px); margin: 0 0 24px; padding: clamp(18px, 3vw, 28px); background: var(--card); border: 1px solid var(--rule); border-left: 4px solid var(--muted); }
 .reset--reset { border-left-color: var(--accent); }
 .reset--soon { border-left-color: #b7791f; }
+.resets { display: grid; gap: 16px; margin: 0 0 24px; }
+.resets .reset { margin: 0; }
 .reset__stamp {
   flex: none; display: grid; place-items: center; min-width: 7.5em; padding: 14px 16px; border: 3px double currentColor; border-radius: 4px;
   font: 900 clamp(1.1rem, 2.6vw, 1.5rem)/1.1 var(--serif); letter-spacing: .12em; color: var(--muted); transform: rotate(-4deg); text-align: center;

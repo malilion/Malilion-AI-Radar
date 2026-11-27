@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""用 TweeterPy 抓 Tibo（@thsottiaux）的 X 時間軸，輸出精簡後的貼文清單。
+"""用 TweeterPy 抓 reset-radar.json 裡各帳號（Tibo @thsottiaux、@_mohansolo…）的 X 時間軸，輸出精簡後的貼文清單。
 
 這支程式會執行第三方套件，所以在 update-news.yml 獨立的 job 裡跑（沒有部署權限），
 輸出的 JSON 由 fetch_tibo.py 再檢查一次才使用。
@@ -12,8 +12,16 @@ import sys
 
 from tweeterpy import TweeterPy
 
-USER = "thsottiaux"
+CONFIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "reset-radar.json")
 TOTAL = 40
+
+
+def users():
+    try:
+        with open(CONFIG, encoding="utf-8") as f:
+            return [a["user"] for a in json.load(f)["accounts"]]
+    except (OSError, ValueError, KeyError):
+        return ["thsottiaux"]
 
 
 def tweet_of(result):
@@ -44,7 +52,7 @@ def normalize(t):
         text = text.replace(u.get("url") or "\0", u.get("expanded_url") or "")
     for u in ents.get("media") or []:
         text = text.replace(u.get("url") or "\0", "")
-    return {"id": t.get("rest_id") or leg.get("id_str"), "author": screen_name(t) or USER, "text": " ".join(text.split()),
+    return {"id": t.get("rest_id") or leg.get("id_str"), "author": screen_name(t) or "", "text": " ".join(text.split()),
             "created_at": leg.get("created_at"), "kind": kind,
             "stats": {"likes": leg.get("favorite_count"), "replies": leg.get("reply_count"), "reposts": leg.get("retweet_count")}}
 
@@ -55,16 +63,25 @@ def main():
     token = os.environ.get("X_AUTH_TOKEN", "").strip()
     if token:
         x.generate_session(auth_token=token)
-    res = x.get_user_tweets(USER, with_replies=bool(token), total=TOTAL)
-    posts = []
-    for e in res.get("data") or []:
-        content = e.get("content") or {}
-        # 一般貼文在 itemContent；自己串的討論串在 items 裡
-        results = [content.get("itemContent")] + [(i.get("item") or {}).get("itemContent") for i in content.get("items") or []]
-        for ic in results:
-            r = ((ic or {}).get("tweet_results") or {}).get("result")
-            if r:
-                posts.append(normalize(r))
+    posts, failed = [], []
+    for user in users():
+        try:
+            res = x.get_user_tweets(user, with_replies=bool(token), total=TOTAL)
+        except Exception as e:  # noqa: BLE001  單一帳號失敗不影響其他帳號
+            print(f"@{user}: 失敗 {e}", file=sys.stderr)
+            failed.append(user)
+            continue
+        got = []
+        for e in res.get("data") or []:
+            content = e.get("content") or {}
+            # 一般貼文在 itemContent；自己串的討論串在 items 裡
+            results = [content.get("itemContent")] + [(i.get("item") or {}).get("itemContent") for i in content.get("items") or []]
+            for ic in results:
+                r = ((ic or {}).get("tweet_results") or {}).get("result")
+                if r:
+                    got.append(dict(normalize(r), owner=user, author=normalize(r)["author"] or user))
+        print(f"@{user}：{len(got)} 則")
+        posts += got
     print(f"{'登入' if token else '訪客'}模式：{len(posts)} 則")
     if not posts:
         sys.exit("沒有抓到貼文")
