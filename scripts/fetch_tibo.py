@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""追蹤 Tibo（@thsottiaux，OpenAI Codex 負責人）在 X 的貼文，判斷 Codex 用量額度是不是要重置了，輸出 site/tibo.json。
+"""追蹤 reset-radar.json 裡的 X 帳號（Tibo @thsottiaux→Codex、@_mohansolo→agy），判斷各產品的用量額度是不是要重置了，輸出 site/tibo.json。
 
 來源依序如下，抓到的合併（同一則只留一份）：
 - tibo-raw/posts.json：獨立 job 用 TweeterPy 抓的時間軸（scripts/fetch_tibo_x.py），這裡只取檢查過的欄位
@@ -24,16 +24,16 @@ from email.utils import parsedate_to_datetime
 
 from fetch_unwind import add_translations, text_of
 
-USER = "thsottiaux"
+CONFIG = "reset-radar.json"
 OUT = "site/tibo.json"
 CACHE = "cache/tibo_zh.json"
 ARCHIVE = "archive"
 TZ = timezone(timedelta(hours=8))
-MAX_ITEMS = 30
+MAX_ITEMS = 40
 DAYS = 14
 MAX_BYTES = 5 * 1024 * 1024
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
-SYNDICATION = f"https://syndication.twitter.com/srv/timeline-profile/screen-name/{USER}"
+SYNDICATION = "https://syndication.twitter.com/srv/timeline-profile/screen-name/{user}"
 RAW = "tibo-raw/posts.json"
 
 RESET = re.compile(r"\breset(?:s|ting)?\b|\brefresh(?:ed)?\b|重置|重設", re.I)
@@ -41,6 +41,19 @@ LIMITS = re.compile(r"\b(?:rate[- ]?limits?|usage|limits?|quotas?|credits?|weekl
 # 「reset Codex for everyone」這類沒寫到 limit 的也算
 SCOPE = re.compile(r"\b(?:codex|everyone|all users|plus|pro|business|enterprise)\b", re.I)
 FUTURE = re.compile(r"\b(?:will|going to|gonna|tomorrow|tonight|soon|shortly|later today|about to|plan(?:ning)? to|in the next|upcoming|next week)\b", re.I)
+
+
+def load_accounts(path=CONFIG):
+    """讀 reset-radar.json：[{user, product, label, scope}]。scope 是該產品專屬的對象字眼（正規表示式）。"""
+    with open(path, encoding="utf-8") as f:
+        accts = json.load(f)["accounts"]
+    for a in accts:
+        a["scope_re"] = re.compile(r"\b(?:" + a["scope"] + r")\b", re.I)
+    return accts
+
+
+ACCOUNTS = load_accounts() if os.path.exists(CONFIG) else [{"user": "thsottiaux", "product": "codex", "label": "Codex", "scope_re": SCOPE}]
+USER = ACCOUNTS[0]["user"]
 
 
 def get(url):
@@ -52,8 +65,9 @@ def get(url):
     return data
 
 
-def post(pid, author, text, date, kind, stats=None):
-    return {"id": pid, "author": author, "link": f"https://x.com/{author}/status/{pid}", "text": text[:1000],
+def post(pid, author, text, date, kind, stats=None, owner=None):
+    """owner：這則貼文出現在哪個追蹤帳號的時間軸（轉推的 author 是原作者，所以另外記）。"""
+    return {"id": pid, "owner": owner or author, "author": author, "link": f"https://x.com/{author}/status/{pid}", "text": text[:1000],
             "date": date, "kind": kind, "stats": stats or {}}
 
 
@@ -75,12 +89,13 @@ def from_raw():
             continue
         kind = p.get("kind") if p.get("kind") in ("post", "repost", "reply") else "post"
         stats = p.get("stats") if isinstance(p.get("stats"), dict) else {}
-        out.append(post(pid, author, " ".join(text.split()), date, kind, {k: num(stats.get(k)) for k in ("likes", "replies", "reposts")}))
+        owner = p.get("owner") if isinstance(p.get("owner"), str) and re.fullmatch(r"\w{1,15}", p.get("owner")) else USER
+        out.append(post(pid, author, " ".join(text.split()), date, kind, {k: num(stats.get(k)) for k in ("likes", "replies", "reposts")}, owner))
     return out
 
 
-def from_syndication():
-    page = get(SYNDICATION).decode("utf-8", "replace")
+def from_syndication(user=USER):
+    page = get(SYNDICATION.format(user=user)).decode("utf-8", "replace")
     m = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', page, re.S)
     if not m:
         raise ValueError("找不到時間軸資料")
@@ -91,7 +106,7 @@ def from_syndication():
         kind = "post"
         if t.get("retweeted_status"):
             t, kind = t["retweeted_status"], "repost"
-        pid, author = str(t.get("id_str") or ""), ((t.get("user") or {}).get("screen_name") or USER)
+        pid, author = str(t.get("id_str") or ""), ((t.get("user") or {}).get("screen_name") or user)
         if not pid.isdigit() or not re.fullmatch(r"\w{1,15}", author):
             continue
         if t.get("in_reply_to_status_id_str"):
@@ -107,7 +122,7 @@ def from_syndication():
         except ValueError:
             continue
         stats = {"likes": t.get("favorite_count") or 0, "replies": t.get("reply_count") or 0, "reposts": t.get("retweet_count") or 0}
-        out.append(post(pid, author, " ".join(text.split()), date, kind, stats))
+        out.append(post(pid, author, " ".join(text.split()), date, kind, stats, user))
     return out
 
 
@@ -129,20 +144,23 @@ def from_rss(url):
     return out
 
 
-def signal(text):
-    if RESET.search(text) and (LIMITS.search(text) or SCOPE.search(text)):
+def signal(text, scope=SCOPE):
+    if RESET.search(text) and (LIMITS.search(text) or scope.search(text)):
         return "soon" if FUTURE.search(text) else "reset"
     return "limits" if LIMITS.search(text) else ""
 
 
-def previous(field):
-    """最近一份存檔裡的 last_reset／last_soon。"""
+def previous(field, product=None):
+    """最近一份存檔裡該產品的 last_reset／last_soon（舊存檔只有頂層欄位，視為第一個產品）。"""
     for d in sorted(os.listdir(ARCHIVE), reverse=True) if os.path.isdir(ARCHIVE) else []:
         try:
             with open(os.path.join(ARCHIVE, d, "tibo.json"), encoding="utf-8") as f:
-                v = json.load(f).get(field)
+                data = json.load(f)
         except (OSError, ValueError):
             continue
+        v = ((data.get("products") or {}).get(product) or {}).get(field) if product else None
+        if not v and (product is None or product == ACCOUNTS[0]["product"]):
+            v = data.get(field)
         if v:
             return v
     return None
@@ -150,7 +168,7 @@ def previous(field):
 
 def main():
     sources = [("TweeterPy", from_raw)] if os.path.exists(RAW) else []
-    sources += [("X syndication", from_syndication)]
+    sources += [(f"X syndication @{a['user']}", lambda u=a["user"]: from_syndication(u)) for a in ACCOUNTS]
     sources += [(u.strip(), lambda u=u.strip(): from_rss(u)) for u in os.environ.get("TIBO_FEEDS", "").split(",") if u.strip()]
     posts, errors, ok = {}, [], []
     for name, fn in sources:
@@ -170,20 +188,25 @@ def main():
     if not items:
         sys.exit("所有來源都沒有抓到貼文：" + "; ".join(errors))
 
-    marks = {}
+    by_owner = {a["user"].lower(): a for a in ACCOUNTS}
+    products = {a["product"]: {"label": a["label"], "user": a["user"]} for a in ACCOUNTS}
     for p in items:
         p["pubDate"] = p.pop("date").astimezone(TZ).isoformat()
-        p["signal"] = signal(p["text"])
+        acct = by_owner.get(p.get("owner", "").lower(), ACCOUNTS[0])
+        p["product"] = acct["product"]
+        p["signal"] = signal(p["text"], acct["scope_re"])
         # 給翻譯共用的欄位：title 是貼文全文
         p["title"], p["summary"] = p["text"], ""
         if p["signal"] in ("reset", "soon"):
             k = "last_" + p["signal"]
-            if k not in marks:
-                marks[k] = {f: p[f] for f in ("link", "text", "pubDate")}
-    for k in ("last_reset", "last_soon"):
-        old = previous(k)
-        if old and (k not in marks or old["pubDate"] > marks[k]["pubDate"]):
-            marks[k] = old
+            products[acct["product"]].setdefault(k, {f: p[f] for f in ("link", "text", "pubDate")})
+    for prod, marks in products.items():
+        for k in ("last_reset", "last_soon"):
+            old = previous(k, prod)
+            if old and (k not in marks or old["pubDate"] > marks[k]["pubDate"]):
+                marks[k] = old
+    first = products[ACCOUNTS[0]["product"]]
+    marks = {k: first[k] for k in ("last_reset", "last_soon") if k in first}  # 舊版欄位，維持相容
 
     add_translations(items, CACHE)
     for p in items:
@@ -194,7 +217,7 @@ def main():
             p.pop("summary_zh", None)
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump({"updated": datetime.now(TZ).isoformat(timespec="seconds"), "user": USER, "sources": ok,
-                   **marks, "items": items, "errors": errors}, f, ensure_ascii=False, indent=1)
+                   **marks, "products": products, "items": items, "errors": errors}, f, ensure_ascii=False, indent=1)
     print(f"寫入 {len(items)} 則，重置訊號 {sum(p['signal'] in ('reset', 'soon') for p in items)} 則")
 
 

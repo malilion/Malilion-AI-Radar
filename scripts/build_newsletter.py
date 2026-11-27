@@ -5,7 +5,7 @@
 - YYYY-MM-DD.email.html  可直接貼進 Gmail／電子報平台的郵件 HTML（表格排版、行內樣式）
 - YYYY-MM-DD.md          Markdown 版
 - latest.html            導向最新一期
-內容：頭版與要聞精選、AI 業界、開發者雷達、Threads、Codex 重置雷達、社群活動、AI 證照與課程。
+內容：頭版與要聞精選、AI 業界、開發者雷達、Threads、重置雷達（Codex、agy）、社群活動、AI 證照與課程。
 """
 import html
 import json
@@ -177,13 +177,15 @@ def collect(day, live=False):
     if rows:
         sections.append(("Threads 熱門", "On Threads", rows))
 
-    tibo = (load(day, "tibo") or {}).get("items", [])
+    tibo_data = load(day, "tibo") or {}
+    tibo = tibo_data.get("items", [])
+    prods = tibo_data.get("products") or {}
     label = {"reset": "重置訊號", "soon": "預告重置"}
     rows = [dict(title=(p.get("text_zh") or p.get("text") or "")[:120], link=p["link"],
-                 meta=f"@{p.get('author', '')} · {label[p['signal']]} · {when(p.get('pubDate'))}")
-            for p in tibo if p.get("signal") in label][:3]
+                 meta=f"{(prods.get(p.get('product')) or {}).get('label', 'Codex')} · @{p.get('author', '')} · {label[p['signal']]} · {when(p.get('pubDate'))}")
+            for p in tibo if p.get("signal") in label][:4]
     if rows:
-        sections.append(("Codex 重置雷達", "Tibo on X", rows))
+        sections.append(("重置雷達", "Reset Radar", rows))
 
     ev = (load(day, "events") or {}).get("items", [])
     ref = datetime.fromisoformat(f"{day}T00:00:00+08:00")
@@ -219,7 +221,7 @@ def collect(day, live=False):
 
 # 版面：lead = 第一則放大主打；grid = 其餘兩欄雜誌式；list = 單欄清單
 LAYOUT = {"頭版與要聞": "lead", "AI 業界動態": "lead", "科技副刊": "grid", "開發者雷達": "list",
-          "Threads 熱門": "grid", "Codex 重置雷達": "list", "社群活動": "grid"}
+          "Threads 熱門": "grid", "重置雷達": "list", "社群活動": "grid"}
 
 
 def issue_of(day):

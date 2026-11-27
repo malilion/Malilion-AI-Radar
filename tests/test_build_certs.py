@@ -108,3 +108,36 @@ def test_local_feed_and_fallback(tmp_path, monkeypatch):
     assert len(items) == 2 and err is None
     items, err = f.fetch({"name": "t", "url": "local:cache/missing.xml", "type": "github"})
     assert items == [] and err
+
+
+def test_reset_radar_multi_account(tmp_path, monkeypatch):
+    import json as j
+    import fetch_tibo as t
+    from datetime import datetime, timezone, timedelta
+    agy = next(a for a in t.ACCOUNTS if a["product"] == "agy")
+    assert t.signal("agy quota reset for everyone tomorrow", agy["scope_re"]) == "soon"
+    assert t.signal("Antigravity limits have been reset", agy["scope_re"]) == "reset"
+    assert t.signal("we reset the office coffee machine", agy["scope_re"]) == ""
+    assert t.signal("weekly limits are high", agy["scope_re"]) == "limits"
+
+    now = datetime.now(timezone.utc)
+    fmt = lambda d: d.strftime("%a %b %d %H:%M:%S +0000 %Y")  # noqa: E731
+    raw = [
+        {"id": "1", "owner": "_mohansolo", "author": "_mohansolo", "text": "agy limits reset for all users", "created_at": fmt(now - timedelta(hours=1)), "kind": "post", "stats": {}},
+        {"id": "2", "owner": "thsottiaux", "author": "thsottiaux", "text": "Codex usage limits reset for everyone", "created_at": fmt(now - timedelta(hours=2)), "kind": "post", "stats": {}},
+        {"id": "3", "owner": "_mohansolo", "author": "someoneelse", "text": "chatting about lunch", "created_at": fmt(now - timedelta(hours=3)), "kind": "repost", "stats": {}},
+    ]
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "tibo-raw").mkdir()
+    (tmp_path / "site").mkdir()
+    (tmp_path / "tibo-raw/posts.json").write_text(j.dumps(raw), encoding="utf-8")
+    monkeypatch.setattr(t, "from_syndication", lambda user=t.USER: (_ for _ in ()).throw(ValueError("blocked")))
+    monkeypatch.setattr(t, "add_translations", lambda items, cache: None)
+    t.main()
+    out = j.loads((tmp_path / "site/tibo.json").read_text(encoding="utf-8"))
+    by_id = {p["id"]: p for p in out["items"]}
+    assert by_id["1"]["product"] == "agy" and by_id["1"]["signal"] == "reset"
+    assert by_id["2"]["product"] == "codex" and by_id["3"]["product"] == "agy"  # 轉推依「在哪個帳號的時間軸」歸類
+    assert out["products"]["agy"]["last_reset"]["link"].endswith("/1")
+    assert out["products"]["codex"]["last_reset"]["link"].endswith("/2")
+    assert out["last_reset"]["link"].endswith("/2")  # 舊欄位 = 第一個產品（Codex）

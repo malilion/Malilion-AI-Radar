@@ -366,6 +366,7 @@
   const KINDS = { repost: '轉貼', reply: '回覆' };
   const fullDate = (iso) => new Intl.DateTimeFormat('zh-TW', { timeZone: TZ, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(Date.parse(iso));
 
+  // 每個追蹤的產品（Codex、agy…）各一張狀態卡；舊資料沒有 products 時只顯示 Codex
   function renderResetStatus() {
     const box = $('#resetStatus');
     box.textContent = '';
@@ -374,31 +375,34 @@
     // 看存檔時以當天結束為準，今天則以現在為準
     const ref = DAY ? Date.parse(`${DAY}T23:59:59+08:00`) : Date.now();
     const age = (m) => (m ? ref - Date.parse(m.pubDate) : Infinity);
-    const r = tibo?.last_reset;
-    const s = tibo?.last_soon;
-    let state = 'none';
-    let mark = r;
-    if (age(r) >= 0 && age(r) < 24 * 3600e3) state = 'reset';
-    else if (age(s) >= 0 && age(s) < 48 * 3600e3 && (!r || Date.parse(s.pubDate) > Date.parse(r.pubDate))) { state = 'soon'; mark = s; }
-    const label = { reset: '已重置', soon: '即將重置', none: '未見重置訊號' }[state];
-    box.className = `reset reset--${state}`;
-    const stamp = el('span', 'reset__stamp', label);
-    const text = el('div', 'reset__text');
-    const head = { reset: 'Tibo 在 24 小時內宣布重置額度', soon: 'Tibo 預告即將重置額度', none: '最近沒有重置公告' }[state];
-    text.append(el('p', 'reset__head', head));
-    if (mark) {
-      const when = el('p', 'reset__when', `${state === 'soon' ? '預告' : '最近一次重置公告'}：${fullDate(mark.pubDate)}（${ago(mark.pubDate)}）`);
-      text.append(when);
-      const a = el('a', 'reset__quote', mark.text.length > 180 ? `${mark.text.slice(0, 180)}…` : mark.text);
-      const href = safeUrl(mark.link);
-      if (href) a.href = href;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      text.append(a);
-    } else {
-      text.append(el('p', 'reset__when', '近 14 天的貼文沒有提到重置'));
-    }
-    box.append(stamp, text);
+    const products = tibo.products || { codex: { label: 'Codex', user: tibo.user, last_reset: tibo.last_reset, last_soon: tibo.last_soon } };
+    Object.values(products).forEach((pr) => {
+      const r = pr.last_reset;
+      const s = pr.last_soon;
+      let state = 'none';
+      let mark = r;
+      if (age(r) >= 0 && age(r) < 24 * 3600e3) state = 'reset';
+      else if (age(s) >= 0 && age(s) < 48 * 3600e3 && (!r || Date.parse(s.pubDate) > Date.parse(r.pubDate))) { state = 'soon'; mark = s; }
+      const label = { reset: '已重置', soon: '即將重置', none: '未見重置訊號' }[state];
+      const card = el('div', `reset reset--${state}`);
+      const stamp = el('span', 'reset__stamp', label);
+      const text = el('div', 'reset__text');
+      const head = { reset: `${pr.label} 額度在 24 小時內宣布重置`, soon: `${pr.label} 額度預告即將重置`, none: `${pr.label} 最近沒有重置公告` }[state];
+      text.append(el('p', 'reset__head', head));
+      if (mark) {
+        text.append(el('p', 'reset__when', `${state === 'soon' ? '預告' : '最近一次重置公告'}：${fullDate(mark.pubDate)}（${ago(mark.pubDate)}）`));
+        const a = el('a', 'reset__quote', mark.text.length > 180 ? `${mark.text.slice(0, 180)}…` : mark.text);
+        const href = safeUrl(mark.link);
+        if (href) a.href = href;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        text.append(a);
+      } else {
+        text.append(el('p', 'reset__when', '近 14 天的貼文沒有提到重置'));
+      }
+      card.append(stamp, text);
+      box.append(card);
+    });
   }
 
   function renderTibo() {
@@ -409,14 +413,19 @@
     const items = tibo?.items || [];
     renderResetStatus();
     if (!items.length) {
-      $('#tiboEmpty').textContent = 'X 暫時抓不到 Tibo 的貼文，下一次整點更新會再試。';
+      $('#tiboEmpty').textContent = 'X 暫時抓不到追蹤帳號的貼文，下一次整點更新會再試。';
       $('#tiboEmpty').hidden = false;
       $('#tiboMore').hidden = true;
       return;
     }
     $('#tiboEmpty').hidden = true;
     const groups = { '': items, signal: items.filter((p) => p.signal === 'reset' || p.signal === 'soon'), limits: items.filter((p) => p.signal === 'limits') };
-    for (const [value, label] of [['', '全部'], ['signal', '重置訊號'], ['limits', '談額度']]) {
+    const prods = Object.entries(tibo?.products || {});
+    const filters = [['', '全部'], ['signal', '重置訊號'], ['limits', '談額度']];
+    if (prods.length > 1) {
+      prods.forEach(([key, pr]) => { groups[`p:${key}`] = items.filter((p) => (p.product || prods[0][0]) === key); filters.push([`p:${key}`, pr.label]); });
+    }
+    for (const [value, label] of filters) {
       const b = el('button', 'chip', label);
       b.type = 'button';
       b.append(el('small', null, groups[value].length));
@@ -433,7 +442,8 @@
       if (p.signal === 'reset' || p.signal === 'soon') li.classList.add('dispatch--signal');
       if (read.has(entry.id)) li.classList.add('is-read');
       const text = el('div');
-      const src = el('span', 'dispatch__src', `@${p.author}${KINDS[p.kind] ? ` · ${KINDS[p.kind]}` : ''}`);
+      const prodLabel = tibo?.products && Object.keys(tibo.products).length > 1 ? tibo.products[p.product]?.label : '';
+      const src = el('span', 'dispatch__src', `@${p.author}${prodLabel ? ` · ${prodLabel}` : ''}${KINDS[p.kind] ? ` · ${KINDS[p.kind]}` : ''}`);
       if (SIGNALS[p.signal]) src.append(el('span', `signal signal--${p.signal}`, SIGNALS[p.signal]));
       const h = el('h3', 'dispatch__title t');
       h.append(el('span', 'hl', main));

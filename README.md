@@ -16,7 +16,7 @@
 | A1 | 頭版 | 頭條、兩則次要新聞、三則短訊 |
 | A2 | 要聞 | 多欄新聞列表，可搜尋、依媒體篩選、只看未讀 |
 | B1 | 社群版 | Threads 貼文引述卡，依互動分數排序，可依帳號篩選 |
-| B2 | 重置雷達（**暫停中**） | X 目前從 GitHub Actions 抓不到資料，區塊已隱藏、抓取步驟已停用（`if: false`），程式碼保留。原設計：追蹤 Tibo（[@thsottiaux](https://x.com/thsottiaux)，OpenAI Codex 負責人）的 X 貼文，判斷 Codex 額度是不是要重置了：上方印章顯示「已重置／即將重置／未見重置訊號」，下方列出近期貼文，可只看重置訊號或談額度的貼文 |
+| B2 | 重置雷達（**暫停中**） | X 目前從 GitHub Actions 抓不到資料，區塊已隱藏、抓取步驟已停用（`if: false`），程式碼保留。原設計：追蹤 `reset-radar.json` 裡的帳號——Tibo（[@thsottiaux](https://x.com/thsottiaux)，Codex）與 [@_mohansolo](https://x.com/_mohansolo)（agy，Antigravity CLI）——判斷額度是不是要重置了：每個產品一張狀態印章（已重置／即將重置／未見重置訊號），下方列出近期貼文，可依產品、重置訊號、談額度篩選 |
 | C1 | 科技副刊 | Unwind AI 電子報，橫向捲動封面卡 |
 | C2 | AI 業界動態 | 「官方部落格／科技媒體」兩個分頁，可依來源篩選 |
 | C3 | 開發者雷達 | 「GitHub 趨勢／Hacker News／論文／部落格／Reddit／版本更新」六個分頁，排行榜類標示名次 |
@@ -122,6 +122,7 @@
 | 翻譯 | Settings → Secrets and variables → Actions 新增 `ANTHROPIC_API_KEY`。沒設定時顯示英文原文。翻譯結果以文章連結為鍵快取 |
 | Threads 帳號 | `threads-keywords.json` 的 `accounts`（不含 @）；`hotWindowHours` 是時間範圍，`keywords` 是搜尋模式（未登入時中文關鍵字常抓不到） |
 | 重置雷達來源 | 預設用 TweeterPy 的訪客模式。訪客模式被擋時，到 Settings → Secrets and variables → Actions 新增 secret `X_AUTH_TOKEN`（X 帳號 cookie 裡的 `auth_token`，請用小帳號，不要用個人主帳號），會改用登入模式並連回覆一起抓。另可在 Variables 新增 `TIBO_FEEDS`（逗號分隔的 RSS 網址，例如自架 RSSHub）當備援 |
+| 重置雷達帳號 | `reset-radar.json` 的 `accounts`：`user`（X 帳號，不含 @）、`product`（產品代號）、`label`（顯示名稱）、`scope`（該產品專屬的對象字眼，正規表示式，例如 `agy\|antigravity`）。新增帳號只要加一筆；恢復運作的步驟同上（設 `X_AUTH_TOKEN`、拿掉 `if: false`、取消隱藏區塊）。X 之外的備援：開發者雷達「部落格與社群」有 Antigravity 論壇（Google AI 開發者論壇的 Antigravity 分類 RSS） |
 | AI／開發者來源 | `ai-feeds.json`、`dev-feeds.json`（欄位見下表） |
 | RSSHub 來源 | 網址寫成 `rsshub:/anthropic/news` 的來源，會接在 Variables 的 `RSSHUB_BASE`（自架 [RSSHub](https://github.com/DIYgod/RSSHub) 網址，不含結尾斜線）後面抓；沒設定就略過，不算錯誤。公開的 rsshub.app 會擋 GitHub Actions，請自架 |
 | 證照與梯次 | `data/certifications.json`（證照主檔）、`data/schedules.json`（梯次與優惠）。欄位：證照 `cert_id`、`title`、`issuer`、`category`、`level`、`schedule_type`（`fixed_batch`／`on_demand`／`campaign`）、`cost_type`（`free`／`freemium`／`paid`／`voucher_available`）、`regular_price`、`language`、`validity_years`、`official_url`、`prep_resources`；梯次 `schedule_id`、`cert_id`、`batch_name`、`reg_start`、`reg_end`、`exam_date`（可為 `YYYY-MM-DD/YYYY-MM-DD` 區間）、`promo_detail`、`source_url`、`last_verified`。`status` 由腳本計算，不必手填。也可用 Issue 範本「新增或更正證照梯次／優惠」投稿，來源請用官方頁面 |
