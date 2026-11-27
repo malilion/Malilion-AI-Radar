@@ -1,0 +1,44 @@
+[
+ {
+  "title": "中小企業網路大學校 AI 專區",
+  "link": "https://smelearning.sme.gov.tw/",
+  "group": "隨時可學",
+  "note": "Free",
+  "meta": "經濟部中小及新創企業署 · 免費"
+ },
+ {
+  "title": "工研院產業學院 AI 課程",
+  "link": "https://college.itri.org.tw/",
+  "group": "隨時可學",
+  "note": "部分課程免費；結訓證書依課程規定",
+  "meta": "工研院產業學院 · 免費上課／付費領證"
+ },
+ {
+  "title": "數位發展部數位培訓平台",
+  "link": "https://training.moda.gov.tw/",
+  "group": "隨時可學",
+  "note": "Free（依課程）",
+  "meta": "數位發展部 · 免費"
+ },
+ {
+  "title": "e等公務園+ 生成式 AI 課程",
+  "link": "https://elearn.hrd.gov.tw/mooc/index.php",
+  "group": "隨時可學",
+  "note": "Free",
+  "meta": "人事行政總處 · 免費"
+ },
+ {
+  "title": "Microsoft Azure AI Fundamentals（AI-900）",
+  "link": "https://learn.microsoft.com/credentials/certifications/azure-ai-fundamentals/",
+  "group": "隨時可學",
+  "note": "依地區定價；Virtual Training Day 常送折扣券",
+  "meta": "Microsoft · 常有免費或折扣券"
+ },
+ {
+  "title": "AWS Certified AI Practitioner（AIF-C01）",
+  "link": "https://aws.amazon.com/certification/certified-ai-practitioner/",
+  "group": "隨時可學",
+  "note": "USD 100（活動期間常有考試折扣）",
+  "meta": "AWS · 常有免費或折扣券"
+ }
+]
